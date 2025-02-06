@@ -1,30 +1,30 @@
-# Pectra FAQ
+# Pectra 常见问题
 
-**What is Pectra?**
-Pectra, (Prague - Electra), is the next network upgrade scheduled for Ethereum. The full list of EIPs as well as an introduction to the features can be found [here](https://notes.ethereum.org/@ethpandaops/mekong#What-is-in-the-Mekong-testnet).
+**Pectra 是什么?**
+Pectra, (Prague - Electra), 是以太坊计划的下一次网络升级。可以在[此处](https://notes.ethereum.org/@ethpandaops/mekong#What-is-in-the-Mekong-testnet)找到完整的 EIP 列表以及功能介绍。
 
-**Who is this guide for?**
-For App developers, Stakers and Node operators who are interested in the upcoming Pectra upgrade.
+**本指南适合哪些人?**
+对即将到来的 Pectra 升级感兴趣的应用程序开发者、质押者和节点运营者。
 
-Overall
+总览
 ---
-**FAQ**:
-#### **Q:** What is Prague/Electra?
-**A:** Prague and Electra are the names of the upcoming Ethereum hard fork. The included EIPs can be found [here](https://eips.ethereum.org/EIPS/eip-7600). Prague is the name of the fork on the execution client side, and Electra is the upgrade name on the consensus layer client side. 
+**常见问题**:
+#### **问题:** Prague/Electra 是什么?
+**回答:** Prague 和 Electra 是即将到来的以太坊硬分叉的名称。可以在[此处](https://eips.ethereum.org/EIPS/eip-7600)找到分叉包含的 EIP。Prague 是执行客户端分叉的名称，而 Electra 是共识层客户端升级的名称。
 
-There are 3 main features along with some smaller EIPs included in Pectra. They are: [EIP-7251](https://eips.ethereum.org/EIPS/eip-7251) also known as Max effective balance (MaxEB), [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702), and [EIP-7002](https://eips.ethereum.org/EIPS/eip-7002) also known as Execution Layer triggered exits.
+Pectra 包含 3 个主要功能，以及一些较小的 EIP。他们分别是: [EIP-7251](https://eips.ethereum.org/EIPS/eip-7251) (也称为最大有效余额 (MaxEB))、[EIP-7702](https://eips.ethereum.org/EIPS/eip-7702)，以及  [EIP-7002](https://eips.ethereum.org/EIPS/eip-7002) (也称为执行层触发退出)。
 
-The [MaxEB](https://eips.ethereum.org/EIPS/eip-7251) feature will allow the user to have a > 32ETH effective balance. This would allow users to consolidate many validators (or deposit new ones) into one up to 2048ETH. The requirement to use this feature is the setting of the `0x02` withdrawal credentials. A user can either make a deposit directly with `0x02` credentials or the user can move from `0x01` to `0x02`.
+[MaxEB](https://eips.ethereum.org/EIPS/eip-7251) 功能将允许用户拥有 > 32ETH 的有效余额。这使用户能够将多个验证器合并为一个（或新增验证器），最大余额为 2048ETH。使用此功能需要设置 `0x02` 提款凭证。用户可以直接使用 `0x02` 凭证进行存款，也可以从 `0x01` 迁移至 `0x02`。
 
-With [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702), The user wallet would be able to delegate control to a smart contract. This pattern allows a new wallet and app interaction design space, leading the path for future full account abstraction solutions.
+通过 [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702), 用户钱包能够将控制权委托给智能合约。这种模式为新的钱包和应用程序交互设计提供了可能，为未来的完整帐户抽象解决方案铺平了道路。
 
-The [Execution Layer (EL) triggered exits](https://eips.ethereum.org/EIPS/eip-7002) is a new feature that allows the withdrawal address set in the `0x01` or `0x02` withdrawal credential to perform exits directly in EL, without relying on pre-signed BLS keys. This feature is mainly targeted at staking pools, enabling them to use smart contracts to fully control the validator lifecycle.
+[执行层 (EL) 触发退出](https://eips.ethereum.org/EIPS/eip-7002) 是一项新功能，允许 `0x01` 或 `0x02` 提现凭证中设置的提现地址直接在执行层执行退出，无需依赖预签名 BLS 密钥。该功能主要面向质押池，使其能够使用智能合约完全控制验证器生命周期。
 
-Users/Devs
+用户/开发者
 ---
-**FAQ**:
-#### **Q:** What is EIP-7702 and how does it relate to Account abstraction?
-While [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) isn’t quite account abstraction, it does provide execution abstraction, i.e adds additional functionality to externally owned accounts (EOAs. This allows your EOA to do things like send transaction batches and delegate to other cryptographic key schemes, like passkeys. It does this by setting the code associated with the EOA to a protocol-level proxy designation. A full specification can be found [here](https://eips.ethereum.org/EIPS/eip-7702). It introduces a new transaction type that temporarily authorizes specific contract code for an EOA during a single transaction, allowing EOAs to function as smart contract accounts. This enables several use cases for users, including transaction batching, gas sponsorship, and privilege de-escalation.
+**常见问题**:
+#### **问题:** EIP-7702 是什么？它与帐户抽象有哪些联系?
+虽然 [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) 并不完全是帐户抽象，但它确实提供了执行抽象，即为外部拥有帐户 (EOA) 添加了额外功能。这使你的 EOA 能够执行如发送批量交易和委托给其他加密密钥方案 (如 passkeys) 等操作。它通过将与 EOA 关联的代码设置为协议级别的代理标识来实现这一点。可以在[此处](https://eips.ethereum.org/EIPS/eip-7702)找到完整的规范。EIP-7702 引入了一种新的交易类型，可在单笔交易期间临时授权 EOA 特定的合约代码，使其能够像智能合约帐户一样运作。这为用户提供了多个应用场景，包括批量交易、gas 赞助和权限降级。
 
 #### **Q:** Where can I find the specification for EIP-7702? How can I use it as a wallet dev?
 The specification for [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) is can be found [here](https://eips.ethereum.org/EIPS/eip-7702). To get started as a wallet developer, you'll need to determine a smart contract wallet core to use with the EOA. Pay close attention to how the wallets [should be initialized](https://eips.ethereum.org/EIPS/eip-7702#front-running-initialization). Once you have determined the core wallet to use, you'll need to expose behavior like `eth_sendTransaction` and other custom methods for [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) specific functionality like batch transactions.
