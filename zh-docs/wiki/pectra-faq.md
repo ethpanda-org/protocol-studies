@@ -78,17 +78,16 @@ Pectra 包含 3 个主要功能，以及一些较小的 EIP。他们分别是: [
 对于测试网，你可以使用 Dora 中的 [`Submit Deposits`](https://dora.mekong.ethpandaops.io/validators/deposits/submit) 页面来提交生成的存款。官方启动板的支持也将在未来几个月内推出。
 
 #### **问题:** 我拥有一个使用 `0x00` 凭证的验证器，我该如何迁移到 `0x02`?
-There is no direct way to move from `0x00` to `0x02`. You will need to first move your validator from `0x00` to `0x01` withdrawal credentials with a BLS change operation, then consolidate your validators to `0x02` withdrawal credentials. You can alternatively exit the validator and make a new deposit with `0x02` withdrawal credentials during the deposit.
+目前没有直接从 `0x00` 迁移到 `0x02` 的方式。你需要首先通过 BLS 更改操作将你的验证器从`0x00` 迁移到 `0x01` 提款凭证，然后再将验证器整合到 `0x02` 提款凭证。你也可以退出当前的验证器，并在存款时使用 `0x02` 提款凭证新增一个验证器。
 
 #### **问题:** 我拥有一个使用 `0x01` 凭证的验证器，我该如何迁移到 `0x02`?
-You can consolidate your validator to `0x02` withdrawal credentials via a self consolidation with both, the source and target pointing to your validator. This will change your withdrawal credentials to `0x02` and allows you to have a single validator with a balance of up to 2048 ETH. For new deposits, the `staking-cli` will support the `0x02` withdrawal credentials in the coming months before the Pectra mainnet Ethereum fork.
+你可以通过自我整合将验证器迁移到 `0x02` 提款凭证，方法是将源和目标都指向你的验证器。这会将你的提款凭证更改为 `0x02`，并允许你拥有一个最大余额为 2048 ETH 的验证器。对于新的存款，`staking-cli` 将在未来几个月内支持 `0x02` 提款凭证，之后 Pectra 主网以太坊分叉将会推出。
 
-#### **Q:** What is MaxEB?
-[EIP-7251](https://eips.ethereum.org/EIPS/eip-7251) or MaxEB increases the `MAX_EFFECTIVE_BALANCE` to 2048 ETH while keeping the minimum staking balance at 32 ETH. Before MaxEB, any entity that wanted to contribute a large amount of ETH to consensus had to spin up multiple validators because each was capped at a maximum of 32 ETH. [EIP-7251](https://eips.ethereum.org/EIPS/eip-7251) will allow large stake operators to consolidate their ETH into fewer validators, using the same stake with up to 64 times less individual validators. It also allows solo stakers' ETH to be compounded into their existing validator and contribute to their rewards without having to use the exact validator amount. For example, 35 ETH will be considered the validator's effective balance by the protocol, instead of leaving out 3 ETH ineffective and waiting till 64 ETH for 2 validators. Overall, consolidating validators will allow for fewer attestations in the consensus network and easing the bandwidth usage by nodes.
+#### **问题:** MaxEB 是什么?
+[EIP-7251](https://eips.ethereum.org/EIPS/eip-7251) (也称 MaxEB) 在保持最小质押余额为 32 ETH 的同时，将 `MAX_EFFECTIVE_BALANCE` 增加到了 2048 ETH。在 MaxEB 之前，任何希望向共识贡献大量 ETH 的实体都必须注册多个验证器，因为每个验证者的最大有效余额为 32 ETH。[EIP-7251](https://eips.ethereum.org/EIPS/eip-7251) 将允许大型质押运营者将他们的 ETH 整合到更少的验证器中，通过相同的质押实现最多减少 64 倍的单个验证器数量。它还允许单独质押者将他们的 ETH 合并到其现有验证器中，而无需使用精确的验证器数量。例如，协议会认为 35 ETH 是验证器的有效余额，而不是将 3 ETH 排除在外，并等待达到 64 ETH 才能启动 2 个验证器。总体而言，整合验证器将减少共识网络中的证明数量，并减少节点的带宽使用。
 
-#### **Q:** How do I consolidate my validators?
-To consolidate your validators, you first need to ensure that both the source and target validators have either `0x01` or `0x02` credentials assigned.
-Validators with withdrawal credentials using the `0x00` prefix or pointing to different execution layer addresses cannot be consolidated.
+#### **问题:** 我该如何整合我的验证器?
+要合并你的验证者，首先需要确保源验证器和目标验证器都已分配 `0x01` 或 `0x02` 凭证。使用 `0x00` 前缀的提款凭证或指向不同执行层地址的验证者将无法被整合。
 
 To consolidate two validators, send a transaction from your withdrawal address to the consolidation system contract, including the public keys of the source and target validators you wish to consolidate.
 
@@ -98,23 +97,23 @@ For testing right now, you can use the [Submit Consolidations](https://dora.meko
 A consolidation where the source and target point to the same validator is called a self-consolidation.
 In this situation, the validator will not be exited, and no funds will be moved. It will simply be assigned 0x02 credentials.
 
-#### **Q:** What are the validator requirements for consolidation?
+#### **问题:** 整合对验证器有哪些要求?
 The validators must be active on the beacon chain at the time of consolidation execution. This means they cannot be exiting, pending activation, or in any state other than active.
 Both the source and target validators must have `0x01` or `0x02` withdrawal credentials pointing to the same withdrawal address. If these two conditions are met, the validators may be consolidated.
 
-#### **Q:** What happens to my original, individual validators?
+#### **问题:** 我原来的单个验证器会发生什么?
 During a consolidation, there is a source and a target validator. The source validator is completely exited and the balance is then transferred to the target validator. The target validator will have the sum of the balances of the source validator and the target validator and will continue to perform its beacon chain duties without any change. 
 
-#### **Q:** When does the balance appear on my consolidated validator?
+#### **问题:** 余额什么时候会出现在我的整合验证器上？
 Once the source validator has completely exited and ceased performing all duties, the balance will be credited to the target validator. 
 
-#### **Q:** When happens if I consolidate one validator with`0x01` and another with `0x00` credentials?
+#### **问题:** 如果我将一个使用 `0x01` 凭证的验证器与另一个使用 `0x00` 凭证的验证器整合，会发生什么?
 The consolidation request will be deemed invalid and will not be processed. It will fail if both validators don't contain a `0x01` withdrawal credential with the exact same execution layer address. 
 
-#### **Q:** What happens if I consolidate validators that are exited?
+#### **问题:** 如果我整合已经退出的验证者。会发生什么?
 The consolidation will fail as the validators must be active on the beacon chain at the time of consolidation execution.
 
-#### **Q:** How can I partially withdraw some ETH from my `0x02` validator?
+#### **问题:** 我要如何从我的 `0x02` 验证器中部分提现 ETH ?
 You can issue a EL triggered partial withdrawal to withdraw some ETH from the `0x02` validator.
 Send a transaction to the withdrawal system contract (pending address to be finalized when Electra goes live on mainnet) with your validator `pubkey` and the `amount` (a positive non-zero Gwei amount).
 As with consolidations, this transaction must be sent from the withdrawal address set in your validator's withdrawal credentials.
@@ -122,21 +121,21 @@ As with consolidations, this transaction must be sent from the withdrawal addres
 We expect this functionality to be added to various tools in the coming months.
 For testing right now, you can use the [Submit Withdrawals](https://dora.mekong.ethpandaops.io/validators/submit_withdrawals) page in Dora. Connect with the wallet that is used as the withdrawal address for your validators, and you should be able to select between your validators and craft an appropriate withdrawal transaction.
 
-#### **Q:** How much ETH can I withdraw from my validator?
+#### **问题:** 我能够从我的验证器中提现多少 ETH ?
 You can partially withdraw the portion above the full validator amount, as long as the validator contains >32 ETH at the time of withdrawal completion. For example, if you currently have 34 ETH and request a partial withdrawal, a maximum of 2 ETH can be withdrawn.
 You may also decide to request a full withdrawal by specifying an amount of `0` in the request. When sending such a full withdrawal request, your validator will be exited, and the full balance withdrawn.
 
-#### **Q:** What happens to the ETH balance if my validator has `0x02` credentials and goes below 32 ETH?
+#### **问题:** What happens to the ETH balance if my validator has `0x02` credentials and goes below 32 ETH?
 A normally behaved validator will not have its balance dropped below 32ETH even if you initiate a partial withdrawal request. This can only be achieved if validator receives penalty. Nothing will happen except reduced rewards. However if balance drops below 16ETH, the validator will be exited and the balance will be transferred to the execution layer withdrawal address.
 
-#### **Q:** What happens to the ETH balance if my validator has `0x02` credentials and goes above 2048 ETH?
+#### **问题:** What happens to the ETH balance if my validator has `0x02` credentials and goes above 2048 ETH?
 The balance will continue to collect at the validator until the next partial withdrawal is triggered. The validator will however contain a maximum effective balance of 2048 ETH, the remaining balance will be considered ineffective in the beacon chain.
 
-#### **Q:** What balances between 32ETH and 2048ETH can I earn on?
+#### **问题:** What balances between 32ETH and 2048ETH can I earn on?
 The effective balance increments 1 ETH at a time. This means the accrued balance needs to meet a threshold before the effective balance changes. E.g, if the accrued balance is 33.74 ETH, the effective balance will be 33 ETH. If the accrued balance increases to 33.75 ETH, then the effective balance will also be 33 ETH. Consequently, an accrued balance of 34.25 ETH would correspond to an effective balance of 34 ETH.
 
-#### **Q:** Can I top up ETH in my `0x02` validator?
+#### **问题:** Can I top up ETH in my `0x02` validator?
 You can either consolidate a validator into the `0x02` validator to increase its balance or make a fresh deposit.
 
-#### **Q:** What happens to the ETH balance if I consolidate and my validator has `0x02` credentials and the total balance goes above 2048 ETH?
+#### **问题:** What happens to the ETH balance if I consolidate and my validator has `0x02` credentials and the total balance goes above 2048 ETH?
 The balance will continue to collect at the validator until the next partial withdrawal is triggered. The validator will however contain a maximum effective balance of 2048 ETH, the remaining balance will be considered ineffective in the beacon chain. The portion over 2048ETH will be withdrawn when partial withdrawal sweep comes.
