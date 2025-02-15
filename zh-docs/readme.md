@@ -1,20 +1,19 @@
-# **Welcome to the protocol!**
+# **欢迎来到这个协议！**
 
-The EPF Wiki is a collection of technical resources about the Ethereum protocol. It's home to all resources from EPF Study Group and the Protocol Wiki. These include technical information covering all core protocol domains and ongoing research. It's dedicated to serve aspiring core contributors and does not cover any smart contract or other high level development. The content consists of 2 parts: Study Group materials and community maintained Protocol Wiki. 
+EPF Wiki是关于以太坊协议的技术资源的集合。它是EPF学习小组和协议维基的所有资源的家园。其中包括涵盖所有核心协议领域的技术信息和正在进行的研究。它致力于服务有抱负的核心贡献者，不涵盖任何智能合约或其他高水平开发。内容由两部分组成：学习小组资料和社区维护协议维基。
 
-## Protocol Study Group
+## 协议研究小组
 
-Ethereum Protocol Fellowship Study Group (EPFsg) is an open study program for anyone interested in learning about internals of the protocol. The first part of EPF Wiki follows all the content presented during the study group. Materials provided by speakers and all their presentation are listed by weeks. 
+以太坊协议奖学金研究小组（EPFsg）是一个开放的研究项目，面向任何有兴趣了解协议内部原理的人。EPF Wiki的第一部分遵循了研究小组期间呈现的所有内容。演讲者提供的材料和他们所有的演讲都按周列出。
+**[开始学习](/eps/intro.md) 使用wiki** 并了解更多关于学习小组的原始信息。[公告的博客](https://blog.ethereum.org/2024/02/07/epf-study-group). 
 
-**[Start your studies](/eps/intro.md) using the wiki here** and learn more about the study group in its original [announcement blog](https://blog.ethereum.org/2024/02/07/epf-study-group). 
-
-> The study group is not just a list of resources but a community of people maintaining them and learning about the core protocol. **Join the community in our [Discord server](https://discord.com/invite/addwpQbhpq)**.
+>该学习小组并非仅仅是一份资源清单，而是一个由维护这些资源的人以及了解核心协议的人员组成的社群。**加入我们所在的社区吧 [Discord 服务器](https://discord.com/invite/addwpQbhpq)**.
 
 
-## Protocol Wiki 
+## 维基协议
 
-Protocol Wiki is a technical documentation of the main parts of Ethereum core development and research. It guides anyone interested in looking under the hood of the protocol and contributing. The wiki is maintained by the community formed around the study group and keeps following the latest research. 
+协议维基是有关以太坊核心开发与研究主要部分的技术文档。它为任何有兴趣深入了解该协议内部运作机制并贡献力量的人提供了指引。该维基由围绕研究小组形成的社区维护，并持续紧跟最新的研究成果。
 
-> :warning: Protocol Wiki is still under construction, many important topics are not fully covered. **If you find a missing content or issues, don't hesitate to [contribute](contributing.md)**. 
+> :警告：协议维基仍在建设中，许多重要主题尚未全面涵盖。 **如果您发现有任何缺失的内容或问题，请不要犹豫地 [提交反馈](contributing.md)** 。
 
 ![](https://raw.githubusercontent.com/eth-protocol-fellows/protocol-studies/wiki-pages/docs/images/epfsg_hero.jpg)
