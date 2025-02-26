@@ -1,19 +1,14 @@
 # 协议历史与演进
-> :警告: 本文是一个存根 [stub](https://en.wikipedia.org/wiki/Wikipedia:Stub) ，通过 [contributing](/contributing.md) 帮助维基并扩展它。
+> 警告: 本文是一个存根 [stub](https://en.wikipedia.org/wiki/Wikipedia:Stub) ，通过 [contributing](/contributing.md) 帮助维基并扩展它。
 本页面重点介绍了以太坊协议历史上的重要技术变更。
 有用的链接：[Overview from Ethereum.org](https://ethereum.org/en/history) 和 [Meta EIPs from Ethereum.org](https://eips.ethereum.org/meta) 。
 ## 前沿 (Frontier)
 前沿版本标志着以太坊协议的正式发布。该版本本质上是一个测试版，允许开发者学习、实验并开始构建以太坊去中心化应用和工具。它于 2015 年 7 月 30 日 UTC 时间凌晨 3:26:13 发布，这也是以太坊创世区块 [Ethereum genesis block](https://etherscan.io/block/0) 的时间戳。前沿版本发布时的 Gas 上限为 5000。这一 Gas 上限被硬编码到协议中，以确保矿工和用户能够在协议初始发布时通过安装客户端启动并运行。随后，通过前沿解冻分叉，Gas 上限被提高到 300 万（确切值为 3,141,592）。金丝雀合约是一种提供二进制信号（0 或 1）的合约。这些金丝雀合约是仅在以太坊前沿版本发布期间使用的初始启动机制。如果客户端检测到多个合约的信号变为 1，它们将停止挖矿并敦促用户更新客户端。这通过确保矿工不会阻止链升级，避免了长时间的停机。
 了解更多关于前沿的信息，请参阅以下资源：
-- [Frontier is coming, what to expect and how to prepare](https://blog.ethereum.org/2015/07/22/frontier-is-coming-what-to-expect-and-how-to-prepare)
-- [The thawing frontier](https://blog.ethereum.org/2015/08/04/the-thawing-frontier)
+- [前沿即将到来，期待什么以及如何准备](https://blog.ethereum.org/2015/07/22/frontier-is-coming-what-to-expect-and-how-to-prepare)
+- [解冻的前沿](https://blog.ethereum.org/2015/08/04/the-thawing-frontier)
 - [ethereum.org web archive](https://web.archive.org/web/20150802035735/https://www.ethereum.org/)
 - [ethereum-protocol-update-1](https://blog.ethereum.org/2015/08/04/ethereum-protocol-update-1)
-前沿即将到来，期待什么以及如何准备 (https://blog.ethereum.org/2015/07/22/frontier-is-coming-what-to-expect-and-how-to-prepare)
-解冻的前沿 (https://blog.ethereum.org/2015/08/04/the-thawing-frontier)
-ethereum.org 
-网页存档 (https://web.archive.org/web/20150802035735/https://www.ethereum.org/)
-以太坊协议更新1 (https://blog.ethereum.org/2015/08/04/ethereum-protocol-update-1)
 ## 家园 (Homestead)
 家园是以太坊协议的第二个主要版本，于 2016 年 3 月 14 日正式发布，标志着以太坊从测试阶段过渡到一个更加成熟和稳定的平台。以下是家园阶段引入的一些显著特性和变更：
 - [EIP-2](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-2.md)：EIP-2 包含了多项修复，例如通过交易创建合约的 Gas 成本增加，确保合约创建要么成功要么失败（防止创建空合约），以及对难度调整算法的修改。
