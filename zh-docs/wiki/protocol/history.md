@@ -1,7 +1,7 @@
 # 协议历史与演进
 > :警告: 本文是一个存根[stub](https://en.wikipedia.org/wiki/Wikipedia:Stub)，通过 [contributing](/contributing.md) 帮助维基并扩展它。
 本页面重点介绍了以太坊协议历史上的重要技术变更。
-有用的链接：[Overview from Ethereum.org](https://ethereum.org/en/history) 和 [Meta EIPs from Ethereum.org](https://eips.ethereum.org/meta)。
+有用的链接：[Overview from Ethereum.org](https://ethereum.org/en/history) 和 [Meta EIPs from Ethereum.org](https://eips.ethereum.org/meta) 。
 ## 前沿 (Frontier)
 前沿版本标志着以太坊协议的正式发布。该版本本质上是一个测试版，允许开发者学习、实验并开始构建以太坊去中心化应用和工具。它于 2015 年 7 月 30 日 UTC 时间凌晨 3:26:13 发布，这也是以太坊创世区块 [Ethereum genesis block](https://etherscan.io/block/0) 的时间戳。前沿版本发布时的 Gas 上限为 5000。这一 Gas 上限被硬编码到协议中，以确保矿工和用户能够在协议初始发布时通过安装客户端启动并运行。随后，通过前沿解冻分叉，Gas 上限被提高到 300 万（确切值为 3,141,592）。金丝雀合约是一种提供二进制信号（0 或 1）的合约。这些金丝雀合约是仅在以太坊前沿版本发布期间使用的初始启动机制。如果客户端检测到多个合约的信号变为 1，它们将停止挖矿并敦促用户更新客户端。这通过确保矿工不会阻止链升级，避免了长时间的停机。
 了解更多关于前沿的信息，请参阅以下资源：
@@ -27,8 +27,8 @@ ethereum.org
 难度调整算法被修改以解决在前沿阶段观察到的问题。新公式旨在通过根据区块之间的时间戳差异调整难度，保持目标区块时间并防止过度偏差。
 - [EIP-7](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-7.md):EIP-7 引入了 DELEGATECALL 操作码。
   一个新的操作码 DELEGATECALL 被添加到 0xf4。它的功能类似于 CALLCODE，但将发送者和值从父作用域传播到子作用域。传播发送者和值使得合约更容易将另一个地址存储为可变的代码源，并「传递」调用给它。与 CALL 操作码不同，没有额外的 Gas 津贴，这使得 Gas 管理更加可预测。
-- [EIP-8](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-8.md): EIP-8：EIP-8 通过引入 devp2p 前向兼容性要求，确保以太坊客户端支持未来的网络升级。
-  The **devp2p 有线协议**、**RLPx 发现协议**和**RLPx TCP 传输协议** 规定，实现应宽松地接受数据包，忽略版本号和 hello 及 ping 数据包中的额外列表元素，静默丢弃未知的数据包类型，并接受加密密钥建立握手数据包的新编码。这确保了所有客户端软件能够应对未来的协议升级，并接受握手，允许宽松地接受来自他人的数据（参见 Postel 定律 [Postel's Law](https://en.wikipedia.org/wiki/Robustness_principle) ）。
+- [EIP-8](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-8.md)：EIP-8 通过引入 devp2p 前向兼容性要求，确保以太坊客户端支持未来的网络升级。
+   **devp2p 有线协议**、**RLPx 发现协议**和**RLPx TCP 传输协议** 规定，实现应宽松地接受数据包，忽略版本号和 hello 及 ping 数据包中的额外列表元素，静默丢弃未知的数据包类型，并接受加密密钥建立握手数据包的新编码。这确保了所有客户端软件能够应对未来的协议升级，并接受握手，允许宽松地接受来自他人的数据（参见 [Postel's Law](https://en.wikipedia.org/wiki/Robustness_principle) ）。
   
 了解更多关于家园的信息，请参阅以下资源：
 - [Ethereum Homestead Documentation](https://readthedocs.org/projects/ethereum-homestead/downloads/pdf/latest/)
@@ -38,7 +38,7 @@ ethereum.org
 
 ## The Merge
 
-在 2022 年 9 月 15 日，以太坊激活了 EIP-3675 [EIP-3675](https://eips.ethereum.org/EIPS/eip-3675) ，并通过一项被称为 The Merge 的事件升级了共识机制，转向了权益证明（proof-of-stake）。The Merge 使得之前采用的工作量证明（proof-of-work）共识机制被废弃，工作量证明机制以前是与执行层在同一逻辑层中实现的。取而代之的是一种更复杂、更精密的权益证明共识机制，它不再需要高能耗的挖矿操作。新的权益证明共识机制被实现于其独立的层，拥有单独的点对点网络和逻辑系统，也被称为 Beacon Chain。Beacon Chain 自 2020 年 12 月 1 日起就已经运行并达成共识，在长时间稳定运行且没有任何故障后，它被认为已经准备好成为以太坊的共识提供者。The Merge 这个名称来源于两种网络的合并。
+在 2022 年 9 月 15 日，以太坊激活了 [EIP-3675](https://eips.ethereum.org/EIPS/eip-3675) ，并通过一项被称为 The Merge 的事件升级了共识机制，转向了权益证明（proof-of-stake）。The Merge 使得之前采用的工作量证明（proof-of-work）共识机制被废弃，工作量证明机制以前是与执行层在同一逻辑层中实现的。取而代之的是一种更复杂、更精密的权益证明共识机制，它不再需要高能耗的挖矿操作。新的权益证明共识机制被实现于其独立的层，拥有单独的点对点网络和逻辑系统，也被称为 Beacon Chain。Beacon Chain 自 2020 年 12 月 1 日起就已经运行并达成共识，在长时间稳定运行且没有任何故障后，它被认为已经准备好成为以太坊的共识提供者。The Merge 这个名称来源于两种网络的合并。
 Learn more about The Merge in following resources and reading on Consensus layer. 
 通过以下资源和阅读共识层相关内容，了解更多关于 The Merge 的信息。
  - [EIP-3675: Upgrade consensus to Proof-of-Stake](https://eips.ethereum.org/EIPS/eip-3675), [archived](https://web.archive.org/web/20240213102133/https://eips.ethereum.org/EIPS/eip-3675)
