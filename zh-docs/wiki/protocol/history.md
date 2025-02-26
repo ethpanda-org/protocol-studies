@@ -1,5 +1,5 @@
 # 协议历史与演进
-> :警告: 本文是一个存根[stub](https://en.wikipedia.org/wiki/Wikipedia:Stub)，通过 [contributing](/contributing.md) 帮助维基并扩展它。
+> :警告: 本文是一个存根 [stub](https://en.wikipedia.org/wiki/Wikipedia:Stub) ，通过 [contributing](/contributing.md) 帮助维基并扩展它。
 本页面重点介绍了以太坊协议历史上的重要技术变更。
 有用的链接：[Overview from Ethereum.org](https://ethereum.org/en/history) 和 [Meta EIPs from Ethereum.org](https://eips.ethereum.org/meta) 。
 ## 前沿 (Frontier)
@@ -28,7 +28,7 @@ ethereum.org
 - [EIP-7](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-7.md):EIP-7 引入了 DELEGATECALL 操作码。
   一个新的操作码 DELEGATECALL 被添加到 0xf4。它的功能类似于 CALLCODE，但将发送者和值从父作用域传播到子作用域。传播发送者和值使得合约更容易将另一个地址存储为可变的代码源，并「传递」调用给它。与 CALL 操作码不同，没有额外的 Gas 津贴，这使得 Gas 管理更加可预测。
 - [EIP-8](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-8.md)：EIP-8 通过引入 devp2p 前向兼容性要求，确保以太坊客户端支持未来的网络升级。
-   **devp2p 有线协议**、**RLPx 发现协议**和**RLPx TCP 传输协议** 规定，实现应宽松地接受数据包，忽略版本号和 hello 及 ping 数据包中的额外列表元素，静默丢弃未知的数据包类型，并接受加密密钥建立握手数据包的新编码。这确保了所有客户端软件能够应对未来的协议升级，并接受握手，允许宽松地接受来自他人的数据（参见 [Postel's Law](https://en.wikipedia.org/wiki/Robustness_principle) ）。
+  **devp2p 有线协议**、**RLPx 发现协议**和**RLPx TCP 传输协议** 规定，实现应宽松地接受数据包，忽略版本号和 hello 及 ping 数据包中的额外列表元素，静默丢弃未知的数据包类型，并接受加密密钥建立握手数据包的新编码。这确保了所有客户端软件能够应对未来的协议升级，并接受握手，允许宽松地接受来自他人的数据（参见 [Postel's Law](https://en.wikipedia.org/wiki/Robustness_principle) ）。
   
 了解更多关于家园的信息，请参阅以下资源：
 - [Ethereum Homestead Documentation](https://readthedocs.org/projects/ethereum-homestead/downloads/pdf/latest/)
