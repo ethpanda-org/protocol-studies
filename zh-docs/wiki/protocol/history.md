@@ -1,5 +1,4 @@
-# Protocol history and evolution
-协议历史与演进
+# 协议历史与演进
 > :warning: This article is a [stub](https://en.wikipedia.org/wiki/Wikipedia:Stub), help the wiki by [contributing](/contributing.md) and expanding it.
 > :警告: 本文是一个存根，帮助维基贡献并扩展它。
 This page highlights important technical changes in the history of Ethereum protocol. 
