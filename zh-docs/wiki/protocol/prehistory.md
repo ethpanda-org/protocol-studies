@@ -1,97 +1,96 @@
-# Prehistory of Ethereum
+# 以太坊的历史背景
 
-> “Heroes are heroes because they are heroic in behavior, not because they won or lost.”\
+> “英雄之所以成为英雄，是因为他们的行为具有英雄气概，而非因为他们取得了胜利或失败。” \
 > — Nicholas Taleb
 
-This article explores the lineage of Ethereum, celebrating the heroes who influenced it with their courage, creativity, and sheer rebellion.
+本文探讨了以太坊的发展脉络，赞颂了那些凭借勇气、创造力以及纯粹的叛逆精神对其产生深远影响的英雄们。
 
-Ethereum has its roots in the early internet's open spirit, with its design philosophy echoing the Unix ideal of 'doing one thing and doing it well'. The rise of the free and open source movement, embodied by GNU/Linux, reaffirmed open standards in software. Meanwhile, breakthroughs in public key cryptography and its advocacy by the cypherpunks laid the groundwork for secure, transparent, and decentralized systems like Bitcoin which ultimately inspired Ethereum's vision of building a platform for a borderless, self-sovereign digital economy.
+以太坊起源于早期互联网的开放精神，其设计理念深受 Unix 系统“专注于一件事并将其做好”这一理念的影响。由 GNU/Linux 所体现的自由开源运动的兴起，再次确认了软件领域的开放标准。与此同时，公钥加密技术的重大突破以及“密码朋克”（cypherpunks）对其的倡导，为像比特币这样安全、透明且去中心化的系统奠定了基础，而比特币最终启发了以太坊构建一个无国界、自主主权的数字经济平台的愿景。
 
-> “If you look at the people that were involved in the early stages of the Bitcoin space, their earlier pedigrees, if they had any pedigrees at all, were in open source—Linux, Mozilla, and cypherpunk mailing lists.”\
-> — _Vitalik Buterin, Co-founder of Ethereum._
+> “倘若你审视一下那些在比特币领域早期阶段有所涉足的人士，他们过往的经历（如果有的话）大多源自开源软件领域——比如 Linux、Mozilla 以及 cypherpunk 邮件列表。”\
+> — _Vitalik Buterin, 以太坊的联合创始人。_
 
-## The information super highway
+## 信息高速公路
 
-From its humble beginnings in 1969 as a Cold War project ([ARPANET](https://en.wikipedia.org/wiki/ARPANET)), the internet has evolved into an unprecedented global phenomenon.
+从1969年作为一个冷战项目（[ARPANET](https://en.wikipedia.org/wiki/ARPANET)）的微小开始，互联网已经发展成为一种前所未有的全球现象。
 
-> "The Internet's pace of adoption eclipses all other technologies that preceded it. Radio was in existence 38 years before 50 million people tuned in; TV took 13 years to reach that benchmark. Sixteen years after the first PC kit came out, 50 million people were using one. Once it was opened to the general public, the Internet crossed that line in four years."\
-> — [The Emerging Digital Economy,(July 1998).](https://www.commerce.gov/sites/default/files/migrated/reports/emergingdig_0.pdf)
+> “互联网的普及速度超过了之前的所有其他技术。在5000万人收听收音机之前，收音机已经存在了38年；电视花了13年才达到这个标准。第一个个人电脑套件问世16年后，有5000万人在使用它。一旦它向公众开放，互联网在四年后就跨越了这条线。”\
+> — [新兴的数字经济，（1998年7月）。](https://www.commerce.gov/sites/default/files/migrated/reports/emergingdig_0.pdf)
 
-![A map of internet cables from 1989 to 2021.](img/overview/information-superhighway.gif)
-**A map of internet cables from 1989 to 2021. [Source: The New York Times.](https://www.nytimes.com/interactive/2019/03/10/technology/internet-cables-oceans.html)**
+![1989年至2021年的互联网连线地图。](img/overview/information-superhighway.gif)
+**1989年至2021年的互联网连线地图。 [来源：《纽约时报》](https://www.nytimes.com/interactive/2019/03/10/technology/internet-cables-oceans.html)**
 
-What started as a research tool for a handful of institutions now connects billions worldwide, collapsing geographical borders and facilitating human interactions that were once inconceivable.
+它最初只是少数几个机构的研究工具，现在连接了全球数十亿人，打破了地理边界，促进了曾经不可思议的人类互动。
 
-> "National borders are just speed bumps on the information superhighway."\
+
+> “国界只是信息高速公路上的减速带。”\
 > — Timothy May, Cypherpunk.
 
-## Unix & Bell Labs
+## Unix和贝尔实验室
 
-Unix originated from the efforts to simplify the complexities of [MULTICS](https://en.wikipedia.org/wiki/Multics), a large and ambitious operating system project of the 1960s. As MULTICS became unwieldy, a small group including [Ken Thompson](https://en.wikipedia.org/wiki/Ken_Thompson) and [Dennis Ritchie](https://en.wikipedia.org/wiki/Dennis_Ritchie) at AT&T Bell Labs sought to create Unix - a more modular, simpler, and composable alternative:
 
-> "At some point I realized that I was three weeks from an operating system. I'll needed an editor, assembler, and kernel overlay — call it an operating system. One week, one week, one week, and we had Unix."\
-> — [_Ken Thompson in an interview_](https://www.youtube.com/watch?v=EY6q5dv_B-o)
+Unix起源于简化[MULTICS]（https://en.wikipedia.org/wiki/Multics）复杂性的努力，MULTICS是20世纪60年代一个雄心勃勃的大型操作系统项目。由于MULTICS变得难以控制，一个包括AT&T贝尔实验室的[Ken Thompson]（https://en.wikipedia.org/wiki/Ken_Thompson）和[Dennis Ritchie]（https://en.wikipedia.org/wiki/Dennis_Ritchie）在内的小团队试图创建Unix——一个更模块化、更简单和可组合的替代方案：
 
-In 1972, Dennis also wrote the influential [C language](<https://en.wikipedia.org/wiki/C_(programming_language)>).
+> “在某种程度上，我意识到我距离操作系统只有三周的时间。我需要一个编辑器、汇编器和内核覆盖层——就叫它操作系统吧。一周，一周，一周，我们就有了Unix。”\
+> — [_Ken Thompson 在一场采访中提到_](https://www.youtube.com/watch?v=EY6q5dv_B-o)
 
-![Ken Thompson and Dennis Ritchie](img/overview/ken-thompson-dennis-ritchie.jpg)
-**Ken Thompson and Dennis Ritchie.**
+1972年，丹尼斯还写了《影响力》 [C 语言 ](<https://en.wikipedia.org/wiki/C_(programming_language)>).
 
-Bell Labs was an unparalleled incubator of the century's most defining technological building blocks:
+![Ken Thompson 和 Dennis Ritchie](img/overview/ken-thompson-dennis-ritchie.jpg)
+**Ken Thompson 和 Dennis Ritchie.**
 
-> "You couldn't go to the store and buy a Bell Labs innovation, yet it was deep inside other things; it was platform innovation integral to communications infrastructure."\
-> — Jon G., The Idea Factory
+贝尔实验室是本世纪最具决定性的技术构件无与伦比的孵化器：
 
-> 🎦 WATCH: [Jon talk about innovations at Bell Labs.](https://www.youtube.com/watch?v=OJsKgiGGzzs)
+> “你不可能去商店买到贝尔实验室的创新产品，但它深藏在其他东西里面；这是通信基础设施不可或缺的平台创新。” \
+> — Jon G., 创意工厂
 
-In many ways, [Ethereum functions](https://ethereum.foundation/infinitegarden) like an open Bell Labs.
+> 🎦 观看: [Jon talk about innovations at Bell Labs.](https://www.youtube.com/watch?v=OJsKgiGGzzs)
 
-Unix introduced concepts like hierarchical file systems, the shell as a command-line interface, single-purpose utilities that could be combined to perform complex tasks.
-These foundational principles laid the groundwork for what became known as the UNIX philosophy — favoring simplicity, flexibility, and reusability in software design.
+在很多方面， [Ethereum functions](https://ethereum.foundation/infinitegarden) 就像一个开放的贝尔实验室。
+Unix引入了一些概念，比如分层文件系统、shell作为命令行界面、可以组合起来执行复杂任务的单一用途实用程序。
+这些基本原则奠定了后来被称为UNIX哲学的基础——在软件设计中支持简单、灵活和可重用性。
 
-Today, UNIX and its derivatives continue to underpin much of modern computing, influencing everything from operating systems like Linux and macOS to the principles of timeless software development.
+今天，UNIX及其衍生物继续支撑着现代计算的大部分，影响着从Linux和macOS这样的操作系统到永恒的软件开发原则的一切。
 
-> 🎦 WATCH: [The Unix documentary.](https://www.youtube.com/watch?v=tc4ROCJYbm0)
+> 🎦 观看: [ Unix纪录片。](https://www.youtube.com/watch?v=tc4ROCJYbm0)
 
-The Unix legacy demonstrates the profound influence a small group of individuals can have on the world through software.
+Unix遗产展示了一小群人可以通过软件对世界产生的深远影响。
 
-## Can we keep a secret?
+## 我们能保守秘密吗？
 
-Since the dawn of civilization, the need to convey messages in secrecy has been a constant human pursuit. From merchants concealing trade secrets to spies and the military transmitting critical information, cryptography has played a vital role. Early methods often used the same key for both encryption and decryption, making secure key distribution a nightmare:
+自人类文明诞生以来，秘密传递信息的需要一直是人类的追求。从商人隐藏商业秘密到间谍和传递关键信息的军方，密码学发挥了至关重要的作用。早期的方法通常使用相同的密钥进行加密和解密，这使得安全的密钥分发成为一个噩梦：
 
-> "The problem of producing, registering, distributing and canceling the keys, may seem slight to an individual who has not had experience with military communications, but in wartime the volumes of traffic stagger even the signal staffs."\
-> — [David Kahn writes in _the codebreakers_](https://en.wikipedia.org/wiki/The_Codebreakers)
+> “对于一个没有军事通信经验的人来说，制造、登记、分发和取消密钥的问题可能显得微不足道，但在战时，交通流量甚至会让信号工作人员感到吃惊。” \
+> — [David Kahn在 **the codebreakers** 中写道](https://en.wikipedia.org/wiki/The_Codebreakers)
 
-If a key fell into enemy hands, messages were vulnerable. This was evident in World War II with the cracking of the [Enigma machine](https://en.wikipedia.org/wiki/Enigma_machine), a sophisticated German cipher, by mathematician [Alan Turing](https://en.wikipedia.org/wiki/Alan_Turing) and his team. Their success significantly altered the outcome of the war.
+如果密钥落入敌人手中，消息就会变得脆弱。在第二次世界大战中，数学家艾伦·图灵（https://en.wikipedia.org/wiki/Alan_Turing）和他的团队破解了一个复杂的德国密码——[Enigma machine](https://en.wikipedia.org/wiki/Enigma_machine)，这一点显而易见。他们的成功极大地改变了战争的结果。
 
-![A statue of Alan Turing and the Enigma machine.](img/overview/alan-turing.jpg)
-**A statue of Alan Turing and the Enigma machine.**
+！[ 艾伦·图灵的雕像和谜机。]（img/overview/ Alan - Turing .jpg）
+**艾伦·图灵和英格玛机的雕像。**
 
-How do you securely exchange keys over long distances, between people who have never met? Critics believed that cryptography was destined to be dependent on trust:
+你如何在素未谋面的人之间安全地远距离交换密钥？批评者认为密码学注定要依赖信任：
 
-> "Few persons can be made to believe that it is not quite an easy thing to invent a method of secret writing which shall baffle investigation. Yet it may be roundly asserted that human ingenuity cannot concoct a cipher which human ingenuity cannot resolve."\
+> “几乎没有人会相信，发明一种能妨碍调查的秘密写作方法不是一件容易的事。然而，我们可以断言，人类的聪明才智无法编造出一种人类聪明才智无法解决的密码。”\
 > — Edgar Allan Poe
 
-Poe was proven wrong by a series of inventions from 1974-1978.
+从1974年到1978年，Poe 的一系列发明证明他错了。
 
-In 1974, [Ralph Merkle](https://en.wikipedia.org/wiki/Ralph_Merkle) devised [Merkle's Puzzles](https://en.wikipedia.org/wiki/Merkle%27s_Puzzles) - an initial method that allowed two parties to agree on a shared secret by exchanging messages, even if they have no secrets in common beforehand.
+1974年，[Ralph Merkle]（https://en.wikipedia.org/wiki/Ralph_Merkle）设计了[Merkle’s Puzzles]（https://en.wikipedia.org/wiki/Merkle%27s_Puzzles）——一种初始方法，允许双方通过交换消息就共享秘密达成一致，即使他们事先没有共同的秘密。
 
-Two years later, in 1976, Merkle’s work inspired [Whitfield Diffie](https://en.wikipedia.org/wiki/Whitfield_Diffie) and [Martin Hellman](https://en.wikipedia.org/wiki/Martin_Hellman) to publish their historic paper ["New directions in cryptography"](https://ee.stanford.edu/~hellman/publications/24.pdf) that introduced [Diffie–Hellman key exchange algorithm.](https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange) This approach was significantly more mathematically robust than Merkle's puzzles - giving birth to trustless cryptography.
+两年后，1976年，默克尔的工作启发了[Whitfield Diffie]（https://en.wikipedia.org/wiki/Whitfield_Diffie）和[Martin Hellman]（https://en.wikipedia.org/wiki/Martin_Hellman）发表了他们具有历史意义的论文[ “密码学的新方向” ](https://ee.stanford.edu/~hellman/publications/24.pdf)，介绍了[Diffie - Hellman 密钥交换算法]（https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange）。这种方法在数学上明显比默克尔的谜题更鲁棒——催生了不可靠的加密。
 
-![Whitfield and Martin published "New directions in cryptography"](img/overview/new-direction-in-cryptography.jpg)
-**Whitfield and Martin published "New directions in cryptography".**
+![Whitfield和Martin发表了《密码学新方向》](img/overview/new-direction-in-cryptography.jpg)
+**Whitfield和Martin发表了《密码学的新方向》。**
 
-In the following year, 1977, computer scientists [Ronald Rivest](http://amturing.acm.org/award_winners/rivest_1403005.cfm), [Adi Shamir](http://amturing.acm.org/award_winners/shamir_2327856.cfm), and [Leonard Adleman](http://amturing.acm.org/award_winners/adleman_7308544.cfm) developed the [RSA cryptosystem](<https://en.wikipedia.org/wiki/RSA_(cryptosystem)>) - the first working implementation of public key cryptography in a paper titled ["A Method for Obtaining Digital Signatures and Public-Key Cryptosystems"](https://people.csail.mit.edu/rivest/Rsapaper.pdf). Rivest sent a copy of the paper to mathematician Martin Gardner. Martin was so impressed that he broke his usual rule of planning his column several months in advance, and quickly wrote it up for [publication in the August 1977](https://web.archive.org/web/20230728001717/http://simson.net/ref/1977/Gardner_RSA.pdf) issue of Scientific American:
+在接下来的1977年，计算机科学家们 [Ronald Rivest](http://amturing.acm.org/award_winners/rivest_1403005.cfm), [Adi Shamir](http://amturing.acm.org/award_winners/shamir_2327856.cfm)， 和 [Leonard Adleman](http://amturing.acm.org/award_winners/adleman_7308544.cfm) 开发了[RSA密码系统](<https://en.wikipedia.org/wiki/RSA_(cryptosystem)>) - 在一篇题为[" a Method for getting Digital Signatures and public key Cryptosystems"](https://people.csail.mit.edu/rivest/Rsapaper.pdf)的论文中，首次实现了公钥密码体制。里维斯特把这篇论文的副本寄给了数学家马丁·加德纳。马丁被深深打动了，他打破了通常几个月前就计划好专栏的规矩，很快就写好了，准备在[1977年8月发表](https://web.archive.org/web/20230728001717/http://simson.net/ref/1977/Gardner_RSA.pdf)。《科学美国人》杂志：
+![Len, Adi,Ron 在 CRYPTO '82，以及 Martin Gardner 现在著名的文章](img/overview/rsa-in-scientific-american.jpg)
+**Len, Adi, Ron 在 CRYPTO '82，和 [现在很出名的文章](https://web.archive.org/web/20230728001717/http://simson.net/ref/1977/Gardner_RSA.pdf) 由 Martin Gardner 发表在《科学美国人》**
 
-![Len, Adi, Ron at CRYPTO '82, and the now-famous article by Martin Gardner](img/overview/rsa-in-scientific-american.jpg)
-**Len, Adi, Ron at CRYPTO '82, and [the now-famous article](https://web.archive.org/web/20230728001717/http://simson.net/ref/1977/Gardner_RSA.pdf) by Martin Gardner published in Scientific American.**
+在文章中，Gardner提供了一个RSA-129密码，并向第一个解决它的人提供100美元：
+![MIT 的 RSA 挑战](img/overview/rsa-challenge.jpg)
+**MIT 的 RSA 挑战**
 
-In the article, Gardner included a RSA-129 cipher and offered $100 to the first person who solved it:
-
-![MIT's RSA Challenge](img/overview/rsa-challenge.jpg)
-**MIT's RSA challenge.**
-
-In 1994, a group of computer scientists and volunteers [cracked the cipher](https://en.wikipedia.org/wiki/The_Magic_Words_are_Squeamish_Ossifrage) and donated the money to the [Free Software Foundation.](https://www.fsf.org/) This effort highlighted a crucial point: perfect security in cryptography is an illusion. Encryption methods, like RSA, are constantly evolving, especially in anticipation of [quantum computers.](/wiki/Cryptography/post-quantum-cryptography.md)
+1994年，一群计算机科学家和志愿者 [破解密码](https://en.wikipedia.org/wiki/The_Magic_Words_are_Squeamish_Ossifrage) 把钱捐给了 [自由软件基金会。](https://www.fsf.org/) 这项工作强调了一个关键点：密码学的完美安全性是一种错觉。像RSA这样的加密方法正在不断发展，特别是在预测[量子计算机](/wiki/Cryptography/post-quantum-cryptography.md)的时候。
 
 Nevertheless, modern RSA encryption (1024 to 4096 bits) created a secure pathway on the information superhighway, enabling banks and credit card companies to protect financial transactions. This fostered trust and facilitated the growth of e-commerce and online banking.
 
