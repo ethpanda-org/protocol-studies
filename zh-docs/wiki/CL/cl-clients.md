@@ -1,86 +1,83 @@
-# Consensus Layer Implementations
+# 共识层的实现
 
-This page covers resources on all consensus client implementations, whether in production or development. It provides an overview of unique features of each client, architecture, basic guides and resources.
+本页面涵盖了所有共识客户端实现的资源，无论是生产环境还是开发环境。它提供了每个客户端的独特特性、体系结构、基本指南和资源的概述。
 
-> Consensus clients originally used to be called _eth2.0 clients_ which is now a deprecated nomenclature but you can still find this reference in their repositories.
+> 共识客户端最初被称为**eth2.0客户端**，现在已经废弃了，但你仍然可以在他们的仓库中找到这个引用。
 
-There are multiple Consensus Layer clients developed to participate in the Ethereum Proof-of-Stake (PoS) mechanism. The most popular, FOSS and production ready are [Lighthouse](https://lighthouse-book.sigmaprime.io/), [Lodestar](https://lodestar.chainsafe.io/), [Nimbus](https://nimbus.team/index.html), [Prysm](https://prysmaticlabs.com/) and [Teku](https://consensys.io/teku). These clients are developed in different programming languages, provide have unique features and offer different performance profiles. All clients support Ethereum mainnet out of the box along with active testnets. Variety of implementations allows the network to benefit from client diversity. If you are choosing a client to use, current client diversity should be one of the main factors.
+有多个共识层客户端被开发来参与以太坊权益证明（PoS）机制。最受欢迎的自由/开源软件和产品版本是[Lighthouse](https://lighthouse-book.sigmaprime.io/), [Lodestar](https://lodestar.chainsafe.io/), [Nimbus](https://nimbus.team/index.html), [Prysm](https://prysmaticlabs.com/) 和 [Teku](https://consensys.io/teku)。 这些客户端使用不同的编程语言开发，提供独特的功能并提供不同的性能配置。所有客户端都开箱即用地支持以太坊主网以及主动测试网。实现的多样性使网络受益于客户机的多样性。如果您正在选择使用的客户端，当前客户端的多样性应该是主要因素之一。
 
-## Clients in production
+## 生产环境中的客户端
 
 ## LightHouse
 
-[Lighthouse](https://lighthouse-book.sigmaprime.io/) is a client developed in the Rust programming language. It is a full-featured Ethereum consensus client that can be used as a beacon node or a validator client. It is developed by [Sigma Prime](https://sigmaprime.io/).
+[Lighthouse](https://lighthouse-book.sigmaprime.io/) 是用Rust编程语言开发的客户端。它是一个功能齐全的以太坊共识客户端，可以用作信标节点或验证客户端。它是由[Sigma Prime](https://sigmaprime.io/)开发的。
 
-### Features
+### 特性
 
-It can also provide a web interface [Siren](https://lighthouse-book.sigmaprime.io/lighthouse-ui.html) enabling to easily monitor the beacon node and validator performance.
+它还可以提供一个web界面[Siren](https://lighthouse-book.sigmaprime.io/lighthouse-ui.html)，从而能够轻松地监视信标节点和验证器性能。
 
-### Installing the client
+### 安装客户端
 
-Lighthouse client can be installed in variety of ways - building from source, running pre-built binaries or using docker. They also provide builds for different architectures like [ARM](https://lighthouse-book.sigmaprime.io/pi.html) and a guide for [cross-compiling](https://lighthouse-book.sigmaprime.io/cross-compiling.html). [Validator](https://lighthouse-book.sigmaprime.io/mainnet-validator.html) client is bundled with the main binary.
+Lighthouse客户端可以通过多种方式安装——源代码构建、运行预构建的二进制文件或者使用docker。他们还提供不同架构的构建，如[ARM](https://lighthouse-book.sigmaprime.io/pi.html)和[交叉编译](https://lighthouse-book.sigmaprime.io/cross-compiling.html)指南。[Validator](https://lighthouse-book.sigmaprime.io/mainnet-validator.html)客户端与主二进制文件捆绑在一起。
+#### 使用 Docker
 
-#### Using Docker
+Lighthouse提供了一个使用docker安装客户端的指南。他们有[Docker Hub](https://lighthouse-book.sigmaprime.io/docker.html#docker-hub)和[from source](https://lighthouse-book.sigmaprime.io/docker.html#building-the-docker-image)构建Docker Hub的选项。
+#### 源代码构建
 
-Lighthouse provides a more illustrative guide to install the client using docker. They have options of [Docker Hub](https://lighthouse-book.sigmaprime.io/docker.html#docker-hub) and building docker hub [from source](https://lighthouse-book.sigmaprime.io/docker.html#building-the-docker-image).
+和Prysm一样，它也支持多种硬件和操作系统，可以从源代码构建客户端。[文档](https://lighthouse-book.sigmaprime.io/installation-source.html)。在构建客户端之前，请确保安装了正确的依赖项。
 
-#### Building from Source
+#### 预构建二进制文件
 
-Just like Prysm, it also has multiple hardware and OS support to built the client from source. The [documentation](https://lighthouse-book.sigmaprime.io/installation-source.html). Make sure you have correct dependencies installed before building the client.
+许多不同操作系统和体系结构的预构建二进制文件都是可用的。它们还提供了可移植版本，这些版本为了更好的平台兼容性而牺牲了编译器性能选项。发布的二进制文件由来自 security@sigmaprime.io 的 gpg 密钥‘ 15E66D941F697E28F49381F426416DC3F30674B0 ’签名。阅读[文档][https://lighthouse-book.sigmaprime.io/installation-binaries.html]关于使用预构建的二进制文件安装客户端的步骤。
 
-#### Pre-built Binaries
+### 附加功能和安全注意事项
 
-Pre-built binaries for many various operating systems and architectures are available. They also provide portable versions which are compromising compiler performance options for a better platform compatibility. Released binaries are signed by gpg key `15E66D941F697E28F49381F426416DC3F30674B0` from security@sigmaprime.io. Read the [documentation](https://lighthouse-book.sigmaprime.io/installation-binaries.html) on the steps to install the client using pre-built binaries.
+Lighthouse客户端相当高级，还具备以下特性。
 
-### Additional features and security considerations
+- [削减保护](https://lighthouse-book.sigmaprime.io/faq.html#what-is-slashing-protection)
+- [ Doppelganger 保护](https://lighthouse-book.sigmaprime.io/validator-doppelganger.html#doppelganger-protection)
+- [ 运行 Slasher](https://lighthouse-book.sigmaprime.io/slasher.html)
+- [MEV 的 Builder API](https://lighthouse-book.sigmaprime.io/builders.html#maximal-extractable-value-mev)
 
-Lighthouse client is quite advanced that it proves the following additional features:
+### 最常见问题
 
-- [Slashing Protection](https://lighthouse-book.sigmaprime.io/faq.html#what-is-slashing-protection)
-- [Doppelganger Protection](https://lighthouse-book.sigmaprime.io/validator-doppelganger.html#doppelganger-protection)
-- [Running a Slasher](https://lighthouse-book.sigmaprime.io/slasher.html)
-- [Builder API for MEV](https://lighthouse-book.sigmaprime.io/builders.html#maximal-extractable-value-mev)
-
-### Most Frequently Asked Questions
-
-For more frequently asked question about the client, refer to the [FAQ](https://lighthouse-book.sigmaprime.io/faq.html).
+有关客户的更多常见问题，请参阅 [FAQ](https://lighthouse-book.sigmaprime.io/faq.html)。
 
 ## Lodestar
 
-By ChainSafe in TypeScript
+通过TypeScript中的ChainSafe
 
 ## Nimbus
 
-By Status in Nim
-
+通过 Nim 中的 Status
 ## Prysm
 
-[Prysm](https://docs.prylabs.network/docs/getting-started) is a client developed in the Go programming language. It is one of the most popular clients and has a large community. Using this client, validators can participate in the Ethereum PoS mechanism. Prysm can be used as a beacon node or a validator client. It can assist execution layer clients in processing transactions and blocks. When an execution client is integrated with Prysm, it first syncs the block headers with it since, as a beacon node, it has a full view of the chain. It gossips the latest block headers to the EL client. Then, the EL client can request the block bodies from its p2p network. This is mostly common in the case of all Consensus Layer clients.
+[Prysm](https://docs.prylabs.network/docs/getting-started)  是用Go编程语言开发的客户端。它是最受欢迎的客户之一，并且有一个很大的社区。使用此客户端，验证者可以参与以太坊PoS机制。Prysm可以用作信标节点或验证客户端。它可以辅助执行层客户处理交易和数据块。当执行客户端与Prysm集成时，它首先与区块头同步，因为作为信标节点，它对链有完整的视图。它向EL客户端传递最新的区块头信息。然后，EL客户端可以从其p2p网络请求块主体。这在所有的共识层客户端中很常见。
 
-Apart from Ethereum mainnet, Prysm can also be run on testnets such as Goerli, Holesky, Pyrmont. Prysm can be integrated with different EL clients such as [Geth](https://geth.ethereum.org/), [Nethermind](https://www.nethermind.io/nethermind-client), and [Besu](https://besu.hyperledger.org/), etc. It has a web interface to monitor the beacon chain and validator performance. It also has a RESTful API to interact with the beacon chain and validator client.
+除了以太坊主网，Prysm 还可以运行在 Goerli， Holesky， Pyrmont等测试网络上。Prysm 可以与不同的 EL 客户端集成，例如 [Geth](https://geth.ethereum.org/)，[Nethermind](https://www.nethermind.io/nethermind-client)，和 [Besu](https://besu.hyperledger.org/) 等等。它有一个 web 界面来监控信标链和验证器的性能。它还有 RESTful API 与信标链和验证器客户端交互。
 
-### Installing the client
+### 安装客户端
 
-The installation process can be done either using an automated process using docker or a manual process building using the source. Both of these methods have flexibility to run clients on different operating systems, hardware, and roles (beacon node and/or validator client).
+安装过程可以使用 docker 自动化过程完成，也可以使用源代码手动构建过程。这两种方法都可以灵活地在不同的操作系统、硬件和角色（信标节点和/或验证器客户端）上运行客户机。
 
-#### Using Docker
+####使用Docker
 
-The easiest and faster way to install the client is [using docker](https://docs.prylabs.network/docs/install/install-with-docker). Most of the client related activities in this way comes using the [configuration files](https://docs.prylabs.network/docs/install/install-with-docker#configure-ports-optional).
+安装客户端最简单快捷的方法是[使用docker]（https://docs.prylabs.network/docs/install/install-with-docker）。以这种方式进行的大多数与客户机相关的活动都使用[配置文件]（https://docs.prylabs.network/docs/install/install-with-docker#configure-ports-optional）。
 
-#### Building from Source
+####从源头构建
 
-One learns slightly more about the client by building it [from source](https://docs.prylabs.network/docs/install/install-with-bazel). One also needs to be careful about the hardware specs and [requirements](https://docs.prylabs.network/docs/install/install-with-bazel#review-system-requirements) for the client to run smoothly.
+通过[源代码]（https://docs.prylabs.network/docs/install/install-with-bazel）构建客户端，可以进一步了解客户端。人们还需要注意硬件规格和[要求](https://docs.prylabs.network/docs/install/install-with-bazel#review-system-requirements)，以便客户端顺利运行。
 
-### Sample Run
+###示例运行
 
-The following is a sample run of the Prysm client on the Ethereum mainnet with Geth Node as an execution client:
+下面是在以太坊主网上运行Prysm客户端的示例，Geth 节点作为执行客户端：
 
 ```bash
-TERMS AND CONDITIONS: https://github.com/prysmaticlabs/prysm/blob/develop/TERMS_OF_SERVICE.md
+条款与条件：https://github.com/prysmaticlabs/prysm/blob/develop/TERMS_OF_SERVICE.md
 
 
-Type "accept" to accept this terms and conditions [accept/decline]: (default: decline):
-accept
+键入 “接受” 以接受本条款与条件[接受/拒绝]:（默认：拒绝）：
+接受
 [2024-03-10 23:42:11]  INFO Finished reading JWT secret from /home/userDemo/code/jwt.hex
 [2024-03-10 23:42:11]  WARN flags: Running on Ethereum Mainnet
 [2024-03-10 23:42:11]  WARN node: In order to receive transaction fees from proposing blocks, you must provide flag --suggested-fee-recipient with a valid ethereum address when starting your beacon node. Please see our documentation for more information on this requirement (https://docs.prylabs.network/docs/execution-node/fee-recipient).
@@ -113,66 +110,64 @@ accept
 [2024-03-10 23:42:38]  INFO blockchain: Finished applying state transition attestations=111 payloadHash=0x492df9344dbd slot=8607137 syncBitsCount=400 txCount=153
 ```
 
-#### No Light client support
+#### 没有轻量级客户端支持
 
-Currently there is no light client support with Prysm.
+目前Prysm还没有轻量级客户端支持。
 
-### Security considerations and best practices
+### 安全性考虑因素和最佳实践
+共识客户端安全性在某种程度上比执行层客户端安全性更重要，因为共识客户端不仅负责网络的安全性，还负责验证器的安全性。负责有效的区块执行，选择正确的链管理相关财务。Prysm 列出了一些[最佳实践](https://docs.prylabs.network/docs/security-best-practicespractices)来确保客户端和网络的安全性。其中，以下是最重要的：
 
-Consensus client security is somewhat more essential than the Execution Layer client security since Consensus client are not only responsible for the security of the network but also for the security of the validators. Responsibilities such as valid block execution, choosing the correct chain to managing the staking related financials. Prysm has outlined a few [best practices](https://docs.prylabs.network/docs/security-best-practicespractices) to follow to ensure the security of the client and the network. Out of which the following holds the utmost importance:
+#### 避免削减
+验证者要对他们在链上的行为负责，以保证协议的安全性和活性。[文档](https://docs.prylabs.network/docs/security-best-practices#slash-avoidance)中列出了避免大幅删减的指导方针。
 
-#### Slashing Avoidance
+#### 钱包和密钥管理
 
-Validators are hold accountable for their on-chain actions towards the safety and liveness of the protocol using possible slashing conditions. Guidelines to avoid slashing are outlined in the [documentation](https://docs.prylabs.network/docs/security-best-practices#slash-avoidance).
+虽然用于下注和取款的凭据是分开的，但保证密钥的安全是很重要的。[文档](https://docs.prylabs.network/docs/security-best-practices#slash-avoidance)概述了保持密钥安全的最佳实践。
 
-#### Wallet and key management
+### 最常见的问题
 
-Although there is a separation between the credentials used to stake and withdrawal, it is important to keep the keys secure. The [documentation](https://docs.prylabs.network/docs/security-best-practices#slash-avoidance) outlines the best practices to keep the keys secure.
-
-### Most Frequently Asked Questions
-
-For more frequently asked question about the client, refer to the [FAQ](https://docs.prylabs.network/docs/faq).
+有关客户端的更多常见问题，请参阅 [FAQ](https://docs.prylabs.network/docs/faq) 。
 
 ## Teku
 
-[Teku](https://consensys.io/teku) is a client developed in the Java programming language. It is developed by [ConsenSys](https://consensys.net/). It is a full-featured Ethereum 2.0 client that can be used as a beacon node or a validator client. It can work with execution client such as Besu. It can work on Ethereum mainnet and testnets such as Goerli, Sepolia, and Holesky. It has a web interface to monitor the beacon chain and validator performance. Teku provides both beacon client and validator client to also run as docker containers.
+[Teku](https://consensys.io/teku) 是一个用Java编程语言开发的客户端。它是由 [ConsenSys]（https://consensys.net/）开发的。它是一个功能齐全的以太坊 2.0 客户端，可以用作信标节点或验证器客户端。它可以与 Besu 等执行客户端一起工作。它可以在以太坊主网和测试网（如 Goerli ， Sepolia 和 Holesky ）上工作。它有一个 web 界面来监控信标链和验证器的性能。Teku 提供 beacon 客户端和 validator 客户端，也可以作为 docker 容器运行。
 
-### Installing the client
+### 安装客户端
 
-The Teku client can be installed using 3 main ways - using docker, building from source, and using pre-built binaries.
+Teku 客户端可以使用三种主要方式安装——使用 docker 、从源代码构建和使用预构建的二进制文件。
 
-#### Using Docker
+#### 使用 Docker
 
-Teku provides a more illustrative guide to install the client using docker. They have options of [Docker Hub](https://docs.teku.consensys.io/get-started/install/run-docker-image#run-teku-docker-image) and using [docker compose](https://docs.teku.consensys.io/get-started/install/run-docker-image#run-teku-using-docker-compose).
+Teku 提供了一个更具有说明性的指南来使用 docker 安装客户端。他们有 [Docker Hub](https://docs.teku.consensys.io/get-started/install/run-docker-image#run-teku-docker-image)和使用 [Docker compose](https://docs.teku.consensys.io/get-started/install/run-docker-image#run-teku-using-docker-compose) 的选项。
 
-#### Building from Source
+#### 从源代码构建
 
-Building the client from source is also an option in Teku. the client is written in Java. The [documentation](https://docs.teku.consensys.io/get-started/install/build-from-source) provides the steps to build the client from source for different operating systems such as Linux, MacOS, and Windows.
+从源代码构建客户端也是 Teku 的一个选项。客户端是用 Java 编写的。[文档](https://docs.teku.consensys.io/get-started/install/build-from-source)提供了针对不同操作系统（如 Linux 、 MacOS 和 Windows）从源代码构建客户端的步骤。
 
-#### Pre-built Binaries
+#### 预构建的二进制文件
 
-Perhaps the easiest way to run a client in a production environment is to use pre-built binaries. The Java based binary is very stable and quite standard to run on different operating systems. The [documentation](https://docs.teku.consensys.io/get-started/install/install-binaries) provides the steps to install and run the client using pre-built binaries.
+也许在生产环境中运行客户端最简单的方法是使用预构建的二进制文件。基于Java的二进制文件非常稳定，可以在不同的操作系统上运行。[文档](https://docs.teku.consensys.io/get-started/install/install-binaries)提供了使用预构建的二进制文件安装和运行客户端的步骤。
 
-### Additional features and security considerations
+### 附加功能和安全注意事项
 
-Running a Teku client from a recent state is quite easy and has faster syncing times. Using a recent finalized checkpoint state, Teku can sync within the weak subjectivity period. Ethereum Beacon chain checkpoints list is available [here](https://eth-clients.github.io/checkpoint-sync-endpoints/). For reference on how to run a Teku client using a recent finalized checkpoint state, refer to the [documentation](https://docs.teku.consensys.io/get-started/checkpoint-start).
+从最近的状态运行 Teku 客户端非常容易，并且同步速度更快。使用最近确定的检查点状态，Teku 可以在弱主观性时期内同步。以太坊 Beacon chain 检查点列表可以在[这里](https://eth-clients.github.io/checkpoint-sync-endpoints/)找到。有关如何使用最近确定的检查点状态运行 Teku 客户端，请参阅[文档](https://docs.teku.consensys.io/get-started/checkpoint-start)。
 
-Teku also provides a slashing protection mechanism, especially in the case where one is migrating from another client to Teku. The [documentation](https://docs.teku.consensys.io/reference/cli/subcommands/slashing-protection#import) provides the steps to migrate from other clients to Teku.
+Teku 还提供了精简保护机制，特别是在从另一个客户端迁移到 Teku 的情况下。[文档](https://docs.teku.consensys.io/reference/cli/subcommands/slashing-protection#import)提供了从其他客户端迁移到 Teku 的步骤。
 
-## Clients in development
+## 开发中的客户端
 
 ### Caplin
 
-A consensus client embedded in Erigon. 
+一个嵌入在 Erigon 的共识客户端。
 
 ### Grandine
 
-Originally a proprietary client in Rust, recently became open source
+最初是 Rust 中的一个专有客户端，最近变成了开源
 
-### LambdaClass Client
+### lambda 类客户端
 
-By LC in Elixir
+由LC在Elixir
 
-### Additional reading
+### 附加阅读
 
 [Analysis of CL clients performance, outdated](https://mirror.xyz/0x934e6B4D7eee305F8C9C42b46D6EEA09CcFd5EDc/b69LBy8p5UhcGJqUAmT22dpvdkU-Pulg2inrhoS9Mbc)
