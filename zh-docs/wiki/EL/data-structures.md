@@ -1,143 +1,130 @@
-# Data Structures in Execution Layer
+# 执行层中的数据结构
 
-The execution client stores the current state and historical blockchain data. In practice, the Ethereum data are stored in trie like structures, mainly Merkle Patricia Tree. 
+执行客户端存储当前状态和历史区块链数据。在实际应用中，Ethereum 数据通常以类似 Trie（前缀树）结构的方式存储，主要使用 Merkle Patricia 树。
 
 ## RLP
 
 [Wiki - RLP](/wiki/EL/RLP.md)
 
-## Primer on Merkle Tree
+## Merkle 树概述
 
-Merkle tree is a hash-based data structure which is very efficient at data integrity and verification. It is a tree based structure where the leaf nodes hold the data values and each non-leaf node is a hash of its child nodes.
+Merkle 树是一种基于哈希的数据结构，能够保证数据完整性，且能高效验证数据是否被篡改。它是一种树形结构，其中叶节点存储数据值，每个非叶节点存储其子节点的哈希值。
 
-A Merkle tree stores all the transactions in a block by producing a digital fingerprint of the entire set of transactions. It allows the user to verify whether a transaction is included in a block or not. Merkle trees are created by repeatedly calculating hashing pairs of nodes until there is only one hash left. This hash is called the **Merkle Root**, or the Root Hash. The Merkle Trees are constructed in a bottom-up approach.
+Merkle 树通过生成整个交易集的数字指纹来存储区块中的所有交易。它允许用户验证某笔交易是否包含在一个区块中。Merkle 树是通过反复计算节点对的哈希值直到只剩下一个哈希值来构建的。这个哈希值被称为 Merkle 根（Merkle Root），或者根哈希（Root Hash）。Merkle 树是以自底向上的方式构建的。
 
-It is important to note that Merkle trees are in a **binary tree**, so it requires an even number of leaf nodes. If there is an odd number of transactions, the last hash will be duplicated once to create an even number of leaf nodes.
+值得注意的是，Merkle 树是一种二叉树，因此它需要偶数个叶子节点。如果交易的数量是奇数，那么最后一个哈希值会被重复一次，以确保叶子节点数量为偶数。
 
-Merkle Trees provide a tamper-proof structure to store transaction data. Hash functions have an Avalanche Effect i.e. a small change in the data will result in a huge change in the resulting hash. Hence, if the data in the leaf nodes are ever modified, the Root Hash will not match the expected value.
-You can try out [SHA-256](https://emn178.github.io/online-tools/sha256.html) hashing function yourself as well.
-To learn more about Hashing, you may refer to [this](https://github.com/ethereumbook/ethereumbook/blob/develop/04keys-addresses.asciidoc)
+Merkle 树提供了一种防篡改的结构，用于存储交易数据。哈希函数具有雪崩效应（Avalanche Effect），即数据的微小变化会导致结果哈希值发生巨大变化。因此，如果叶子节点中的数据被修改，根哈希值将与预期的值不匹配。你可以尝试自己使用 [SHA-256 哈希函数](https://emn178.github.io/online-tools/sha256.html)来进行验证。如果想了解更多关于哈希的内容，你可以参考[这里](https://github.com/ethereumbook/ethereumbook/blob/develop/04keys-addresses.asciidoc)。
 
-Merkle Root is stored in the **Block Header**. Read more about the structure of a Block inside Ethereum (_will be linked this to relevant doc once its ready_)
+Merkle 根（Merkle Root）被存储在区块头中。要了解更多关于以太坊区块结构的内容（链接将在相关文档准备好后提供）。
 
-The main parent node is called Root, hence the hash inside is Root Hash. There is infinitesimally small chance(1 in 1.16x10^77 for a single SHA-256 hash) to create two different states with the same root hash, and any attempt to modify state with different values will result in a different state root hash.
+主父节点称为根节点，因此其中的哈希值就是根哈希（Root Hash）。对于单个 SHA-256 哈希，生成两个不同状态的相同根哈希的几率极其小（大约是 1/1.16x10^77），并且任何试图修改状态的操作都会导致不同的状态根哈希。
 
-The image below depicts a simplified version of the working of a Merkle Tree:
+下图展示了 Merkle 树工作原理的简化版本：
 
-- The leaf nodes contain the actual data(for simplicity, we have taken numbers)
-- Every non-leaf node is a hash of its children.
-- The first level of non-leaf nodes contains the Hash of its child leaf nodes
-  `Hash(1,2)`
-- The same process continues till we reach the top of the tree, which the Hash of all the previous Hashes
-  `Hash[Hash(1,2),Hash(3,4),Hash(5,6),Hash(7,8)]`
+- 叶子节点包含实际数据（为简化，例子中使用的是数字）。
+- 每个非叶子节点是其子节点哈希的结果。
+- 第一层的非叶子节点包含其子叶子节点的哈希值 Hash(1,2)。
+- 同样的过程会一直持续，直到到达树顶，最终形成一个包含所有先前哈希值的哈希值 Hash[Hash(1,2), Hash(3,4), Hash(5,6), Hash(7,8)]。
 
-More on [Merkle Trees in Ethereum](https://blog.ethereum.org/2015/11/15/merkling-in-ethereum)
-
+以太坊 Merkle 树更多内容可以参考[这里](https://blog.ethereum.org/2015/11/15/merkling-in-ethereum)。
 ![Merkle Tree](../../images/merkle-tree.jpg)
 
-## Primer on Patricia Tree
+## Patricia Trie 概述
 
-Patricia Tries (also called Radix tree) are n-ary trees which unlike Merkle Trees, are used for storage of data instead of verification.
+Patricia Trie（也叫 Radix Trie）是 n 叉字典树，与 Merkle 树不同，它用于数据存储而非验证。
 
-Simply put, Patricia Tries is a tree data structure where all the data is store in the leaf nodes, and each non-leaf nodes is a character of a unique string identifying the data. Using the unique string we navigate through the character nodes and finally reach the data. Hence, it is very efficient at data retrieval.
+Patricia Trie 是一种树形数据结构，所有数据均存储在叶子节点。每个非叶子节点是唯一标识数据的字符串中的一个字符或一个字符序列。我们使用这个唯一标识通过字符节点导航，最终到达数据所在位置。因此，它在数据检索方面非常高效。。
 
-Patricia tries are designed to be more space-efficient than traditional trie structures by eliminating redundant nodes with single children. They achieve compactness by sharing prefixes among keys. This means that common prefixes are shared among different keys, reducing the overall storage requirements.
+Patricia Trie 通过消除只有一个子节点的冗余节点，比传统的 Trie 结构更节省空间。它通过在键之间共享前缀来实现紧凑性。这意味着，多个键之间的公共前缀会被共享，从而减少整体存储需求。
 
-## Merkle Patricia Trie in Ethereum
+## 以太坊中的 Merkle Patricia Trie
 
-Ethereum's primary data structure for storing the execution layer state is a **Merkle Patricia Trie** (pronounced "try"). It is named so, since it is a Merkle tree that uses features of PATRICIA (Practical Algorithm To Retrieve Information Coded in Alphanumeric), and because it is designed for efficient data retrieval of items that comprise the Ethereum state.
+以太坊用于存储执行层状态的主要数据结构是 **Merkle Patricia Trie**（简称 MPT，发音为 “try”）。之所以命名为 Merkle Patricia Trie，是因为它结合了 Merkle 树和 PATRICIA（Practical Algorithm To Retrieve Information Coded in Alphanumeric）算法的特点，并且它的设计旨在高效地检索构成以太坊状态的各个数据项。
 
-There are three types of nodes within the MPT:
+MPT 中有三种类型的节点：
 
-- **Branch Nodes**: A branch node consists of a 17-element array, which includes one node value and 16 branches. This node type is the primary mechanism for branching and navigating through the trie.
-- **Extension Nodes**: These nodes function as optimized nodes within the MPT. They come into play when a branch node has only one child node. Instead of duplicating the path for every branch, the MPT compresses it into an extension node, housing both the path and the child's hash.
-- **Leaf Nodes**: A leaf node represents a key-value pair. The value is the MPT node's content, while the key is the node's hash. Leaf nodes store specific key-value data.
+- **分支节点（Branch Nodes）**：一个分支节点由一个 17 元素的数组构成，其中包括一个节点值和 16 个分支。这个节点类型是 MPT 进行分支和遍历的主要机制。
+- **扩展节点（Extension Nodes）**：这些节点作为 MPT 中的优化节点。当一个分支节点只有一个子节点时，扩展节点就发挥作用。为了避免为每个分支重复路径，MPT 会将路径压缩为一个扩展节点，保存路径和子节点的哈希值。
+- **叶子节点（Leaf Nodes）**：一个叶子节点代表一个键值对。值是 MPT 节点的内容，而键是节点的哈希值。叶子节点存储特定的键值数据。
 
-Every single node has a hash value. The node's hash is calculated as the SHA-3 hash value of its contents. This hash also acts as a key to refer that specific node.
-Nibbles serve as the distinguishing unit for key values in the MPT. It represents a single hexadecimal digit. Each trie node can branch out to as many as 16 offshoots, ensuring a concise representation and efficient memory usage.
+每个节点都有一个哈希值。节点的哈希值是其内容的 SHA-3 哈希值，这个哈希值也作为引用该节点的键。Nibbles（半字节）是 MPT 中用于区分键值的单位，代表一个十六进制数字。每个 Trie 节点最多可以分支到 16 个子节点，从而确保了紧凑的表示和高效的内存使用。
 
-##### **TODO: Patricia Tree Diagram**
+#### **TODO：Patricia 树图示**
 
-# Ethereum
+# 以太坊
 
-Ethereum's primary data structure for storing the execution layer state is a **Merkle Patricia Trie** (pronounced "try"). It is named so, since it is a Merkle tree that uses features of PATRICIA (Practical Algorithm To Retrieve Information Coded in Alphanumeric), and because it is designed for efficient data retrieval of items that comprise the Ethereum state.
+以太坊用于存储执行层状态的主要数据结构是 Merkle Patricia Trie（发音为 “try”）。它之所以被命名为 Merkle Patricia Trie，是因为它结合了 Merkle 树的特性，并采用了 PATRICIA（Practical Algorithm To Retrieve Information Coded in Alphanumeric）算法的特点，同时它的设计旨在高效地检索构成以太坊状态的各个数据项。
 
-Ethereum state is stored in four different modified merkle patricia tries (MMPTs):
+以太坊的状态被存储在四个不同的修改版 Merkle Patricia Tries（MMPTs）中：
 
-- Transaction Trie
-- Receipt Trie
-- World State Trie
-- Account State Trie
+- 交易 Trie（Transaction Trie）
+- 回执 Trie（Receipt Trie）
+- 世界状态 Trie（World State Trie）
+- 账户状态 Trie（Account State Trie）
 
 ![Tries](../../images/tries.png)
 
-At each block there is one transaction, receipt, and state trie which are referenced by their root hashes in the block Header.
-For every contract deployed on Ethereum there is a storage trie used to hold that contract's persistent variables, each storage trie is referenced by their root hash in the state account object stored in the state trie leaf node corresponding to that contract's address.
+在每个区块中，都有一个交易、回执和状态 trie，这些 trie 在区块头部通过其根哈希值进行引用。对于以太坊上每个部署的合约，都有一个存储 trie 用于保存该合约的持久变量，每个存储 trie 都通过其根哈希值在状态 trie 中对应合约地址的状态账户对象中进行引用。
 
-## Transaction Trie
+## 交易 Trie
 
-The Transaction Trie is a data structure responsible for storing all the transactions within a specific block. Every block has its own Transaction Trie, corresponding to the respective transactions that are included in that block.
-Ethereum is a transaction based state machine. This means every action or change in Ethereum is due to a transaction. Every block is made up of a block header and a transaction list(among other things). Thus, once a transaction is executed and a block is finalized the transaction trie for that block can never be changed.(in contrast to the World State trie).
+交易 Trie 是一个数据结构，用于存储特定区块中的所有交易。每个区块都有自己的交易 Trie，存储该区块中包含的相应交易。以太坊是一个基于交易的状态机，这意味着以太坊中的每一个操作或状态变更都源于一笔交易。每个区块由区块头和交易列表（以及其他内容）组成。因此，一旦交易被执行并且区块被最终确认，该区块的交易 Trie 就无法再被更改（与世界状态 Trie 不同）。
 
 ![Merkle Tree](../../images/transaction-trie.png)
 
-A transaction is mapped in the trie so that the key is a transaction index and the value is the transaction T . Both the
-transaction index and the transaction itself are RLP encoded. It compose a key-value pair, stored in the trie:
-`𝑅𝐿𝑃 (𝑖𝑛𝑑𝑒𝑥) → 𝑅𝐿𝑃 (𝑇)`
+每笔交易在交易 Trie 中有一个映射，其中键是交易的索引，值是交易 T。交易索引和交易本身都采用 RLP 编码。它们组成一个键值对，存储在 Trie 中：`𝑅𝐿𝑃 (𝑖𝑛𝑑𝑒𝑥) → 𝑅𝐿𝑃 (𝑇)`
 
-The structure `T` consists of the following:
+交易 T 的结构包括以下内容：
 
-- **Nonce**: For every new transaction submitted by the same sender, the nonce is increased. This value allows for tracking order of transactions and prevents replay attacks.
-- **maxPriorityFeePerGas** - The maximum price of the consumed gas to be included as a tip to the validator.
-- **gasLimit**: The maximum amount of gas units that can be consumed by the transaction.
-- **maxFeePerGas** - the maximum fee per unit of gas willing to be paid for the transaction (including baseFeePerGas and maxPriorityFeePerGas)
-- **from** – The address of the sender, that will be signing the transaction. This must be an externally-owned account as contract accounts cannot send transactions.
-- **to**: Address of an account to receive funds, or zero for contract creation.
-- **value**: amount of ETH to transfer from sender to recipient.
-- **input data** – optional field to include arbitrary data
-- **data**: Input data for a message call together with the message signature.
-- **(v, r, s)**: Values encoding signature of a sender. Serves as identifier of the sender
+- **Nonce**：每次相同发送者提交新交易时，nonce 会递增。这个值用于跟踪交易的顺序，并防止重放攻击。
+- **maxPriorityFeePerGas**：交易中用于给验证者的小费的最大 Gas 价格。
+- **gasLimit**：交易可以消耗的最大 Gas 单位数。
+- **maxFeePerGas**：交易中每单位 Gas 愿意支付的最大费用（包括 baseFeePerGas 和 maxPriorityFeePerGas）。
+- **from**：交易发起者的地址，该地址将签署交易。必须是外部拥有账户（EOA），因为合约账户不能发送交易。
+- **to**：接收资金的账户地址，或为合约创建时为零。
+- **value**：从发送者转账给接收者的 ETH 数量。
+- **input data**：可选字段，包含任意数据。
+- **data**：消息调用的输入数据，以及消息的签名。
+- **(v, r, s)**：编码发送者签名的值。作为发送者的标识符。
 
-### TODO: Explain Receipt Trie
+### TODO: 解释收据树（Receipt Trie）
 
-### TODO: Explain World State Trie
+### TODO: 解释全局状态树（World State Trie）
 
 ![Merkle Tree](../../images/eth-tries.png)
 
-### TODO: Explain Storage Trie
+### TODO: 解释存储树（Storage Trie）
 
-## Future Implementations
+## 未来的实现
 
-## Verkle Trees
+## Verkle 树
 
-[Verkle tree](https://verkle.info/) is a new data structure that is being proposed to replace the current Merkle Patricia Trie. Named by combining the "Vector commitment" and "Merkle Tree", it is designed to be more efficient and scalable than the current MPT. It is a trie-based data structure that replaces the heavy witness used in the MPT with a lightweight witness. Verkle trees are the key part of The Verge upgrade of [Ethereum Roadmap](https://ethereum.org/en/roadmap/#what-about-the-verge-splurge-etc). They can enable [stateless](https://ethereum.org/en/roadmap/statelessness/#statelessness) clients to be more efficient and scalable.
+[Verkle 树](https://verkle.info/)是一种新的数据结构，旨在取代当前的 Merkle Patricia Trie（MPT）。它的名称来自“向量承诺（Vector commitment）“和“Merkle 树”这两个概念的结合，设计上比当前的 MPT 更高效、更具可扩展性。Verkle 树是一种基于 Trie 的数据结构，它用轻量级的证明替代了 MPT 中使用的重型证明。Verkle 树是[以太坊“Verge”升级](https://ethereum.org/en/roadmap/#what-about-the-verge-splurge-etc)的关键部分。它们能够使[无状态](https://ethereum.org/en/roadmap/statelessness/#statelessness)客户端变得更加高效和可扩展。
 
-### Structure of Verkle Tree
+### Verkle 树的结构
 
-The layout structure of a Verkle tree is just like a MPT but with different base of the tree i.e. number of children. Just like [MPT](https://ethereum.org/en/developers/docs/data-structures-and-encoding/patricia-merkle-trie/#optimization) it has root node, inner nodes, extension nodes and leaf nodes. There a slight difference in the key size, on which the tree is made. MPT uses 20 byte key which Verkle tree uses 32 byte key in which the 31 bytes are used as a stem of the tree while last 1 byte is used for storage with almost the same stem address or neighboring code chunks (opening the same commitment is cheaper). Also due to the fact that while computing the witness data the algorithms take 252 bit as field element so it is convenient to use 31 bytes as a suffix of the tree. Using this, the stem data can commit to two difference commitments ranging from 0-127 and 128-255, aka lower value and upper value of the same key, thus covering the whole suffix space. For more on this refer [here](https://blog.ethereum.org/2021/12/02/verkle-tree-structure).
+Verkle 树的布局结构与 MPT 类似，但树的基数（即每个节点的子节点数量）不同。就像 [MPT](https://ethereum.org/en/developers/docs/data-structures-and-encoding/patricia-merkle-trie/#optimization) 一样，它有根节点、内部节点、扩展节点和叶节点。唯一的区别在于树的键的大小，MPT 使用的是 20 字节的键，而 Verkle 树使用的是 32 字节的键，其中 31 字节作为树的主干，而最后 1 字节用于存储具有几乎相同主干地址或相邻代码块的数据（开启相同的承诺会更便宜）。此外，由于在计算证明数据时，算法使用了 252 位作为字段元素，因此使用 31 字节作为树的后缀是更方便的。这样，主干数据可以承诺两种不同的承诺，分别是 0-127 和 128-255，即相同键的下值和上值，从而覆盖整个后缀空间。有关更多信息，请参阅[此处](https://blog.ethereum.org/2021/12/02/verkle-tree-structure)。
 
 ![Verkle Tree](../../images/verkle_tree_structure.png)
 
-### Key differences between MPT and Verkle Tree
+### MPT 和 Verkle 树的主要区别
 
-A Merkle/MP tree has a lot of depth since the tree structure is binary (2/16-ary tree) at every node. This means that the witness data for a leaf node is the path from the root to the leaf. Due to the fact that sibling hash data is also required at each level, this makes the witness data very large for a large tree. A Verkle tree has a lot of width since the tree structure is n-ary at every node. This means that the witness data for a leaf node is the path from the leaf to the root. This can be very small for a large tree. Currently the Verkle tree is proposed to have 256 children per node. More on this [here](https://ethereum.org/en/roadmap/verkle-trees/)
+Merkle/MP 树的深度很大，因为其树结构在每个节点处是二叉的（2/16 叉树）。这意味着，叶节点的证明数据是从根节点到叶节点的路径。由于每一层还需要包含兄弟节点的哈希数据，这使得对于一棵大的树来说，证明数据会非常庞大。而 Verkle 树的宽度较大，因为其树结构在每个节点处是 n 叉的。因此，叶节点的证明数据是从叶节点到根节点的路径，这对于一棵大的树来说可以非常小。目前，Verkle 树建议每个节点有 256 个子节点。更多信息参与[此处](https://ethereum.org/en/roadmap/verkle-trees/)。
 
-The intermediate nodes of Merkle/MP tree are hashes of the children. The nodes of a Verkle tree carry a special type of hash called "vector commitments" to commit to their children. This means that the witness data for a leaf node in a Verkle tree is the commitment of the children of the path from the leaf to the root. On top of this a proof is computed by aggregating the commitments which makes the verification process very compact. More on [Proof System](https://dankradfeist.de/ethereum/2021/06/18/pcs-multiproofs.html?ref=hackernoon.com).
+Merkle/MP 树的中间节点是子节点的哈希值，而 Verkle 树的节点则携带一种特殊类型的哈希，称为“向量承诺”（vector commitments），用于对其子节点进行承诺。这意味着，在 Verkle 树中，叶节点的证明数据是沿着从叶节点到根节点路径的子节点的承诺。此外，通过聚合这些承诺来计算证明，使得验证过程非常紧凑。有关证明系统的更多信息，请参阅[相关内容](https://dankradfeist.de/ethereum/2021/06/18/pcs-multiproofs.html?ref=hackernoon.com)。
 
-### Why Verkle Trees?
+### 为什么选择 Verkle 树？
 
-To make a client stateless it is essential that to validate a block, client should not have to store the entire/previous blockchain state. The incoming block should be able to provide the client with the necessary data to validate the block. This extra proof data are called _witness_ enabling a stateless client validating the data without the full state. 
-Using the information inside the block, client should also be able to maintain/grow a local state with each incoming block. Using this a client guarantees that for the current block (and succeeding ones that it validates) the state transition is correct. It doesn't guarantee that the state is correct for the previous blocks that the current block refers to because block producer can build on an invalid or non-canonical block.
+要使客户端无状态（stateless），关键在于客户端验证区块时无需存储整个或之前的区块链状态。新接收的区块应能提供客户端验证该区块所需的必要数据。这些额外的证明数据称为见证数据（witness），使得无状态客户端能够在不需要完整状态的情况下验证数据。通过区块内的信息，客户端还应该能够随着每个传入区块的到来来维护或增长本地状态。使用这种方式，客户端保证对当前区块（以及其后验证的区块）的状态转换是正确的。这并不保证对当前区块引用的先前区块的状态是正确的，因为区块生产者可能构建在无效或非规范的区块之上。
 
-Verkle trees are designed to be more efficient in terms of storage and communication cost. For a 1000 leaves/data, a binary Merkle Tree takes around 4MB of witness data, Verkle tree reduces it to 150 kB. If we include the witness data in the block then it will not impact the blocksize that much but it would enable the stateless clients to be more efficient and scalable. Using this the stateless client will be able to trust the computation done without having to store the entire state.
+Verkle 树旨在在存储和通信成本方面更加高效。对于 1000 个叶子/数据，一个二叉 Merkle 树大约需要 4MB 的证明数据，而 Verkle 树则将其减少到 150KB。如果我们将证明数据包含在区块中，它不会对区块大小产生太大影响，但它将使无状态客户端更高效和可扩展。通过这种方式，无状态客户端将能够信任计算结果，而无需存储整个状态。
 
-The transition to new verkle tree database poses a major challenge. To securely create the new verkle data, clients needs to generate them from the existing MPT which takes a lot of computation and space. Distribution and verification of the verkled database is currently being researched. 
+然而，向新的 Verkle 树数据库过渡面临着重大挑战。为了安全地创建新的 Verkle 数据，客户端需要从现有的 MPT 中生成它们，这需要大量的计算和空间。目前，Verkle 数据库的分发和验证仍在研究中。
 
-## Resources
+## 参考资料
 
-- [More on Merkle Patricia Trie](https://ethereum.org/developers/docs/data-structures-and-encoding/patricia-merkle-trie)
+- [More on Merkle Patricia Trie](https://ethereum.org/en/developers/docs/data-structures-and-encoding/patricia-merkle-trie/)
 - [More on Verkle Tree](https://notes.ethereum.org/@vbuterin/verkle_tree_eip#Simple-Summary)
 - [Verge transition](https://notes.ethereum.org/@parithosh/verkle-transition)
 - [Implementing Merkle Tree and Patricia Trie](https://medium.com/coinmonks/implementing-merkle-tree-and-patricia-trie-b8badd6d9591) • [archived](https://web.archive.org/web/20210118071101/https://medium.com/coinmonks/implementing-merkle-tree-and-patricia-trie-b8badd6d9591)
-
-[More on Merkle Patricia Trie](https://ethereum.org/developers/docs/data-structures-and-encoding/patricia-merkle-trie)
