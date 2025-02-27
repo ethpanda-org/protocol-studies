@@ -1,73 +1,68 @@
-# Transaction
+# 交易
 
-A **transaction** is a cryptographically-signed instruction issued by **an external account**, broadcasted to the entire network using [JSON-RPC](/wiki/EL/JSON-RPC.md).
+A **交易** 是一个由**外部账户**发布的加密签名指令，使用 [JSON-RPC](/wiki/EL/JSON-RPC.md)广播到整个网络。
 
-A transaction contains following fields:
+一个交易包含以下字段：
 
-- **nonce ($T_n$)**: An integer value equal to the number of transactions sent by the sender. Nonce is used to:
+- **nonce ($T_n$)**: 等于发送方发送的交易数的一个整数值。Nonce 用于：
+- **防止重放攻击**：假设 Alice 在一次交易中向 Bob 发送了1个 ETH ，Bob 可能会试图将相同的交易重新广播到网络中，以从 Alice 的账户中获取额外的资金。由于交易是用唯一的 nonce 签名的，如果 Bob 再次发送它，EVM 将简单地拒绝它。从而保护 Alice 的账户免受未经授权的重复交易。
+- **确定合同账户地址**：在“合同创建”模式下，nonce 和发件人地址一起用于确定合同账户地址。
+- **替换交易**：当交易由于天然气价格低而陷入僵局时，矿工通常允许替换交易具有相同的 nonce 。一些钱包可能会利用这种行为提供取消交易的选项。本质上，发送一个具有相同的 nonce、更高的 gas 价格和0值的新交易，有效地掩盖了原始待处理交易。然而，重要的是要理解，替换待处理交易的成功并不能保证，因为它依赖于矿工的行为和网络条件。
 
-  - **Prevent replay attack**: Let's say Alice sends 1 ETH to Bob in a transaction, Bob might try to rebroadcast the same transaction into the network to get additional funds from Alice's account. Since the transaction is signed with a unique nonce, EVM will simply reject it if Bob sends it again. Thus safeguarding Alice's account from unauthorized duplicate transactions.
-  - **Determine contract account address**: In `contract creation` mode, nonce along with the sender's address is used to determine the contract account address.
-  - **Replace a transaction**: When a transaction gets stuck due to low gas price, miners often allow a replacement transaction that has the same nonce. Some wallets may provide the option to cancel a transaction by exploiting this behavior. Essentially, a new transaction with the same nonce, higher gas price, and 0 value is sent, effectively overshadowing the original pending transaction. However, it's crucial to understand that the success of replacing a pending transaction is not guaranteed, as it relies on the behavior of miners and network conditions.
+- **gasprice ($T_p$)**：一个整数值，等于每单位 gas 的价格。**Wei** 是以太币的最小面额。$1 \textnormal{ETH} = 10^{18} \textnormal{Wei}$。gas 价格用于确定交易执行的优先级。gas 价格越高，矿商将交易作为区块的一部分的可能性就越大。
 
-- **gasPrice ($T_p$)**: An integer value equal to the number wei to be paid per unit of gas. **Wei** is the smallest denomination of ether. $1  \textnormal{ETH} = 10^{18} \textnormal{Wei}$. Gas price is used to prioritize the execution of a transaction. Higher the gas price, more likely that a miner will include the transaction as part of a block.
+- **gasLimit ($T_g$)**：一个整数值，等于在执行该交易时使用的最大 gas 量。如果 gas 限额耗尽，该交易的执行将停止。
+- **to ($T_t$)**: 此交易接收者的 20 字节地址。‘ to ’ 字段也决定了交易的模式或目的：
 
-- **gasLimit ($T_g$)**: An integer value equal to the maximum amount of gas to be used in execution of this transaction. Execution of this transaction will stop if the gasLimit is exhausted.
+|     `to`的值     |      交易模式     |                        描述                               |
+| ---------------- | ------------------ |  -------------------------------------------------------- |
+|        空        |      创建合约      |                 这个交易创建了一个新的合约账户             |
+|     外部账户     |      价值转移      |             这个交易把 Ether 转移到了一个外部账户          |
+|     合约账户     |      执行合约      |                 这个交易调用现有的智能合约代码             |
 
-- **to ($T_t$)**: The 20-byte address of the recipient of this transaction. The `to` also field determines the mode or purpose of the transaction:
-
-| Value of `to`    | Transaction Mode   | Description                                               |
-| ---------------- | ------------------ | --------------------------------------------------------- |
-| _Empty_          | Contract creation  | The transaction creates a new contract account.           |
-| External Account | Value transfer     | The transaction transfers Ether to an external account.   |
-| Contract Account | Contract execution | The transaction invokes the existing smart contract code. |
-
-- **value ($T_v$)**: An integer value equal to the number of Wei to be transferred to this transaction's recipient. In `Contract creation` mode, value becomes the initial balance of the newly created contract account.
-
-- **data ($T_d$) or init($T_i$)**: An unlimited size byte array specifying the input to the EVM. In contract `creation mode`, this value is considered as `init bytecode`, otherwise byte array of `input data`.
-
-- **Signature ($T_v, T_r, T_s$)**: [ECDSA](/wiki/Cryptography/ecdsa.md) signature of the sender.
+- **value ($T_v$)**: 一个整数值，等于要转移给该交易接收者的 Wei 的数量。在‘创建合约’模式下，value 成为新创建的合约账户的初始余额。
+- **data ($T_d$) or init($T_i$)**: 指定 EVM 输入的无限大小字节数组。在合约的`创建模式`中，这个值被认为是 `init bytecode` ，否则是`输入数据`的字节数组。
+- **Signature ($T_v, T_r, T_s$)**: [ECDSA](/wiki/Cryptography/ecdsa.md) 发送者的签名。
 
 
-## Contract creation
+## 创建合约
 
-Let's deploy the following code onto a new contract account:
+让我们在一个新的合约账户中部署以下代码：
 
 ```bash
 [00] PUSH1 06 // Push 06
 [02] PUSH1 07 // Push 07
 [04] MUL      // Multiply
-[05] PUSH1 0  // Push 00 (storage address)
-[07] SSTORE   // Store result to storage slot 00
+[05] PUSH1 0  // Push 00 (存储地址)
+[07] SSTORE   // 将结果储存到 storage slot 00
 ```
 
-The brackets indicate instruction offset. Corresponding bytecode:
+方括号表示指令偏移量 (instruction offset) 。对应的字节码:
 
 ```bash
 6006600702600055
 ```
 
-Now, let's prepare the `init` value of our transaction to deploy this bytecode. Init actually consists of two fragments:
-
+现在，让我们准备交易的 `init` 值来部署这个字节码。Init 实际上由两个片段组成：
 ```
 <init bytecode> <runtime bytecode>
 ```
 
-`init` is executed by EVM only once at account creation. The return value of init code execution is the **runtime bytecode**, which is stored as part of the contract account. Runtime bytecode is executed every time a contract account receives a transaction.
+EVM 只在创建帐户时执行一次`init`。init code 执行的返回值是 **runtime bytecode** ，它作为合约账户的一部分存储。每当合约账户收到交易时，都会执行 runtime bytecode 。
 
-Let's prepare our init code such that it returns our runtime code:
+让我们准备初始化代码 (init code) ，使其返回运行时代码 (runtime code) ：
 
 ```bash
-// 1. Copy to memory
-[00] PUSH1 08 // PUSH1 08 (length of our runtime code)
-[02] PUSH1 0c // PUSH1 0c (offset of the runtime code in init)
-[04] PUSH1 00 // PUSH1 00 (destination in memory)
-[06] CODECOPY // Copy code running in current environment to memory
-// 2. Return from memory
-[07] PUSH1 08 // PUSH1 08 (length of return data)
-[09] PUSH1 00 // PUSH1 00 (memory location to return from)
-[0b] RETURN   // Return the runtime code and halt execution
-// 3. Runtime code (8 bytes long)
+// 1. 复制到内存
+[00] PUSH1 08 // PUSH1 08 (我们 runtime code 的长度)
+[02] PUSH1 0c // PUSH1 0c (runtime code 在 init 的 offset)
+[04] PUSH1 00 // PUSH1 00 (内存中的目的地)
+[06] CODECOPY // 将当前环境中运行的代码复制到内存中
+// 2. 从内存中返回
+[07] PUSH1 08 // PUSH1 08 (返回数据的长度)
+[09] PUSH1 00 // PUSH1 00 (要返回的内存位置)
+[0b] RETURN   // 返回 runtime code 和终止执行
+// 3. Runtime code (8 字节长)
 [0c] PUSH1 06
 [0e] PUSH1 07
 [10] MUL
@@ -75,35 +70,32 @@ Let's prepare our init code such that it returns our runtime code:
 [13] SSTORE
 ```
 
-The code does 2 simple things: First, copy the runtime bytecode to memory and then return the runtime bytecode from memory.
-
+代码做了两件简单的事情：首先，将 runtime code 复制到内存中，然后从内存中返回 runtime code 。
 `init` bytecode:
 
 ```javascript
 6008600c60003960086000f36006600702600055
 ```
 
-Next, prepare the transaction payload:
+接下来，准备交易负载/载荷(transaction payload)：
 
 ```javascript
 [
-  "0x", // nonce (zero nonce, since first transaction)
-  "0x77359400", // gasPrice (we're paying 2000000000 wei per unit of gas)
-  "0x13880", // gasLimit (80000 is standard gas for deployment)
-  "0x", // to address (empty in contract creation mode)
-  "0x05", //value (we'll be nice and send 5 wei to our new contract)
+  "0x", // nonce (0 nonce, 从第一次交易起)
+  "0x77359400", // gasPrice (我们每单位 gas 支付 2000000000 wei)
+  "0x13880", // gasLimit (80000 是用于部署的标准 gas)
+  "0x", // to address (在合约创建模式中为空)
+  "0x05", //value (我们将会给我们的新合约发送 5 wei)
   "0x6008600c60003960086000f36006600702600055", // init code
 ];
 ```
 
-> Order of the values in the payload is important!
+> 负载中的数值顺序很重要！
 
-For this example, we'll use [Foundry](https://getfoundry.sh/) to deploy the transaction locally. Foundry is an ethereum development toolkit that provides following cli tools:
-
-- **Anvil** : A local Ethereum node, designed for development.
-- **Cast**: A tool for performing Ethereum RPC calls.
-
-Install and launch [anvil](https://book.getfoundry.sh/anvil/) local node.
+例如，我们会使用 [Foundry](https://getfoundry.sh/) 来本地部署交易。 Foundry 是一个提供以下 cli 工具的以太坊开发工具包：
+- **Anvil** : 本地以太坊节点，专为开发而设计。
+- **Cast**: 执行以太坊 RPC 调用的工具。
+安装并启动 [anvil](https://book.getfoundry.sh/anvil/) 本地节点。
 
 ```
 $ anvil
@@ -119,13 +111,13 @@ $ anvil
     0.2.0 (5c3b075 2024-03-08T00:17:08.007462509Z)
     https://github.com/foundry-rs/foundry
 
-Available Accounts
+可用的账户
 ==================
 
 (0) "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" (10000.000000000000000000 ETH)
 .....
 
-Private Keys
+私钥
 ==================
 
 (0) 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
@@ -133,7 +125,7 @@ Private Keys
 Listening on 127.0.0.1:8545
 ```
 
-Sign the transaction using one of anvil's dummy account:
+使用 anvil 的一个虚拟账户签署交易：
 
 ```bash
 $ node sign.js '[ "0x", "0x77359400", "0x13880", "0x", "0x05", "0x6008600c60003960086000f36006600702600055" ]' ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
@@ -141,9 +133,8 @@ $ node sign.js '[ "0x", "0x77359400", "0x13880", "0x", "0x05", "0x6008600c600039
 f864808477359400830138808005946008600c60003960086000f360066007026000551ca01446316c9bdcbe0cb87fac0b08a00e59552634c96d0d6e2bd522ea0db827c1d0a0170680b6c348610ef150c1b443152214203c7f66288ea6332579c0cdfa86cc3f
 ```
 
-> See **Appendix A** below for the source of `sign.js` helper script.
-
-Finally, submit the transaction using [cast](https://book.getfoundry.sh/cast/):
+>有关`sign.js`辅助脚本的源代码，请参阅下面的**附录 A**。
+最终，使用 [cast](https://book.getfoundry.sh/cast/) 提交交易：
 
 ```javascript
 $ cast publish f864808477359400830138808005946008600c60003960086000f360066007026000551ca01446316c9bdcbe0cb87fac0b08a00e59552634c96d0d6e2bd522ea0db827c1d0a0170680b6c348610ef150c1b443152214203c7f66288ea6332579c0cdfa86cc3f
@@ -166,14 +157,13 @@ $ cast publish f864808477359400830138808005946008600c60003960086000f360066007026
 }
 ```
 
-Querying the local `anvil` node confirms that code is deployed:
-
+查询本地的 `anvil` 节点确认代码已部署：
 ```bash
 $ cast code 0x5fbdb2315678afecb367f032d93f642f64180aa3
 0x6006600702600055
 ```
 
-And the initial balance is available:
+可用初始余额：
 
 ```bash
 $ cast balance 0x5fbdb2315678afecb367f032d93f642f64180aa3
@@ -182,16 +172,14 @@ $ cast balance 0x5fbdb2315678afecb367f032d93f642f64180aa3
 
 ---
 
-Simulation of contract creation:
-
+模拟创建合约：
 ![Contract creation](../../images/evm/create-contract.gif)
 
-## Contract code execution
+## 执行合约代码
 
-Our simple contract multiplies 6 and 7, then stores the result to storage **slot 0**. Let's execute the contract code with another transaction.
+我们的简单合约将 6 和 7 相乘，然后将结果存储到存储 **slot 0** 中。让我们用另一个交易执行合约代码。
 
-The transaction payload is similar, except `to` address points to the smart contract, `value` and `data` is empty:
-
+交易的有效负载类似，除了 `to` 指向智能合约的地址点，`value` 和 `data` 为空：
 ```javascript
 [
   "0x1", // nonce (increased by 1)
@@ -203,7 +191,7 @@ The transaction payload is similar, except `to` address points to the smart cont
 ];
 ```
 
-Sign the transaction:
+给交易签名：
 
 ```bash
 
@@ -212,7 +200,7 @@ $ node sign.js '[ "0x1", "0x77359400", "0x13880", "0x5fbdb2315678afecb367f032d93
 f86401847735940083013880945fbdb2315678afecb367f032d93f642f64180aa380801ba047ae110d52f7879f0ad214784168406f6cbb6e72e0cab59fa4df93da6494b578a02c72fcdea5b7838b520664186707d1465596e4ad4eaf8781a721530f8b8dd5f2
 ```
 
-Publish the transaction:
+发布交易：
 
 ```bash
 $ cast publish f86401847735940083013880945fbdb2315678afecb367f032d93f642f64180aa380801ba047ae110d52f7879f0ad214784168406f6cbb6e72e0cab59fa4df93da6494b578a02c72fcdea5b7838b520664186707d1465596e4ad4eaf8781a721530f8b8dd5f2
@@ -234,25 +222,24 @@ $ cast publish f86401847735940083013880945fbdb2315678afecb367f032d93f642f64180aa
 }
 ```
 
-Read storage **slot 0** using cast:
+使用 cast 读取存储 **slot 0**：
 
 ```
 $ cast storage 0x5fbdb2315678afecb367f032d93f642f64180aa3 0x
 0x000000000000000000000000000000000000000000000000000000000000002a
 ```
 
-Sure enough, the result is indeed [42](<https://simple.wikipedia.org/wiki/42_(answer)>) (0x2a) 🎉.
+果然，结果是 [42](<https://simple.wikipedia.org/wiki/42_(answer)>) (0x2a) 🎉.
 
 ---
 
-Simulation of contract execution:
+模拟合约执行：
 
 ![Contract execution](../../images/evm/contract-execution.gif)
 
-## Appendix A: Transaction signer
+## 目录 A: 交易签署
 
-`signer.js`: A simple [node.js](https://nodejs.org/) script for signing transactions. See comments for explanation:
-
+`signer.js`: 一个 [node.js](https://nodejs.org/) 签署合约的简单脚本. 详情见注释：
 ```javascript
 /**
  * Utility script to sign a transaction payload array.
@@ -261,40 +248,40 @@ Simulation of contract execution:
 
 const { rlp, keccak256, ecsign } = require("ethereumjs-util");
 
-// Parse command-line arguments
+// 解析命令行参数
 const payload = JSON.parse(process.argv[2]);
 const privateKey = Buffer.from(process.argv[3].replace("0x", ""), "hex");
 
-//valdiate privatekey length
+//验证私钥长度
 if (privateKey.length != 32) {
   console.error("Private key must be 64 characters long!");
   process.exit(1);
 }
 
-// STEP 1: Encode payload to RLP
-// Learn more: https://ethereum.org/en/developers/docs/data-structures-and-encoding/rlp/
+// 步骤1：将有效载荷编码为 RLP
+// 了解更多: https://ethereum.org/en/developers/docs/data-structures-and-encoding/rlp/
 const unsignedRLP = rlp.encode(payload);
 
-// STEP 2: Hash the RLP encoded payload
-// Learn more: https://ethereum.org/en/glossary/#keccak-256
+// 步骤2：对 RLP 编码的有效载荷进行散列
+// 了解更多: https://ethereum.org/en/glossary/#keccak-256
 const messageHash = keccak256(unsignedRLP);
 
-// STEP 3: Sign the message
-// Learn more: https://epf.wiki/#/wiki/Cryptography/ecdsa
+// 步骤3：签署信息
+// 了解更多: https://epf.wiki/#/wiki/Cryptography/ecdsa
 const { v, r, s } = ecsign(messageHash, privateKey);
 
-// STEP 4: Append signature to payload
+// 步骤4：将签名添加到有效载荷
 payload.push(
   "0x".concat(v.toString(16)),
   "0x".concat(r.toString("hex")),
   "0x".concat(s.toString("hex"))
 );
 
-// STEP 5: Output RLP encoded signed transaction
+// 步骤5：输出 RLP 编码的签名交易
 console.log(rlp.encode(payload).toString("hex"));
 ```
 
-## Resources
+## 资源
 - 📝 Gavin Wood, ["Ethereum Yellow Paper."](https://ethereum.github.io/yellowpaper/paper.pdf)
 - 📘 Andreas M. Antonopoulos, Gavin Wood, ["Mastering Ethereum."](https://github.com/ethereumbook/ethereumbook)
 - 📝 Ethereum.org, ["RLP Encoding."](https://ethereum.org/en/developers/docs/data-structures-and-encoding/rlp/)
