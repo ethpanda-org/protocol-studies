@@ -1,13 +1,12 @@
 # JSON-RPC
 
-The JSON-RPC specification is a remote procedure call protocol encoded in JSON based on [OpenRPC](https://open-rpc.org/getting-started). It allows calling functions on a remote server, and for the return of the results.
-It is part of the Execution API specification which provides a set of methods to interact with the Ethereum blockchain.
-It is better known to be the way of how the users interact with the network using a client, even how the consensus layer (CL) and the execution layer (EL) interact through the Engine API.
-This section provides a description of the JSON-RPC methods.
+JSON-RPC 规范是基于 [OpenRPC](https://open-rpc.org/getting-started) 的 JSON 编码的远程过程调用协议。它允许调用远程服务器上的函数，并返回结果。
+它是执行 API 规范的一部分，该规范提供了一组与以太坊区块链交互的方法。
+更广为人知的是用户如何使用客户端与网络交互，甚至共识层（CL）和执行层（EL）如何通过引擎 API（Engine API） 进行交互。
+本节介绍 JSON-RPC 方法。
+## API 规范
 
-## API Specification
-
-The JSON-RPC methods are grouped by namespaces specified as a method prefix. Even though they all have different purposes, all of them share a common structure and must behave the same across all implementations:
+JSON-RPC 方法按照方法前缀指定的命名空间进行分组。尽管它们的目的不同，但都共享一个公共的结构，并且在所有实现中必须具有相同的行为：
 
 ```json
 {
@@ -18,106 +17,110 @@ The JSON-RPC methods are grouped by namespaces specified as a method prefix. Eve
 }
 ```
 
-Where:
-- `id`: A unique identifier for the request.
-- `jsonrpc`: The version of the JSON-RPC protocol.
-- `method`: The method to be called.
-- `params`: The parameters for the method. It can be an empty array if the method does not require any parameters. Other ones may have default values if not provided.
+解释:
+- `id`：请求的唯一标识符。
+- `jsonrpc`: JSON-RPC 协议的版本。
+- `method`：被调用的方法。
+- `params`：方法的参数。如果方法不需要任何参数，则可以是空数组。如果不提供其他值，则可能有默认值。
+  
+### 命名空间
 
-### Namespaces
+每个方法都由命名空间前缀和方法名组成，方法名之间用下划线分隔。
 
-Every method is composed of a namespace prefix and the method name, separated by an underscore.
+以太坊客户端必须实现规范要求的最基本的 RPC 方法集合来与网络交互。除此之外，还有一些特定于客户端的方法来控制节点或实现额外的独特功能。总是参考列出可用方法和命名空间的客户端文档，例如注意 [Geth](https://geth.ethereum.org/docs/interacting-with-geth/rpc) 和 [Reth](https://paradigmxyz.github.io/reth/jsonrpc/intro.html) 文档中的不同命名空间。
 
-Ethereum clients must implement the basic minimum set of RPC methods required by spec to interact with the network. On top of that, there are also client specific methods for controlling the node or implementing extra unique features. Always refer to client documentation listing available methods and namespace, for example notice different namespaces in [Geth](https://geth.ethereum.org/docs/interacting-with-geth/rpc) and [Reth](https://paradigmxyz.github.io/reth/jsonrpc/intro.html) docs. 
+下面是一些最常见的命名空间的例子。
 
-Here are examples of most common namespaces: 
-
-| **Namespace** | **Description**                                                                                      | **Sensitive** |
+| **命名空间** | **描述**                                                                                      | **敏感性** |
 | ------------- | ---------------------------------------------------------------------------------------------------- | ------------- |
-| eth           | The eth API allows you to interact with Ethereum.                                                    | Maybe         |
-| web3          | The web3 API provides utility functions for the web3 client.                                         | No            |
-| net           | The net API provides access to network information of the node.                                      | No            |
-| txpool        | The txpool API allows you to inspect the transaction pool.                                           | No            |
-| debug         | The debug API provides several methods to inspect the Ethereum state, including Geth-style traces.   | No            |
-| trace         | The trace API provides several methods to inspect the Ethereum state, including Parity-style traces. | No            |
-| admin         | The admin API allows you to configure your node.                                                     | Yes           |
-| rpc           | The rpc API provides information about the RPC server and its modules                                | No            |
+| eth           | eth API 允许您与以太坊进行交互。                                                    | Maybe         |
+| web3          | web3 API 为 web3 客户端提供实用功能。                                        | No            |
+| net           | net API 提供对节点网络信息的访问。                                      | No            |
+| txpool        | txpool API 允许您检查交易池。                                           | No            |
+| debug         | debug API 提供了几个方法来检查以太坊状态，包括 Geth 风格（Geth-style）的跟踪。| No            |
+| trace         | trace API 提供了几个方法来检查以太坊状态，包括奇偶校验风格（Parity-style）的跟踪。 | No            |
+| admin         | admin API 允许你配置你的节点。                                                     | Yes           |
+| rpc           | rpc API 提供 rpc 服务器及其模块的信息                                | No            |
 
-Sensitive means they could be used to set up the node, such as *admin*, or access account data stored in the node, just like *eth*.
+敏感意味着它们可能被用来建立节点，例如 **admin** ，或访问存储在节点中的帐户数据，就像 **eth** 。
 
-Now, let's take a look at some methods to understand how they are built and what they do:
+现在，让我们看看一些方法，以了解它们是如何构建的以及它们的作用：
 
 #### Eth
 
-Eth is probably the most used namespace providing basic access to Ethereum network, e.g. it's necessary for wallets to read balance and create transactions. 
-Just a brief list of the methods is provided here, but the full list can be found in the [Ethereum JSON-RPC specification](https://ethereum.github.io/execution-apis/api-documentation/).
+Eth 可能是最常用的命名空间，提供对以太坊网络的基本访问，例如，钱包读取余额并创建交易是必要的。
+这里只提供了方法的简要列表，但完整列表可以在 [Ethereum JSON-RPC 规范](https://ethereum.github.io/execution-apis/api-documentation/)中找到。
 
-| **Method**                           |           **Params**            | **Description**                                                                                                                             |
+| **方法**                           |           **参数**            | **描述**                                                                                                                             |
 | ------------------------------------ |:-------------------------------:| ------------------------------------------------------------------------------------------------------------------------------------------- |
-| eth_blockNumber                      |       no mandatory params       | returns the number of the most recent block                                                                                                 |
-| eth_call                             |       transaction object        | executes a new message call immediately without creating a transaction on the block chain                                                   |
-| eth_chainId                          |       no mandatory params       | returns the current chain id                                                                                                                |
-| eth_estimateGas                      |       transaction object        | makes a call or transaction, which won't be added to the blockchain and returns the used gas, which can be used for estimating the used gas |
-| eth_gasPrice                         |       no mandatory params       | returns the current price per gas in wei                                                                                                    |
-| eth_getBalance                       |      address, block number      | returns the balance of the account of the given address                                                                                     |
-| eth_getBlockByHash                   |      block hash, full txs       | returns information about a block by hash                                                                                                   |
-| eth_getBlockByNumber                 |     block number, full txs      | returns information about a block by block number                                                                                           |
-| eth_getBlockTransactionCountByHash   |           block hash            | returns the number of transactions in a block from a block matching the given block hash                                                    |
-| eth_getBlockTransactionCountByNumber |          block number           | returns the number of transactions in a block from a block matching the given block number                                                  |
-| eth_getCode                          |      address, block number      | returns code at a given address in the blockchain                                                                                           |
-| eth_getLogs                          |          filter object          | returns an array of all logs matching a given filter object                                                                                 |
-| eth_getStorageAt                     | address, position, block number | returns the value from a storage position at a given address                                                                                |
+| eth_blockNumber                      |       没有必填参数       | 返回最近的块的编号                                                                                                 |
+| eth_call                             |       交易对象        | 立即执行一个新的消息调用，而不在区块链上创建交易                                                   |
+| eth_chainId                          |       没有必填参数       | 返回当前链                                                                                                                 |
+| eth_estimateGas                      |       交易对象        | 发起一次调用或交易，该操作不会被添加到区块链上，并返回消耗的 Gas，可用于估算实际消耗的 Gas。|
+| eth_gasPrice                         |       没有必填参数       | 返回当前每个 Gas 的价格（以 wei 为单位）                                                 |
+| eth_getBalance                       |      地址，区块编号      | 返回给定地址的账户余额                                                   |
+| eth_getBlockByHash                   |      区块哈希，完整交易      | 通过区块哈希返回区块信息                                                                                              |
+| eth_getBlockByNumber                 |     区块编号，完整交易      | 通过区块编号返回区块信息                                                         |
+| eth_getBlockTransactionCountByHash   |           区块哈希            | 返回与给定区块哈希匹配的区块中的交易数量                                                  |
+| eth_getBlockTransactionCountByNumber |         区块编号          | 返回一个区块中与给定区块编号匹配的交易数量                                               |
+| eth_getCode                          |     地址，区块编号     |           返回区块链中给定地址的代码                                       |
+| eth_getLogs                          |            过滤器对象        |          返回一个匹配给定过滤器对象的所有日志的数组                    |
+| eth_getStorageAt                     | 地址，位置，区块编号 |         返回给定地址的存储位置的值                                                      |
 
 #### Debug
 
-The *debug* namespace provides methods to inspect the Ethereum state. It's direct access to raw data which might be necessary for certain use cases like block explorers or research purposes. Some of these methods might require a lot of computation to be done on the node and requests for historical states on non-archival node are mostly not feasible. Therefore, providers of public RPCs often restrict this namespace or allow only safe methods. 
-Here are basic examples of debug methods: 
+*debug* 命名空间提供了检查以太坊状态的方法。它是对原始数据的直接访问，对于某些用例（如区块浏览器或研究目的）可能是必要的。某些方法可能需要在节点上进行大量计算，且对于非存档节点的历史状态请求通常不可行。因此，公共 RPC 提供者通常会限制该命名空间，或者仅允许使用安全的方法。
+以下是 debug 方法的一些基本示例：
 
-| **Method**               |      **Params**       | **Description**                                                 |
+| **方法**               |      **参数**       | **描述**                                                 |
 |--------------------------|:---------------------:|-----------------------------------------------------------------|
-| debug_getBadBlocks       |  no mandatory params  | returns and array of recent bad blocks that the client has seen |
-| debug_getRawBlock        |     block_number      | returns an RLP-encoded block                                    |
-| debug_getRawHeader       |     block_number      | returns an RLP-encoded header                                   |
-| debug_getRawReceipts     |     block_number      | returns an array of EIP-2718 binary-encoded receipts            |
-| debug_getRawTransactions |        tx_hash        | returns an array of EIP-2718 binary-encoded transactions        |
+| debug_getBadBlocks       |  没有必填参数  | 返回客户端最近看到的坏块数组 |
+| debug_getRawBlock        |     block_number      | 返回一个 RLP 编码的区块                                    |
+| debug_getRawHeader       |     block_number      | 返回一个 RLP 编码的区块头                   |
+| debug_getRawReceipts     |     block_number      |    返回一个 EIP-2718 二进制编码的收据数组       |
+| debug_getRawTransactions |        tx_hash        |    返回一个 EIP-2718 二进制编码的交易数组    |
 
 #### Engine
 
-[Engine API](https://hackmd.io/@danielrachi/engine_api) is different from aforementioned methods. Clients serve Engine API on a different and authenticated endpoint rather than normal http JSON RPC because it is not a user facing API. It's intended for connection between consensus and execution client, making it basically an internal node communication process. 
-Inter-client communication exchanging information about consensus, forkchoice, validation of blocks, etc: 
+[Engine API](https://hackmd.io/@danielrachi/engine_api) 与前述方法不同，客户端在一个独立且经过身份验证的端点上提供引擎 API(Engine API)，而不是常规的 HTTP JSON RPC，因为它并非面向用户的 API。该 API 旨在用于共识客户端和执行客户端之间的连接，基本上是一个内部节点通信过程。
+跨客户端通信用于交换有关共识、分叉选择、区块验证等的信息：
 
-| **Method**                               |               **Params**               | **Description**                                                           |
+
+| **方法**                               |               **参数**               | **描述**                                                           |
 |------------------------------------------|:--------------------------------------:|---------------------------------------------------------------------------|
-| engine_exchangeTransitionConfigurationV1 |        Consensus client config         | exchanges client configuration                                            |
-| engine_forkchoiceUpdatedV1*              |  forkchoice_state, payload attributes  | updates the forkchoice state                                              |
-| engine_getPayloadBodiesByHashV1*         |           block_hash (array)           | given block hashes returns bodies of the corresponding execution payloads |
-| engine_getPayloadV1*                     |  forkchoice_state, payload attributes  | obtains execution payload from payload build process                      |
-| debug_newPayloadV1*                      |                tx_hash                 | returns execution payload validation                                      |
+| engine_exchangeTransitionConfigurationV1 |        共识客户端配置（Consensus client config）        |         更换客户端配置                                   |
+| engine_forkchoiceUpdatedV1*              |  forkchoice_state,载荷属性（payload attributes）   |        更新分叉选择状态                                      |
+| engine_getPayloadBodiesByHashV1*         |           block_hash (array)           |    给定区块哈希，返回相应执行载荷的主体  |
+| engine_getPayloadV1*                     |  forkchoice_state, 载荷属性（payload attributes）  |    从载荷构建过程获取执行载荷            |
+| debug_newPayloadV1*                      |                tx_hash                 |              返回执行载荷验证                        |
 
-Those methods marked with an asterisk (*) have more than one version. The [Ethereum JSON-RPC specification](https://ethereum.github.io/execution-apis/api-documentation/) provides a detailed description.
+带有星号（*）的方法有多个版本。[Ethereum JSON-RPC specification](https://ethereum.github.io/execution-apis/api-documentation/) 提供了详细的描述。
 
-## Encoding
+## 编码
 
-There is a convention for encoding the parameters of the JSON-RPC methods, which is the hex encoding.
-* Quantities are represented as hexadecimal values using a "0x" prefix.
-  * For example, the number 65 is represented as "0x41".
-  * The number 0 is represented as "0x0".
-  * Some invalid usages are "0x" and "ff". Since the first case does not have a following digit and the second one is not prefixed with "0x". 
-* Unformatted data is, such as hashes, account addresses or byte arrays are hex encoded using a "0x" prefix as well.
-  * For example: 0x400 (1014 in decimal)
-  * An invalid case is 0x400 because there are no leading zeroes allowed
 
-## Transport agnostic
+JSON-RPC 方法的参数编码有一个约定，就是十六进制编码。
+*数量以使用 “0x” 前缀的十六进制值表示。
+  *例如，数字65表示为 “0x41”。
+  *数字0表示为 “0x0”。
+  *一些无效的用法是 “0x” 和 “ff” 。因为第一种情况下没有数字，第二种情况下没有 “0x” 前缀。
+*未格式化的数据，如哈希、账户地址或字节数组，也使用 “0x” 前缀进行十六进制编码。
+  *例如：0x400（十进制的 1014）
+  *无效的大小写是 0x400，因为不允许前导零
 
-Worth to mention here the JSON-RPC is transport agnostic, meaning it can be used over any transport protocol, such as HTTP, WebSockets (WSS), or even Inter-Process Communication (IPC).
-Their differences can be summarized as it follows:
-* **HTTP** transport provides an unidirectional response-request model, which gets the connection closed after the response is sent.
-* **WSS** is a bidirectional protocol, which means the connection is kept open until either the node or the user explicitly closes it. It allows subscriptions-based model communication such as event-driven interactions.
-* **IPC** transport protocol is used for communication between processes running on the same machine. It is faster than HTTP and WSS, but it is not suitable for remote communication, e.g. it can be used via local JS console.
-  
-## Tooling
+  //译者注：在某些情况下，特别是当参数需要符合特定大小或格式时，JSON-RPC 可能会将数字“填充”到特定的字节长度。例如，可能会将 1014 填充为 0x400（十六进制），以符合特定的格式要求。
 
-There are several ways of how to use the JSON-RPC methods. One of them is using the `curl` command. For example, to get the latest block number, you can use the following command:
+## 与传输方式无关
+
+值得一提的是，JSON-RPC 是与传输方式无关的，这意味着它可以通过任何传输协议使用，例如 HTTP、WebSockets（WSS）甚至进程间通信（IPC）。
+
+它们的区别可以总结如下：
+
+* **HTTP** 传输提供了单向的请求-响应模型，连接会在响应发送后关闭。
+* **WSS** 是一种双向协议，这意味着连接会一直保持开启，直到节点或用户显式关闭它。它支持基于订阅的通信模型，例如事件驱动的交互。
+* **IPC** 传输协议用于同一台机器上运行的进程之间的通信。它比 HTTP 和 WSS 更快，但不适合远程通信，例如可以通过本地 JS 控制台使用。
+## 工具
+有几种方式可以使用 JSON-RPC 方法，其中之一是使用 curl 命令。例如，要获取最新的区块号，可以使用以下命令：
 
 ```bash
 curl <node-endpoint> \
@@ -125,9 +128,10 @@ curl <node-endpoint> \
 -H "Content-Type: application/json" \
 -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
 ```
-Please note how the *params* field is empty, as the method pass "latest" as default value.
 
-Another way is to use the `axios` library in Javascript/TypeScript. For example, to get the address balance, you can use the following code:
+请注意，*params* 字段是空的，因为该方法将 “latest” 作为默认值。
+
+另一种方法是使用 Javascript/TypeScript 中的`axios`库。例如，要获取地址余额，可以使用以下代码：
 
 ```typescript
 import axios from 'axios';
@@ -145,11 +149,10 @@ const response = await axios.post(node, {
   },
 });
 ```
-As you may notice, the JSON-RPC methods are wrapped in a POST request, and the parameters are passed in the body of the request.
-This is a different way to exchange data between the client and the server using the OSI's application layer: the HTTP protocol.
+你可能注意到了，JSON-RPC 方法包装在一个 POST 请求中，参数在请求主体中传递。
+这是使用 OSI 的应用层（ HTTP 协议）在客户端和服务器之间交换数据的另一种方式。
 
-Either way, the most common use to interact with the Ethereum network is using web3 libraries, such as web3py for python or web3.js/ethers.js for JS/TS:
-
+无论哪种方式，与以太坊网络交互的最常见用途是使用 web3 库，例如用于 python 的 web3py 或用于 JS/TS 的 web3. JS/ ether . JS：
 #### web3py
 
 ```python
@@ -172,9 +175,9 @@ const provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');
 await provider.getBlockNumber();
 ```
 
-Usually, all the web3 libraries wrap the JSON-RPC methods providing a more friendly way to interact with the execution layer. Please, look forward in your preferred programming language as the syntax may vary.
+通常，所有 web3 库都会封装 JSON-RPC 方法，以提供一种更友好的方式与执行层交互。请参阅您首选的编程语言，因为语法可能有所不同。
 
-### Further Reading
+### 进一步的阅读
 * [Ethereum JSON-RPC Specification](https://ethereum.github.io/execution-apis/api-documentation/)
 * [Execution API Specification](https://github.com/ethereum/execution-apis/tree/main)
 * [JSON-RPC | Infura docs](https://docs.infura.io/api/networks/ethereum/json-rpc-methods)
