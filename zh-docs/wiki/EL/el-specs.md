@@ -966,12 +966,12 @@ $$
 ### 代码 A
 
 ```R
-##导入
+## 导入
 
 library(plotly)
 library(dplyr)
 
-## for xi 和 rho 的值
+## xi 和 rho 的值
 ## 这就是 R 语言中 '<-' 赋值的工作方式
 
 ELASTICITY_MULTIPLIER <- 2
