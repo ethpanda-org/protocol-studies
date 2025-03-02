@@ -6,7 +6,7 @@
 > - [Python 执行层规范](https://ethereum.github.io/execution-specs/)
 > - EIPs [查看仓库的自述文件](https://github.com/ethereum/execution-specs)
 
-本页面提供了执行层规范的概述、架构以及与 Pyspec 的背景信息。
+本页面提供了执行层规范的概述、架构以及 Pyspec 的背景信息。
 
 ## 状态转换函数
 
@@ -27,7 +27,7 @@ $$
 \end{equation}
 $$
 
-在该方程中，每个符号分别代表与区块链状态转换相关的特定概念：
+在此公式中，每个符号分别代表与区块链状态转换相关的特定概念：
 
 - $\sigma_{t+1}$ 代表应用当前区块后的 **区块链状态**，通常称为 "新状态"。
 - $\Pi$ 表示 [区块级状态转换函数](https://github.com/ethereum/execution-specs/blob/0f9e4345b60d36c23fffaa69f70cf9cdb975f4ba/src/ethereum/shanghai/fork.py#L145)，它通过应用当前区块中包含的交易，将区块链从一个状态转换到下一个状态。
@@ -41,12 +41,12 @@ $$
 
 上图中的 ID 如黄皮书 (巴黎版本) 所示：
 
-| Id.   | 方程编号 | 黄皮书                                                    | 注释                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Id.   | 公式编号 | 黄皮书                                                    | 注释                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | ----- | ------------ | --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1     | 7            | $$TRIE(L_I^*(\sigma[a]_s)) \equiv \sigma[a]_s $$           | 在通过函数 $L_I((k,v)) \equiv (KEC(k), RLP(v))$ 映射每个节点后，这给出了帐户存储 Trie 的根，即右侧的 $\sigma[a]_s$。左侧的方程表示映射到账户存储 $\sigma[a]_s$ 的基础键和值，左侧的 $\sigma[a]_s$ 和右侧的 $\sigma[a]_s$ 这两个对象是不同的，后者表示根哈希。 |
+| 1     | 7            | $$TRIE(L_I^*(\sigma[a]_s)) \equiv \sigma[a]_s $$           | 在通过函数 $L_I((k,v)) \equiv (KEC(k), RLP(v))$ 映射每个节点后，这给出了帐户存储 Trie 的根，即右侧的 $\sigma[a]_s$。左侧的公式表示映射到帐户存储 $\sigma[a]_s$ 的基础键和值，左侧的 $\sigma[a]_s$ 和右侧的 $\sigma[a]_s$ 这两个对象是不同的，后者表示根哈希。 |
 | 2     |              | 第 4 页，第 2 段                                              | 黄皮书中描述了帐户状态 $\sigma[a] $                                                                                                                                                                                                                                                                                                                                                                         |
-| 3     | 10           | $$L_s(\sigma) \equiv \{p(a) : \sigma[a] \neq \empty \} $$ | 这是世界状态收缩函数，应用于所有被认为非空的账户：                                                                                                                                                                                                                                                                                                                                                      |
-| 4 & 5 | 36           | $$TRIE(L_s(\sigma)) = P(B_H)_{H_{stateRoot}} $$           | 该方程定义了父区块的状态根头部，作为通过 TRIE 函数得到的根，其中 $P(B_H)$ 是父区块。                                                                                                                                                                                                                                                                                                      |
+| 3     | 10           | $$L_s(\sigma) \equiv \{p(a) : \sigma[a] \neq \empty \} $$ | 这是世界状态收缩函数，应用于所有被认为非空的帐户：                                                                                                                                                                                                                                                                                                                                                      |
+| 4 & 5 | 36           | $$TRIE(L_s(\sigma)) = P(B_H)_{H_{stateRoot}} $$           | 此公式定义了父区块的状态根头部，作为通过 TRIE 函数得到的根，其中 $P(B_H)$ 是父区块。                                                                                                                                                                                                                                                                                                      |
 | 6.    | 33b          | $$H_{stateRoot} \equiv TRIE(L_s(\Pi(\sigma, B))) $$       | 这给出了当前区块的状态根。                                                                                                                                                                                                                                                                                                                                                                                               |
 
 代码文档中状态转换函数的指定流程包括以下步骤：
@@ -145,9 +145,9 @@ $$
 
 这些标准构成了以太坊经济模型的一部分，尤其受到 EIP-1559 的影响，该机制引入了一种动态基本费用机制。该机制旨在优化网络使用和费用的可预测性，从而增强用户体验和经济稳定性。此外，[EIP-4844](https://eips.ethereum.org/EIPS/eip-4844) 引入了一种新交易类型——blob 交易，进一步增强了 EIP-1559 的经济模型。
 
-让我们更深入地探讨该模型，并尝试更好地理解这些方程中所发生的事情，它们在 Python 规范或黄皮书中不容易看到。
+让我们更深入地探讨该模型，并尝试更好地理解这些公式中所发生的事情，它们在 Python 规范或黄皮书中不容易看到。
 
-让我们从扩展 57h 开始，该方程在黄皮书中指定如下:
+让我们从扩展 57h 开始，此公式在黄皮书中指定如下:
 
 $$
 \begin{equation}
@@ -198,7 +198,7 @@ $$
 | $\rho $ | 弹性系数                      | 2                                                  | 帮助调整 Gas 目标，以维持网络的响应性、容量和价格可预测性。                    |
 | $\xi $  | 基本费用最大分母	                   | 8                                                  | 控制基本费用的最大变化率，以确保逐步调整。                                     |
 
-此外，黄皮书中还对这些对象的类型进行了一些重要定义，这些定义将用于推导这些方程：
+此外，黄皮书中还对这些对象的类型进行了一些重要定义，这些定义将用于推导这些公式：
 
 首先，它为我们提供无限的区块限制，即这些限制可以无限扩展。
 
@@ -299,9 +299,9 @@ Blob Gas 价格动态在以下场景中进行了建模，从零开始，并且�
   <img src="images/el-specs/blob-gas-and-price-norm.png" width="800"/>
 
 - 当父区块的 gas 使用量低于目标值时（约 400K，对应约 400KB 或每区块 3 个 blob），blob gas 价格保持在 1。
-- 超过目标并不会立即影响 gas 价格，但多余的 gas 会开始累积。
-- 持续的需求增加导致累积的多余 gas 超过阈值，触发 gas 价格的指数性增加，以作为一种调节措施。
-- 如果前一个区块的 gas 使用量低于目标，累积的多余 gas 可以在一个区块内清除，重置调节机制。
+- 超过目标并不会立即影响 gas 价格，但超额的 gas 会开始累积。
+- 持续的需求增加导致累积的超额 gas 超过阈值，触发 gas 价格的指数性增加，以作为一种调节措施。
+- 如果前一个区块的 gas 使用量低于目标，累积的超额 gas 可以在一个区块内清除，重置调节机制。
 
 ## 区块执行流程
 
@@ -363,7 +363,7 @@ $$
 | $I_{state}$               | 当前状态，包括所有帐户余额、存储和合约代码。                                        |
 | $I_{chainId}$             | 区块链的标识符，确保交易为特定链签名。                                    |
 | $I_{traces}$              | 执行痕迹的占位符，供将来使用或调试。                                       |
-| $I_{excessBlobGas}$       | 从父区块进行计算，它表示 blob 交易分配的多余 gas 量。                          |
+| $I_{excessBlobGas}$       | 从父区块进行计算，它表示 blob 交易分配的超额 gas 量。                          |
 | $I_{blobVersionedHashes}$ |                                                                                                                          |
 
 ## Gas 计算
@@ -474,15 +474,15 @@ $$totalBlobGas  \equiv  (G_{gasPerBlob = 2^{17}} \times length(T_{blobVersionedH
 
 ### Blob Gas 价格
 
-Blob Gas 价格通过一个公式确定，该公式基于网络中生成的多余 blob gas 进行调整，公式如下：
+Blob Gas 价格通过一个公式确定，该公式基于网络中生成的超额 blob gas 进行调整，公式如下：
 
 $$
 blobGasPrice  \\  \approx  \\ 
 factor_{minBlobBaseFee = 1} \times e^{numerator_{excessBlobGas} / denominator_{blobGaspriceUpdateFraction = 3338477}}
 $$
 
-- 对于任何低于当前每区块最大 blob gas（设为 786432）的输入，如果没有积累多余的 gas，则此公式返回 1。
-- 然而，当超过目标一定数量的区块后，它就会开始增加，这会导致多余的 Blob Gas 参数开始积累，从而触发 Blob Gas 价格的指数级增长。
+- 对于任何低于当前每区块最大 blob gas（设为 786432）的输入，如果没有积累超额的 gas，则此公式返回 1。
+- 然而，当超过目标一定数量的区块后，它就会开始增加，这会导致超额的 Blob Gas 参数开始积累，从而触发 Blob Gas 价格的指数级增长。
 - 当目标设置为每区块最大 blob gas 的大约一半（393216）时，该函数从十倍目标时开始上升至 2，然后呈指数增长。
 
 
@@ -563,7 +563,7 @@ $$
 
 |     |                                                                                                                  |
 | --- | ---------------------------------------------------------------------------------------------------------------- |
-| 1   | 交易发送者必须存在，且不能是一个未初始化的账户。                                         |
+| 1   | 交易发送者必须存在，且不能是一个未初始化的帐户。                                         |
 | 2   | 发送者不能是一个合约                                                                                  |
 | 3   | 帐户的交易次数有上限，确保随机数 小于 $2^{64} - 1$。                         |
 | 4   | 输入数据或 CALLDATA 的大小不得超过最大代码大小的两倍 (24576 字节)。                   |
@@ -730,9 +730,9 @@ $$\mu \equiv (\mu_{gasAvailable}, \mu_{programCounter},\\ \mu_{memoryContents}, 
 |$$\mu_{stackContents}$$ | | [堆栈](/wiki/EL/evm?id=stack) 项 : 256 位字长, 最大项数 = 1024 |
 |$$\mu_{outputFromNormalHalting}$$ | () | 表示来自上一个函数调用的输出（字节），由正常终止函数决定。EELS pyspec 在 EVM 对象中为输出提供了一个专门字段，而 Geth 则没有，它使用 returnData 字段来实现相同功能。
 
-#### Current Operation
+#### 当前操作
 
-The `currentOperation` is determined based on the position of the `programCounter` within the [bytecode](/wiki/EL/evm?id=evm-bytecode) array:
+`currentOperation` 由 `programCounter` 在 [字节码](/wiki/EL/evm?id=evm-bytecode) 数组中的位置确定：
 
 $$ currentOperation \equiv \ w \equiv
 \begin{cases}
@@ -741,12 +741,12 @@ STOP & \text{otherwise}
 \end{cases}
 $$
 
-This logic fetches the current operation by accessing the byte at the programCounter's position within the bytecode array. If the programCounter exceeds the length of the bytecode, a STOP operation is issued to halt execution.
+此逻辑通过访问字节码数组中 programCounter 的位置来获取当前操作。如果 programCounter 超过字节码的长度，则发出 STOP 操作以停止执行。
 
-Consider the Yellow Paper's definition of the add operator as an illustrative example:
+以黄皮书中对加法运算符的定义为例： 
 $$\mu'_{stackContents}[0] \equiv \mu_{stackContents}[0] + \mu_{stackContents}[1]$$
 
-This representation implies a left-sided addition and removal in the stack, akin to queue operations. However, traditional stack operations add and remove items from the right. Translating this to stack-based operations:
+这种表示意味着在堆栈左侧添加和移除，类似于队列操作。然而，传统堆栈操作是从右侧添加和移除元素。将其转换为基于堆栈操作：
 
 $$
 Add \Rightarrow
@@ -763,9 +763,9 @@ $$
 \Rightarrow \mu_{stackContents^{itemsAdded_{\alpha}=1}_{itemsRemoved_{\delta}=2}}
 $$
 
-When converting to code, the notation $\mu_{s}[number]$ translates to $\mu_{stackContents}[stackLength - 1 - number]$, aligning with the conventional understanding of stack operations.
+在转换为代码时，符号 $\mu_{s}[number]$ 对应于 $\mu_{stackContents}[stackLength - 1 - number]$，这与堆栈操作的传统理解保持一致。
 
-The Yellow Paper elegantly notates stack-based operations and provides a framework for interpreting these operations within the execution cycle. It specifies that stack items are manipulated from the left-most, lower-indexed part of the array, with unaffected items remaining constant:
+黄皮书优雅地表示了基于堆栈的操作，并提供了一个在执行周期内解释这些操作的框架。它规定，堆栈项的操作是从数组最左侧、索引较低的部分进行的，而未受影响的项保持不变：
 
 $$
 \begin{align}
@@ -777,19 +777,19 @@ $$
 \end{align}
 $$
 
-Equation 162 demonstrates that for each x within the specified range, the modified stack mirrors the original stack at position $x - \Delta$, effectively tracking the original position of stack items post-operation. For example, adding an item [2] to an existing stack [10] results in [2,10], where the original item's new position aligns with $x=Delta$, maintaining the integrity of stack order post-operation.
+公式 162 证明，对于指定范围内的每个 x，修改后的堆栈在位置 $x - \Delta$ 处反映了原始堆栈，这有效地跟踪了操作后堆栈项的原始位置。例如，将项 [2] 添加到现有堆栈 [10] 产生 [2,10]，其中原始项的新位置对应于 $x=Delta$，保持了操作后堆栈顺序的完整性。
 
-#### Single Execution Cycle
+#### 单个执行周期
 
 $$
 O((\sigma, \mu, A, I)) \equiv (\sigma', \mu', A', I) \quad (159)\\
 $$
 
-Where $O$ represents the Execution Cycle, encapsulating the outcome of a single cycle within the state machine. This cycle can modify all components of $\mu$, with explicit specifications for changes to $\mu_{gas}$ and $\mu_{programCounter}$:
+其中，$O$ 表示执行周期，封装了状态机中单个周期的结果。此周期可以修改 $\mu$ 的所有组件，并对 $\mu_{gas}$ and $\mu_{programCounter}$ 的更改进行了明确规定：
 
-##### Resultant Program Counter of a Single Execution Cycle
+##### 单个执行周期的结果程序计数器
 
-The following equation outlines how the execution cycle processes one instruction at a time:
+以下公式概述了执行周期如何逐条处理指令：
 
 $$
 \mu'_{programCounter} \equiv
@@ -812,12 +812,12 @@ programCounter + 1 \space \text{otherwise}
 \end{cases}
 $$
 
-- Here if the Operation is $JUMP$, the $J_{JUMP}$ function will set the program counter to the value at the top of the stack.
-- For $JUMP1$ operations, the $J_{JUMP1}$ function sets the program counter to the value at the top of the stack only if the adjacent value in the stack is not 0. Otherwise, it increases the program counter by 1. If the current operation is neither $JUMP$ nor $JUMP1$, the program counter will be incremented by the NextValidInstruction function.
+- 如果操作是 $JUMP$，则 $J_{JUMP}$ 函数会将程序计数器设置为堆栈顶部的值。
+- 对于 $JUMP1$ 操作，$J_{JUMP1}$ 函数仅在堆栈中的相邻值不为 0 时，才会将程序计数器设置为堆栈顶部的值。否则，它会将程序计数器增加 1。如果当前操作既不是 $JUMP$ 也不是 $JUMP1$，程序计数器将通过 NextValidInstruction 函数增加。
 
-The NextValidInstruction function determines that if the current operation is within the range of all PUSH operations, we increment the program counter to the byte immediately following the current operation byte, accounting for the data associated with the operation. This data can range from 1 to 32 bytes, depending on the specific PUSH operation. If the operation is not a PUSH operation, we simply increment the program counter by 1, advancing to the next byte of the code. This process highlights that PUSH instructions are responsible for loading data onto the stack from the code.
+NextValidInstruction 函数会确定当前操作是否属于所有 PUSH 操作的范围内。如果是，则程序计数器增加到紧随当前操作字节之后的字节，以记录与该操作相关的数据。根据具体的 PUSH 操作，这些数据的大小可以在 1 到 32 字节之间。如果操作不是 PUSH 操作，则程序计数器仅增加 1，以进入代码的下一个字节。此过程强调了 PUSH 指令的作用，即将数据从代码加载到堆栈上。
 
-When the program counter executes a jump operation, it must target a valid jump destination. The $ValidJumpDestinations_{D}$ function specifies the set of all valid jump destinations.
+当程序计数器执行跳转操作时，它必须指向一个有效的跳转目标。$ValidJumpDestinations_{D}$ 函数指定了所有有效跳转目标的集合。
 
 $$
 ValidJumpDestinations_{D}(byteCode) \equiv \\
@@ -832,27 +832,27 @@ ValidJumpDestinations_{D_J}(byteCode,NextValidInstruction(index, byteCode[index]
 \end{cases}
 $$
 
-This indicates that we include the index in the set if the bytecode at that index corresponds to a JUMPDEST operation. We continue adding these indices by recursively calling the $ValidValidJumpDestinations_{D_J}(byteCode, index)$ function with the index determined by the $NextValidInstruction$ function.
+这表明，如果该索引处的字节码对应于 JUMPDEST 操作，则将该索引包含在集合中。我们通过递归调用 $ValidValidJumpDestinations_{D_J}(byteCode, index)$ 函数，并使用 $NextValidInstruction$ 函数确定的索引，继续添加这些索引。
 
-##### Resultant Gas Consumption in a Single Execution Cycle
+##### 单个执行周期的结果 Gas 消耗计算
 
 $$
 \mu'_{gas} \equiv \mu_{gas} - C_{gasCost}(\sigma, \mu, AccruedSubState, Environment_I)
 $$
 
-The gas cost function, while not overly complex, includes various cases for different operations. It is succinctly defined in Appendix H of the Yellow Paper. In essence, it calculates the total cost of the current cycle by adding the cost of the current operation to the difference between the cost of active words in memory before and after the cycle (memory expansion cost).
+虽然 gas 成本函数并不复杂，但它涵盖了不同操作的各种情况。它在以太坊黄皮书的附录 H 中进行了简要定义。本质上，它通过将当前操作的成本加上执行周期前后活动内存中活跃字数成本的差值（即内存扩展成本），来计算当前执行周期的总成本。
 
-Different clients handle gas costs differently. In PySpec, various types of cost processing are integrated into the operations, while in Geth, gas costs are handled before the operation executes. Moreover, Geth distinguishes between [dynamic](https://github.com/ethereum/go-ethereum/blob/7bb3fb1481acbffd91afe19f802c29b1ae6ea60c/core/vm/interpreter.go#L257) costs used for memory expansion and [constant](https://github.com/ethereum/go-ethereum/blob/7bb3fb1481acbffd91afe19f802c29b1ae6ea60c/core/vm/interpreter.go#L224) gas associated with the base cost of the operation. Both types of costs are deducted using the [UseGas](https://github.com/ethereum/go-ethereum/blob/7bb3fb1481acbffd91afe19f802c29b1ae6ea60c/core/vm/contract.go#L161) function
+不同的以太坊客户端对 gas 成本的处理方式不同。在 PySpec 中，各种类型的成本处理都被集成到操作中，而在 Geth 中， gas 成本则在操作执行之前进行处理。此外，Geth 还区分了用于内存扩展的 [动态](https://github.com/ethereum/go-ethereum/blob/7bb3fb1481acbffd91afe19f802c29b1ae6ea60c/core/vm/interpreter.go#L257) 成本和与操作基础成本相关的 [恒定](https://github.com/ethereum/go-ethereum/blob/7bb3fb1481acbffd91afe19f802c29b1ae6ea60c/core/vm/interpreter.go#L224) gas。这两种成本均使用 [UseGas](https://github.com/ethereum/go-ethereum/blob/7bb3fb1481acbffd91afe19f802c29b1ae6ea60c/core/vm/contract.go#L161) 函数进行扣除。
 
-#### Program Execution $\Xi$ :
+#### 程序执行 $\Xi$ :
 
 $$(\sigma^{'}_{resultantState}, gas_{remaining}, A^{resultantAccruedSubState}, \omicron^{Output})$$ $$\equiv \Xi(\sigma,gas,A^{accruedSubState}, Environment_I)$$
 
-The Program Execution function is defined formally by the function X, the only difference is $\Xi$ calls X and returns the output of X removing the $Environment_I$ from the output tuple.
+程序执行函数由函数 X 正式定义，唯一的区别是 $\Xi$ 调用 X 并返回 X 的输出，同时从输出元组中移除了 $Environment_I$。
 
-##### Recursive Execution Function X
+##### 递归执行函数 X
 
-X orchestrates the execution of the entire code. This is typically implemented by clients as a main loop iterating over the code. However, its definition is recursive:
+X 协调整个代码的执行。这通常由客户端作为主循环对代码进行迭代来实现。但从定义上，它是递归的：
 
 $$
 X((\sigma,\mu,AccruedSubState,Environment_I)) \equiv  \nonumber \\
@@ -884,17 +884,17 @@ $$
 \mu'_{activeWordsInMemory} \equiv 32 * M_{memoryExpansionForRangeFunction}(\mu_{activeWordsInMemory}, \mu_{stackContents}[0], \mu_{stackContents}[1])
 $$
 
-1. If the conditions for Exceptional Halting are met, return a tuple consisting of an empty state, the machine state, accrued sub state, environment, and an empty output.
-2. If the current Operation is $REVERT$, return a tuple consisting of an empty state, the machine state after deducting gas, accrued sub state, environment, and the machine output.
-3. If the machine output is not empty, the execution iterator function $O$ consumes the output.
+1. 如果满足异常停止的条件，则返回一个由空状态、机器状态、累计子状态、环境和空输出组成的元组。
+2. 如果当前操作是 $REVERT$，则返回一个由空状态、扣除 gas 后的机器状态、累积子状态、环境和机器输出组成的元组。
+3. 如果机器输出不为空，则执行迭代函数 $O$ 会消耗该输出。
 
-- For instance, if the current operation is a system operation such as CALL, CALLCODE, [DELEGATECALL](https://github.com/ethereum/execution-specs/blob/9c24cd78e49ce6cb9637d1dabb679a5099a58169/src/ethereum/cancun/vm/instructions/system.py#L542), or STATICCALL, these calls invoke the [generic call function](https://github.com/ethereum/execution-specs/blob/9c24cd78e49ce6cb9637d1dabb679a5099a58169/src/ethereum/cancun/vm/instructions/system.py#L267), setting up a new message and a child EVM process. The output of this process is then [written back into the memory](https://github.com/ethereum/execution-specs/blob/9c24cd78e49ce6cb9637d1dabb679a5099a58169/src/ethereum/cancun/vm/instructions/system.py#L325) of the parent EVM process, effectively consuming the output in one iteration of $O$, which may be utilized in the next iteration.
+- 例如，如果当前操作是系统操作（如 CALL、CALLCODE、[DELEGATECALL](https://github.com/ethereum/execution-specs/blob/9c24cd78e49ce6cb9637d1dabb679a5099a58169/src/ethereum/cancun/vm/instructions/system.py#L542) 或 STATICCALL），这些调用会触发 [通用调用函数](https://github.com/ethereum/execution-specs/blob/9c24cd78e49ce6cb9637d1dabb679a5099a58169/src/ethereum/cancun/vm/instructions/system.py#L267)，设置一个新消息和子 EVM 进程。然后，该进程的输出会被 [写回到父 EVM 进程的内存中](https://github.com/ethereum/execution-specs/blob/9c24cd78e49ce6cb9637d1dabb679a5099a58169/src/ethereum/cancun/vm/instructions/system.py#L325)，在 $O$ 的一次迭代中被有效地消耗，并且可能在下一次迭代中被使用。
 
-4. In all other scenarios, we simply continue recursively calling the iterator function. In simpler terms, this means we proceed with the main interpreter loop
+4. 在所有其他情况下，我们只需继续递归调用迭代函数。简而言之，这意味着我们继续执行主解释器循环。
 
-##### Normal Halting H
+##### 正常暂停 H
 
-The $H_{normalHaltingFunction}$ defines the halting behavior of the EVM under normal circumstances:
+$H_{normalHaltingFunction}$ 定义了正常情况下的 EVM 暂停行为：
 
 $$
 H_{normalHaltingFunction}(\mu, Environment_I) \equiv
@@ -908,7 +908,7 @@ H_{RETURN}(\mu) & \text{if } \text{currentOperation} \in \{ \text{RETURN}, \text
 \end{cases}
 $$
 
-Where:
+其中：
 
 - $H_{RETURN}(\mu) \equiv \mu'$
 
@@ -924,12 +924,12 @@ Where:
     - $\mu'_{gas} \equiv \mu_{gas} - \text{memoryExpansionCost}$
     - $\mu'_{running} \equiv false$
 
-Where:
+其中：
 
 - $startPos \equiv  \mu_{stackContents}[0]$
 - $memorySize \equiv  \mu_{stackContents}[1]$
 
-The function $M_{memoryExpansionForRangeFunction}(s,f,l)$ determines the memory expansion required to accommodate the range specified:
+函数 $M_{memoryExpansionForRangeFunction}(s,f,l)$ 会确定需要适应指定范围的内存扩展：
 
 $$
 M_{memoryExpansionForRangeFunction}(s,f,l) \equiv
@@ -942,47 +942,46 @@ S & \text{if } l = 0 \\
 \end{cases}
 $$
 
-In essence, the $H_{normalHaltingFunction}$ first sets the start index and length of the output based on the top two stack items. If memory expansion is needed to accommodate the output, it expands the memory accordingly, incurring memory expansion costs if necessary. Finally, it sets the EVM's output to the specified memory range.
+从本质上讲，$H_{normalHaltingFunction}$ 首先根据堆栈顶的两个元素设置输出的起始索引和长度。如果需要扩展内存以容纳输出，则相应地扩展内存，并在必要时产生内存扩展成本。最后，它将 EVM 的输出设置为指定的内存范围。
 
-##### Exception Halting Z
+##### 异常停止 Z
 
-### $T$ Execution stage 4 : Provisional State $\sigma_p$
+### $T$ 执行状态 4 : 临时状态 $\sigma_p$
 
-TODO
+待完成
 
-### $T$ Execution stage 5 : Pre-Final State $\sigma^*$
+### $T$ 执行状态 5 : 预最终状态 $\sigma^*$
 
-TODO
+待完成
 
-### $T$ Execution stage 6 : Final State $\sigma'$
+### $T$ 执行状态 6 : 最终状态 $\sigma'$
 
-TODO
+待完成
 
-## Block holistic Validity
+## 区块整体有效性
+待完成
 
-TODO
+## 附录
 
-## Appendix
-
-### Code A
+### 代码 A
 
 ```R
-##imports
+##导入
 
 library(plotly)
 library(dplyr)
 
-## values for xi and rho
-## this is how '<-' assignment works in R
+## for xi 和 rho 的值
+## 这就是 R 语言中 '<-' 赋值的工作方式
 
 ELASTICITY_MULTIPLIER <- 2
 BASE_FEE_MAX_CHANGE_DENOMINATOR <- 8
 
-## Slightly modified function from the spec
+## 从规范进行略微修改的函数
 
 calculate_base_fee_per_gas <- function(parent_gas_limit, parent_gas_used, parent_base_fee_per_gas, max_change_denom = BASE_FEE_MAX_CHANGE_DENOMINATOR , elasticity_multiplier = ELASTICITY_MULTIPLIER) {
 
-  #  %/% == // (in python) == floor
+  #  %/% == // (python) == floor
 
   parent_gas_target <- parent_gas_limit %/% elasticity_multiplier
   if (parent_gas_used == parent_gas_target) {
@@ -1004,43 +1003,43 @@ calculate_base_fee_per_gas <- function(parent_gas_limit, parent_gas_used, parent
 }
 ```
 
-After defining the model in R, we proceed by simulating the function across a range of gasused scenarios:
+在 R 中定义了模型后，我们继续在一系列 gas 使用场景中模拟该函数：
 
 ````R
-parent_gas_limit <- 30000  # Fixed for simplification
+parent_gas_limit <- 30000  # 固定以简化
 
-## lets see the effect on 100 to see the percentage effect this function has on fee
+## 让我们看看对 100 的影响，以了解该函数对费用百分比的影响
 parent_base_fee_per_gas <- 100
 
-## note gas used can not go below the minimum limit of 5k ,
-## therefore we can just count from 5k to 30k by ones for complete precision
+## 注意，gas使用量不能低于最小限制 5k，
+## 因此我们可以从 5k 到 30k 逐个单位地计算，以获得完全精确的结果
 
 seq_parent_gas_used <- seq(5000, parent_gas_limit, by = 1) # creates a vector / column
 
-## add the vector / column to the data frame
+## 将这个向量/列添加到数据框架中
 
 data <- expand.grid(parent_gas_used = seq_parent_gas_used)
 
-## apply the function we created above and collect it in a new column
+## 应用我们上面创建的函数，并将其收集到一个新列中
 
 data$expected_base_fee <- mapply(calculate_base_fee_per_gas, parent_gas_limit, data$parent_gas_used, parent_base_fee_per_gas)
 ````
 
-That's all for prep , now let's plot and observe by doing a scatter plot which will reveal any shape this function produces over a range; given the constraints.
+这些是准备工作，现在让我们通过散点图进行绘制和观察，这将揭示该函数在一定范围内产生的任何形状；考虑到约束条件。
 
 ```R
 fig <- plot_ly(data, x = ~parent_gas_used, y = ~expected_base_fee, type = 'scatter', mode = 'markers')  # scatter plot
 
-## %>% is a pipe operater from dplyr , used extensively in R codebases it's like the pipe | operator used in shell
+## %>% 是 dplyr 中的管道操作符，在 R 代码库中被广泛使用，类似于 shell 中使用的管道 | 操作符
 
 fig <- fig %>% layout(xaxis = list(title = "Parent Gas Used"),
                       yaxis = list(title = "Expected Base Fee "))
 
-## display the plot
+## 显示图表
 fig
 ```
 
-### Code B
+### 代码 B
 
 ````r
 
@@ -1049,17 +1048,17 @@ library(ggplot2)
 library(scales)
 library(viridis)
 
-## Initial parameters
+## 初始参数
 initial_gas_limit <- 30000000
 initial_base_fee <- 100
 num_blocks <- 100000
 
-## Sequence of blocks
+## 区块顺序
 blocks <- 1:num_blocks
 
 max_natural_number <- 2^256
 
-## Calculate gas limit for each block
+## 计算每个区块的 gas 限制
 gas_limits <- numeric(length = num_blocks)
 expected_base_fee <- numeric(length = num_blocks)
 gas_limits[1] <- initial_gas_limit
@@ -1067,24 +1066,24 @@ expected_base_fee[1] <- initial_base_fee
 
 for (i in 2:num_blocks) {
 
-   # apply max change to gas_limit at each block
+   # 将最大更改应用到每个区块的 gas_limit
     gas_limits[i] <- gas_limits[i-1] + gas_limits[i-1] %/% 1024
 
 
-  # Check if the previous expected_base_fee has already reached the threshold
+  # 检查先前的 expected_base_fee 是否已经达到阈值
   if (expected_base_fee[i-1] >= max_natural_number) {
-    # Once max_natural_number is reached or exceeded, stop increasing expected_base_fee
+    # 一旦达到或超过 max_natural_number，则停止增加 expected_base_fee
     expected_base_fee[i] <- expected_base_fee[i-1]
   } else {
-    # Calculate expected_base_fee normally until the threshold is reached
+    # 正常计算 expected_base_fee 直到达到阈值
     expected_base_fee[i] <- calculate_base_fee_per_gas(gas_limits[i-1], gas_limits[i], expected_base_fee[i-1])
   }
 }
 
-## Create data frame for plotting
+## 创建用于绘图的数据框架
 data <- data.frame(Block = blocks, GasLimit = gas_limits, BaseFee = expected_base_fee)
 
-## Saner labels
+## 合理化标签
 label_custom <- function(labels) {
   sapply(labels, function(label) {
     if (is.na(label)) {
@@ -1106,7 +1105,7 @@ label_custom <- function(labels) {
   })
 }
 
-## Bin the ranges we want to observe
+## 将我们想要的观察范围分箱
 data_ranges <- data %>%
   mutate(Range = case_when(
     Block <= 1000 ~ "1-1000",
@@ -1114,36 +1113,36 @@ data_ranges <- data %>%
     Block <= 100000 ~ "10001-100000"
   ))
 
-## Rearrange the bins to control where the plots are displayed
+## 重新排列数据箱以控制绘图的显示位置
 data_ranges$Range <- fct_relevel(data_ranges$Range, "1-1000", "1001-10000", "10001-100000")
 
-## Grammar of graphics we can just + the features we want in the plot
+## 图形语法，我们可以通过 + 来将我们想要的特性添加到图表中
 plot <- ggplot(data_ranges, aes(x = Block, y = GasLimit, color = BaseFee)) +
   geom_line() +
-  facet_wrap(~Range, scales = "free") +  # Using free to allow each facet to have its own x-axis scale
+  facet_wrap(~Range, scales = "free") +  # 使用 free 来让每个面都有自己的 x 轴刻度
   labs(title = "Gas Limit Over Different Block Ranges",
        x = "Block Number",
        y = "Gas Limit") +
-  scale_x_continuous(labels = label_custom) +  # Use custom label function for x-axis
-  scale_y_continuous(labels = label_custom) +  # Use custom label function for y-axis
+  scale_x_continuous(labels = label_custom) +  # 为 x 轴使用自定义标签函数
+  scale_y_continuous(labels = label_custom) +  # 为 y 轴使用自定义标签函数
   scale_color_gradientn(colors = viridis(8), trans = "log10",
                         breaks = c(1e3, 1e10, 1e20, 1e40, 1e60, 1e76),
                         labels = c("100", "10^10", "10^20", "10^40", "10^60", "10^76")) +
   theme_bw()
 
-## To view
+## 查看
 plot
 
-## Save to file
+## 保存到文件
 ggsave("plot_gas_limit.png", plot, width = 7, height = 5)
 
 ````
 
-### Code C
+### 代码 C
 
 ````r
-## we are observing the effects of this parameter
-## it's set at 8 but lets see its effect in the range of [2,4, .. ,8, .. ,12]
+## 我们正在观察该参数的影响
+## 它被设置为 8，但让我们看看它在 [2,4, .. ,8, .. ,12] 范围内的影响
 seq_max_change_denom <- seq(2, 12, by = 2)
 
 parent_gas_limit <- 3 * 10^6
@@ -1156,7 +1155,7 @@ data <- expand.grid( parent_gas_used = seq_parent_gas_used, base_fee_max_change_
 data$expected_base_fee <- mapply(calculate_base_fee_per_gas, parent_gas_limit, data$parent_gas_used, parent_base_fee_per_gas, data$  base_fee_max_change_denominator)
 $`
 
-That's all for data prep , now lets plot:
+这就是数据准备的全部内容，现在让我们开始绘制：
 
 ```r
 plot <- ggplot(data, aes(x = parent_gas_used, y = expected_base_fee, color = as.factor(base_fee_max_change_denominator))) +
@@ -1169,7 +1168,7 @@ plot <- ggplot(data, aes(x = parent_gas_used, y = expected_base_fee, color = as.
 plot
 ```
 
-### Code D
+### 代码 D
 
 ````r
 seq_elasticity_multiplier <- seq(1, 6, by = 1)
@@ -1186,7 +1185,7 @@ data```expected_base_fee <- mapply(calculate_base_fee_per_gas, parent_gas_limit,
 
 plot <- ggplot(data, aes(x = parent_gas_used, y = expected_base_fee, color = as.factor(base_fee_max_change_denominator))) +
     geom_point() +
-    facet_wrap(~elasticity_multiplier) +  #  we break the plots out by the this facet
+    facet_wrap(~elasticity_multiplier) +  #  我们通过这个分面来拆分图表
     scale_color_brewer(palette = "Spectral") +
     theme_minimal() +
     labs(color = "Base Fee Max Change Denominator") +
@@ -1196,13 +1195,13 @@ ggsave("rho-xi.png", plot, width = 14, height = 10)
 
 $`
 
-### Code E
+### 代码 E
 
 ````r
 library(ggplot2)
 library(tidyr)
 
-## fake exponential or taylor series expansion function
+## 伪指数或泰勒级数展开函数
 fake_exponential <- function(factor, numerator, denominator) {
     i <- 1
     output <- 0
@@ -1215,13 +1214,13 @@ fake_exponential <- function(factor, numerator, denominator) {
     output %/% denominator
 }
 
-## Blob Gas Target
+## Blob Gas 目标
 target_blob_gas_per_block <- 393216
 
-## Blob Gas Max Limit
+## Blob Gas 最大限制
 max_blob_gas_per_block <- 786432
 
- # Used in header Verificaton
+ # 用于头部验证
  calc_excess_blob_gas <- function(parent_excess_blob_gas, parent_gas_used) {
    if (parent_gas_used  + parent_excess_blob_gas < target_blob_gas_per_block) {
      return(0)
@@ -1230,18 +1229,18 @@ max_blob_gas_per_block <- 786432
    }
  }
 
-## This is how EL determines the Blob Gas Price
+## 这就是 EL 确定 Blob Gas Price 的方式
 cancun_blob_gas_price <- function(excess_blob_gas) {
   fake_exponential(1, excess_blob_gas, 3338477)
 }
 
-## we got from zero to Max each step increasing by 1000
+## 我们以 1000 为单位，从 0 逐步增加到最大值
 parent_gas_used <- seq(0, max_blob_gas_per_block, by = 1000)
-## A column of the same Length
+## 相同长度的列
 excess_blob_gas <- numeric(length = length(parent_gas_used))
 excess_blob_gas[1] <- 0
 
-## We get the T+1(time + 1) excess gas by using values from before
+## 我们通过使用之前的值得到 T+1（时间 + 1）的超额 gas。
 for (i in 2:length(parent_gas_used)) {
   excess_blob_gas[i] <- calc_excess_blob_gas(excess_blob_gas[i - 1],
                                              parent_gas_used[i - 1])
@@ -1250,14 +1249,14 @@ for (i in 2:length(parent_gas_used)) {
 data_blob_price <- expand.grid(parent_gas_used = parent_gas_used)
 data_blob_price```excess_blob_gas <- excess_blob_gas
 
-## Apply the EL gas price function
+## 应用 EL gas 价格函数
 data_blob_price$  blob_gas_price <- mapply(cancun_blob_gas_price,
                                          data_blob_price$excess_blob_gas)
 
-## Each row represents a block
+## 每一行表示一个区块
 data_blob_price$BlockNumber <- seq_along(data_blob_price$parent_gas_used)
 
-## we collapse the 3 columns into 1 Parameter Column
+## 我们将 3 列折叠为 1 个参数列
 data_long <- pivot_longer(data_blob_price,
                           cols = c(parent_gas_used,
                                    excess_blob_gas,
@@ -1267,7 +1266,7 @@ data_long <- pivot_longer(data_blob_price,
 
 ggplot(data_long, aes(x = BlockNumber, y = Value)) +
   geom_line() +
-  facet_wrap(~ Parameter, scales = "free_y") +   # We break the charts out based on the Parameter Column
+  facet_wrap(~ Parameter, scales = "free_y") +   # 我们根据参数列分解图表
   theme_minimal() +
   scale_y_continuous(labels = scales::label_number()) +
   labs(title = "Dynamic Trends in Blob Gas Consumption & Price Over Time",
@@ -1280,7 +1279,7 @@ ggplot(data_long, aes(x = BlockNumber, y = Value)) +
 
 ````
 
-### Code F
+### 代码 F
 
 ````r
 normalize <- function(x) {
@@ -1299,9 +1298,9 @@ ggplot(data_blob_price, aes(x = BlockNumber)) +
   labs(title = "Normalized Trends Over Blocks", x = "Block Number", y = "Normalized Value", color = "Parameter")
 ````
 
-### Code for formatting document
+### 格式化文档的代码
 
-Formatting are messing up the latex code in this document the below script formats katex documents correctly.
+格式化将破坏此文档中的 LaTeX 代码，下面的脚本可以正确格式化 katex 文档。
 
 ````bash
 #!/bin/bash
@@ -1317,8 +1316,8 @@ sed -i -E 's/(\$+)\s*([^$]+?)\s*(\$+)/\1\2\3/g' $1
 
 [¹]: https://archive.devcon.org/archive/watch/6/eels-the-future-of-execution-layer-specifications/?tab=YouTube
 
-> [!NOTE]
-> All the topics in this PR are open for collaboration on a separate branch
+> [!注意]
+> 此 PR 中的所有主题都可以在单独的分支上进行协作
 
 $$
 
