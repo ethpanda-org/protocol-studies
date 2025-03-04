@@ -1,20 +1,20 @@
-# Recursive-Length Prefix (RLP) Serialization
+# 递归长度前缀（RLP）序列化
 
-Recursive Length Prefix (RLP) is a core serialization protocol used within the execution layer for encoding and parsing data. It is designed to serialize data and produce a structure readable by all client software. It is used for everything from transaction data to the entire state of the blockchain. This wiki page explores the internals of RLP, its encoding/decoding rules, tools available and its role in Ethereum's functionality.
+递归长度前缀(RLP)是以太坊执行层中用于编码和解析数据的核心序列化协议。它旨在序列化数据并生成所有客户端软件都可读的结构。它用于从交易数据到区块链的整个状态的所有内容。本维基页面探讨了 RLP 的内部原理、其编码/解码规则、可用工具以及它在以太坊功能中的作用。
 
-## Data Serialization in Ethereum
+## 以太坊中的数据序列化
 
-Data serialization is the process of converting data structures or objects into a byte stream for storage, transmission, or later reconstruction. In distributed systems like Ethereum, serialization is crucial for transmitting data across network nodes reliably and efficiently. Clients written in different languages need to be able to process data the same way. Data communicated to other nodes or exported by the client need to have a standard format. While there are common serialization formats like JSON, XML or Protobuf, Ethereum uses its own protocols for its simplicity and effectiveness in encoding nested arrays of bytes.
+数据序列化是将数据结构或对象转换为字节流以进行存储、传输或后续重建的过程。在以太坊这样的分布式系统中,序列化对于在网络节点之间可靠且高效地传输数据至关重要。用不同语言编写的客户端需要能够以相同的方式处理数据。传输给其他节点或由客户端导出的数据需要有标准格式。虽然有像 JSON、XML 或 Protobuf 这样常见的序列化格式，但以太坊使用其自己的协议，因为它在编码嵌套字节数组方面简单且有效。
 
-> Ethereum actually utilizes 2 formats: RLP and Simple Serialize (SSZ) which is more modern standard used by consensus layer.
+> 以太坊实际上使用两种格式:RLP 和简单序列化(SSZ),后者是共识层使用的更现代的标准。
 
-## How RLP Algorithm works
+## RLP 算法的工作原理
 
-**RLP encoding algorithm**
+**RLP 编码算法**
 
-Here is a flow chart describing how RLP encoding algorithm works.
+以下是 RLP 编码算法的流程图。
 
-_Note that in some RLP tools, some clients may add additional conditional cases to the flow. These additional cases are not part of the standard specification but they are useful for the clients for the correct data serialization, e.g. geth client node communicating with a Nethermind client node._
+_注意:在某些 RLP 工具中,一些客户端可能会添加额外的条件情况到流程中。这些额外的条件情况不是标准规范的一部分,但它们对于客户端正确序列化数据非常有用,例如 geth 客户端节点与 Nethermind 客户端节点通信时。_
 
 ```mermaid
 flowchart TD
@@ -41,7 +41,7 @@ _Figure: RLP Encoding Flow_
 
 **RLP decoding algorithm**
 
-Here is a flow chart describing how RLP decoding algorithm works.
+以下流程图描述了 RLP 解码算法的工作原理。
 
 ```mermaid
 flowchart TD
@@ -72,104 +72,112 @@ flowchart TD
 
 _Figure: RLP Decoding Flow_
 
+## RLP 编码规则
 
-## RLP Encoding Rules
+理解 RLP 编码的推导需要掌握基于数据类型和大小应用的具体规则。让我们通过示例来探索这些规则,展示不同类型数据是如何编码的。
 
-Understanding how RLP encoding is derived requires a grasp of the specific rules applied based on the type and size of the data. Let's explore these rules using an example to demonstrate how different types of data are encoded.
+如果你不熟悉字符串转十六进制的过程,可以参考这个 [ASCII 对照表](https://www.asciitable.com/)。
 
-If you are not familiar with converting the strings to hex, you may refer to this [ASCII chart](https://www.asciitable.com/). 
+### RLP 编码规则的详细说明和示例
 
-### Detailed Explanation of RLP Encoding Rules with Example
+递归长度前缀(RLP)是以太坊中用于将结构化数据编码为字节序列的基础数据序列化技术。理解 RLP 编码的推导需要掌握基于数据类型和大小应用的具体规则。让我们逐步通过示例来探索这些规则,展示不同类型数据是如何编码的。
 
-Recursive Length Prefix (RLP) is a fundamental data serialization technique used in Ethereum to encode structured data into a sequence of bytes. Understanding how RLP encoding is derived requires a grasp of the specific rules applied based on the type and size of the data. Let's explore these rules step-by-step using an example to demonstrate how different types of data are encoded.
+**单字节编码**
 
-**Single Byte Encoding**
-  - **Condition**: If the input is a single byte and its value is between `0x00` and `0x7F` (inclusive).
-  - **Encoding**: The byte is encoded directly, unchanged.
-  - **Example**: Encoding the byte `0x2a` directly yields `0x2a`.
+- **条件**: 如果输入是单个字节且其值在 `0x00` 和 `0x7F` 之间(包含边界)。
+- **编码**: 该字节直接编码,保持不变。
+- **示例**: 编码字节 `0x2a` 直接得到 `0x2a`。
 
-**Short String Encoding (1-55 bytes)**
-  - **Condition**: If the string (or byte array) length is between 1 and 55 bytes.
-  - **Encoding**: The output is the length of the string plus `0x80`, followed by the string itself.
-  - **Example**: Encoding the string "dog" (`0x64, 0x6f, 0x67`) results in `0x83, 0x64, 0x6f, 0x67`. Here, `0x83` is `0x80 + 3` (the length of "dog").
+**短字符串编码(1-55 字节)**
 
-**Long String Encoding (over 55 bytes)**
-  - **Condition**: If the string length exceeds 55 bytes.
-  - **Encoding**: The length of the string is encoded as a byte array in big-endian format, prefixed by `0xb7` plus the length of this length array.
-  - **Example**: For a string of length 56, the length `0x38` is encoded, preceded by `0xb8` (`0xb7 + 1`). The resulting encoding starts with `0xb8, 0x38`, followed by the string's bytes.
+- **条件**: 如果字符串(或字节数组)长度在 1 到 55 字节之间。
+- **编码**: 输出为字符串长度加上 `0x80`,后跟字符串本身。
+- **示例**: 编码字符串 "dog" (`0x64, 0x6f, 0x67`) 得到 `0x83, 0x64, 0x6f, 0x67`。这里 `0x83` 是 `0x80 + 3` ("dog" 的长度)。
 
-**Short List Encoding (total payload 1-55 bytes)**
-  - **Condition**: If the total encoded payload of the list's items is between 1 and 55 bytes.
-  - **Encoding**: The list is prefixed with `0xc0` plus the total length of the encoded items.
-  - **Example**: For a list `["cat", "dog"]`, each item is first encoded to `0x83, 0x63, 0x61, 0x74` and `0x83, 0x64, 0x6f, 0x67`. The total length is 8, so the prefix is `0xc8` (`0xc0` + 8 = `0xc8`). The entire encoding is `0xc8, 0x83, 0x63, 0x61, 0x74, 0x83, 0x64, 0x6f, 0x67`.
+**长字符串编码(超过 55 字节)**
 
-**Long List Encoding (total payload over 55 bytes)**
-  - **Condition**: If the total encoded payload of the list's items exceeds 55 bytes.
-  - **Encoding**: Similar to long strings, the length of the payload is encoded in big-endian format, prefixed by `0xf7` plus the length of this length array.
-  - **Example**: For a list `["apple", "bread", ...]` exceeding 55 bytes, suppose the payload length is 57. The length `0x39` is encoded, preceded by `0xf8` (`0xf7 + 1`), followed by the encoded list items.
+- **条件**: 如果字符串长度超过 55 字节。
+- **编码**: 字符串的长度被编码为大端格式的字节数组,前缀为 `0xb7` 加上这个长度数组的长度。
+- **示例**: 对于长度为 56 的字符串,长度 `0x38` 被编码,前面加上 `0xb8` (`0xb7 + 1`)。最终编码以 `0xb8, 0x38` 开始,后跟字符串的字节。
 
-**Null, Empty String, Empty List and False**
-  - Rule for Empty string, Null and False: Encoded as a single byte `0x80`.
-  - Rule for Empty List: Encoded as `0xc0`.
-  - Examples:
-    - Encoding an empty string or a null value or false, (` `, `null`, `false`), result in `0x80`.
-    - Encoding an empty list, `[]`, results in `0xc0`.
+**短列表编码(总负载 1-55 字节)**
 
-## RLP Decoding Rules 
+- **条件**: 如果列表项的总编码负载在 1 到 55 字节之间。
+- **编码**: 列表前缀为 `0xc0` 加上编码项的总长度。
+- **示例**: 对于列表 `["cat", "dog"]`,每个项先编码为 `0x83, 0x63, 0x61, 0x74` 和 `0x83, 0x64, 0x6f, 0x67`。总长度为 8,所以前缀是 `0xc8` (`0xc0 + 8 = 0xc8`)。完整编码为 `0xc8, 0x83, 0x63, 0x61, 0x74, 0x83, 0x64, 0x6f, 0x67`。
 
-The RLP decoding process is based on the structure and specifics of the encoded data:
+**长列表编码(总负载超过 55 字节)**
 
-**Determine Data Type**:
-  - The first byte (prefix) of the encoded data determines the type and length of the data that follows. This byte is critical in guiding the decoding process.
-**Decoding Single Bytes**:
-  - If the prefix byte is in the range `0x00` to `0x7F`, the byte itself represents the decoded data. This case is straightforward as the byte is encoded directly.
-**Decoding Strings and Lists**:
-  - The complexity in decoding arises with strings and lists, which have varying lengths and may contain nested structures.
-**Short Strings (0x80 to 0xB7)**:
-  - If the prefix byte is between `0x80` and `0xB7`, it indicates a string whose length can be directly determined by subtracting `0x80` from the prefix. The following bytes equal the length are the string.
-**Long Strings (0xB8 to 0xBF)**:
-  - For longer strings, if the prefix byte is between `0xB8` and `0xBF`, the number of length bytes is determined by subtracting `0xB7` from the prefix. The subsequent bytes represent the length of the string, and the bytes following represent the string itself.
-**Short Lists (0xC0 to 0xF7)**:
-  - Similar to short strings, a prefix between `0xC0` and `0xF7` indicates a list. The length of the list's encoded data can be determined by subtracting `0xC0` from the prefix. The bytes that follow must then be decoded recursively as individual RLP encoded items.
-**Long Lists (0xF8 to 0xFF)**:
-  - For longer lists, a prefix between `0xF8` and `0xFF` indicates that the next few bytes (determined by subtracting `0xF7` from the prefix) will tell the length of the list's encoded data. The data following these length bytes is then recursively decoded into RLP items.
+- **条件**: 如果列表项的总编码负载超过 55 字节。
+- **编码**: 类似于长字符串,负载的长度以大端格式编码,前缀为 `0xf7` 加上这个长度数组的长度。
+- **示例**: 对于超过 55 字节的列表 `["apple", "bread", ...]`,假设负载长度为 57。长度 `0x39` 被编码,前面加上 `0xf8` (`0xf7 + 1`),后跟编码的列表项。
 
-**Examples of RLP Decoding of `[0xc8, 0x83, 0x63, 0x61, 0x74, 0x83, 0x64, 0x6f, 0x67]`**
+**空值、空字符串、空列表和 false**
 
-- **Identify the Prefix**
-  - The sequence starts with the byte `0xc8`. In RLP, a list's length prefix starts at `0xc0`. The difference between `0xc8` and `0xc0` gives us the length of the list content.
+- 空字符串、空值和 false 的规则: 编码为单个字节 `0x80`。
+- 空列表的规则: 编码为 `0xc0`。
+- 示例:
+  - 编码空字符串、空值或 false (` `, `null`, `false`) 得到 `0x80`。
+  - 编码空列表 `[]` 得到 `0xc0`。
+
+## RLP 解码规则
+
+RLP 解码过程基于编码数据的结构和具体特征:
+
+**确定数据类型**:
+
+- 编码数据的第一个字节(前缀)决定了后续数据的类型和长度。这个字节对指导解码过程至关重要。
+  **解码单字节**:
+- 如果前缀字节在 `0x00` 到 `0x7F` 范围内,该字节本身就代表解码后的数据。这种情况很简单,因为字节是直接编码的。
+  **解码字符串和列表**:
+- 解码的复杂性主要来自于字符串和列表,它们具有不同的长度并可能包含嵌套结构。
+  **短字符串(0x80 到 0xB7)**:
+- 如果前缀字节在 `0x80` 和 `0xB7` 之间,表示这是一个字符串,其长度可以通过从前缀中减去 `0x80` 直接得到。后续等于该长度的字节就是字符串内容。
+  **长字符串(0xB8 到 0xBF)**:
+- 对于较长的字符串,如果前缀字节在 `0xB8` 和 `0xBF` 之间,长度字节的数量可以通过从前缀中减去 `0xB7` 得到。随后的字节表示字符串的长度,之后的字节则是字符串本身。
+  **短列表(0xC0 到 0xF7)**:
+- 类似于短字符串,前缀在 `0xC0` 和 `0xF7` 之间表示这是一个列表。列表编码数据的长度可以通过从前缀中减去 `0xC0` 得到。随后的字节必须递归解码为单独的 RLP 编码项。
+  **长列表(0xF8 到 0xFF)**:
+- 对于较长的列表,前缀在 `0xF8` 和 `0xFF` 之间表示接下来的几个字节(通过从前缀中减去 `0xF7` 确定)将告诉我们列表编码数据的长度。这些长度字节之后的数据然后被递归解码成 RLP 项。
+
+**RLP 解码示例 `[0xc8, 0x83, 0x63, 0x61, 0x74, 0x83, 0x64, 0x6f, 0x67]`**
+
+- **识别前缀**
+  - 序列以字节 `0xc8` 开始。在 RLP 中,列表的长度前缀从 `0xc0` 开始。`0xc8` 和 `0xc0` 的差值给出了列表内容的长度。
     - `0xc8 - 0xc0 = 8`
-  - This tells us that the next 8 bytes are part of the list.
-- **Decode the List Content**
-  - The list content in this example is `[0x83, 0x63, 0x61, 0x74, 0x83, 0x64, 0x6f, 0x67]`.
-  - We will decode this content byte by byte to extract the individual items.
-- **Decode the First Item**
-  - The first byte of the list content is `0x83`. In RLP, for strings where the length is between 1 and 55 bytes, the length prefix starts at `0x80`. Thus:
+  - 这告诉我们接下来的 8 个字节是列表的一部分。
+- **解码列表内容**
+  - 本例中的列表内容是 `[0x83, 0x63, 0x61, 0x74, 0x83, 0x64, 0x6f, 0x67]`。
+  - 我们将逐字节解码这些内容以提取各个项。
+- **解码第一项**
+  - 列表内容的第一个字节是 `0x83`。在 RLP 中,对于长度在 1 到 55 字节之间的字符串,长度前缀从 `0x80` 开始。因此:
     - `0x83 - 0x80 = 3`
-  - This tells us that the first string has a length of `3` bytes.
-  - The next three bytes are `0x63, 0x61, 0x74`, which correspond to the ASCII values for "cat".
-  - We have now decoded the first item: "cat".
-- **Decode the Second Item**
-  - After decoding the first item, the next byte in the sequence is another `0x83`.
-  - Following the same rule as before:
+  - 这表明第一个字符串的长度为 `3` 字节。
+  - 接下来的三个字节是 `0x63, 0x61, 0x74`,对应 ASCII 值为 "cat"。
+  - 现在我们已经解码出第一项: "cat"。
+- **解码第二项**
+  - 解码第一项后,序列中的下一个字节是另一个 `0x83`。
+  - 按照相同的规则:
     - `0x83 - 0x80 = 3`
-  - This indicates the next string also has a length of 3 bytes.
-  - The following three bytes are `0x64, 0x6f, 0x67`, corresponding to "dog".
-  - We have now decoded the second item: "dog".
-- The decoded output is `["cat", "dog"]`.
+  - 这表明下一个字符串也有 3 个字节长。
+  - 接下来的三个字节是 `0x64, 0x6f, 0x67`,对应 "dog"。
+  - 现在我们已经解码出第二项: "dog"。
+- 解码后的输出是 `["cat", "dog"]`。
 
-## The Need for RLP in Ethereum
+## 以太坊为什么需要 RLP
 
-> RLP is intended to be a highly minimalistic serialization format; its sole purpose is to store nested arrays of bytes. Unlike protobuf, BSON and other existing solutions, RLP does not attempt to define any specific data types such as booleans, floats, doubles or even integers; instead, it simply exists to store structure, in the form of nested arrays, and leaves it up to the protocol to determine the meaning of the arrays.
-> -- Ethereum's design rationale
+> RLP 旨在成为一个高度简约的序列化格式;它的唯一目的是存储嵌套的字节数组。与 protobuf、BSON 和其他现有解决方案不同，RLP 不试图定义任何特定的数据类型，如布尔值、浮点数、双精度数或甚至整数;相反，它仅仅用于以嵌套数组的形式存储结构，并将数组的含义解释权留给协议。
+> -- 以太坊设计理念
 
-RLP was created with Ethereum and is tailored to meet its specific needs:
-- Minimalistic Design: It focuses purely on storing structure without imposing data type definitions.
-- Consistency: It guarantees byte-perfect consistency across different implementations, crucial for the deterministic nature required in blockchain operations.
+RLP 是为以太坊创建的，专门用于满足其特定需求:
 
-## RLP Tools
+- 极简设计：它纯粹专注于存储结构，而不强加数据类型定义。
+- 一致性：它保证了不同实现之间的字节级一致性，这对区块链操作所需的确定性特征至关重要。
 
-There are many libraries available for RLP implementations in Ethereum. Here are few tools:
+## RLP 工具
+
+以太坊中有许多可用的 RLP 实现库。以下是一些工具：
+
 - [Geth RLP](https://github.com/ethereum/go-ethereum/tree/master/rlp)
 - [RLP Dump](https://github.com/ethereum/go-ethereum/tree/master/cmd/rlpdump)
 - [RLP for Node.js and the browser.](https://github.com/ethereumjs/ethereumjs-monorepo/tree/master/packages/rlp)
@@ -178,12 +186,10 @@ There are many libraries available for RLP implementations in Ethereum. Here are
 - [Nethermind RLP Serialization](https://github.com/NethermindEth/nethermind/tree/master/src/Nethermind/Nethermind.Serialization.Rlp)
 
 ## Resources
+
 - [Ethereum Yellow Paper](https://ethereum.github.io/yellowpaper/paper.pdf)
 - [Ethereum RLP documentation](https://ethereum.org/vi/developers/docs/data-structures-and-encoding/rlp/)
 - [A Comprehensive Guide to RLP Encoding in Ethereum by Mark Odayan](https://medium.com/@markodayansa/a-comprehensive-guide-to-rlp-encoding-in-ethereum-6bd75c126de0)
 - [Ethereum's RLP serialization in Elixir](https://www.badykov.com/elixir/rlp/)
 - [Ethereum Under The Hood Part 3 (RLP Decoding)](https://medium.com/coinmonks/ethereum-under-the-hood-part-3-rlp-decoding-df236dc13e58)
 - [Ethereum's Recursive Length Prefix in ACL2](https://arxiv.org/abs/2009.13769)
-
-
-
