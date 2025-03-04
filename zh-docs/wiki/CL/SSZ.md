@@ -1,16 +1,14 @@
 # Simple Serialize (SSZ)
 
-## Overview
+## 概述
 
+Simple Serialize (SSZ) 是一种为以太坊的 Beacon Chain 设计的序列化和[Merkle 化](/wiki/CL/merkleization.md)方案。SSZ 替代了执行层（EL）中使用的[ RLP 序列化](/wiki/EL/RLP.md)，在共识层（CL）中得到广泛应用，除了[对等发现协议](https://github.com/ethereum/devp2p)。它的开发和采用旨在提高以太坊共识层的效率、安全性和可扩展性。
 
-Simple Serialize (SSZ) is a serialization and [Merkleization](/wiki/CL/merkleization.md) scheme designed specifically for Ethereum's Beacon Chain. SSZ replaces the [RLP serialization](/wiki/EL/RLP.md) used on the execution layer (EL) everywhere across the consensus layer (CL) except the [peer discovery protocol](https://github.com/ethereum/devp2p). Its development and adoption are aimed at enhancing the efficiency, security, and scalability of Ethereum's CL.
+本文讨论了 SSZ 序列化的内容。您可以在[merkle化维基页面](/wiki/CL/merkleization.md)了解更多关于 SSZ merkle 化的信息。
 
-This document is about SSZ Serialization. You can learn more about SSZ merkleization at the [merkleization wiki page](/wiki/CL/merkleization.md).
+## SSZ 工具
 
-
-## SSZ Tools
-
-There are many tools available for SSZ. Here is a [full list](https://github.com/ethereum/consensus-specs/issues/2138) of SSZ tools. Below are some of the popular ones:
+有许多工具可供使用 SSZ。以下是 [SSZ 工具的完整列表](https://github.com/ethereum/consensus-specs/issues/2138)。以下是一些流行的工具：
 
 - [py-ssz](https://github.com/ethereum/py-ssz)
 - [dafny](https://github.com/ConsenSys/eth2.0-dafny)
@@ -18,134 +16,72 @@ There are many tools available for SSZ. Here is a [full list](https://github.com
 - [fastssz](https://github.com/ferranbt/fastssz/)
 - [rust-ssz](https://github.com/ralexstokes/ssz-rs)
 
-## SSZ VS RLP Serialization
+## SSZ 与 RLP 序列化比较
 
-| CRITERIA   | COMPACT | EXPRESSIVENESS | HASHING  | INDEXING |
-|------------|---------|----------------|----------|----------|
-| RLP        | Yes     | Flexible       | Possible | No       |
-| SSZ        | No      | Yes            | Yes      | Poor     |
+| 标准       | 紧凑性 | 表达性       | 哈希化  | 索引      |
+|------------|---------|--------------|----------|-----------|
+| RLP        | 是      | 灵活         | 可能     | 否        |
+| SSZ        | 否      | 是           | 是       | 较差      |
 
-_Table: SSZ VS RLP Comparison by [Piper Merriam](https://twitter.com/pipermerriam)._
+_表：SSZ 与 RLP 的比较，[Piper Merriam](https://twitter.com/pipermerriam)。_
 
-**Expressiveness**:
-- **SSZ**: Supports all necessary data types directly without the need for additional abstraction layers. This makes SSZ inherently more straightforward and robust for handling complex data structures used in Ethereum PoS.
-- **RLP**: Limited to dynamic length byte strings and lists. Additional data types are only supported through abstraction layers, which can introduce complexity and potential inefficiencies.
+**表达性**：
+- **SSZ**：直接支持所有必要的数据类型，无需额外的抽象层。这使得 SSZ 在处理以太坊 PoS 中使用的复杂数据结构时，更加直观且健壮。
+- **RLP**：仅限于动态长度的字节串和列表。其他数据类型仅能通过抽象层支持，这可能会引入复杂性和潜在的低效。
 
-**Hashing**:
-- **SSZ**: Facilitates efficient hashing and re-hashing of objects, particularly beneficial for operations that require frequent updates to data states, such as those in sharding and stateless clients. This efficiency is crucial for maintaining blockchain integrity and performance.
-- **RLP**: While hashing is possible, it does not offer the same performance optimizations, especially when data structures undergo minor modifications.
+**哈希化**：
+- **SSZ**：促进高效的哈希和再哈希操作，特别有利于需要频繁更新数据状态的操作，如分片和无状态客户端。这种效率对于维护区块链的完整性和性能至关重要。
+- **RLP**：虽然支持哈希操作，但在数据结构发生微小变化时，性能优化不如 SSZ。
 
-**Indexing**:
-- **SSZ**: Although indexing is described as 'poor', SSZ supports some level of direct access to serialized data without full deserialization, which is beneficial for certain operations within the blockchain.
-- **RLP**: Does not support efficient indexing, potentially leading to `O(N)` complexity when accessing internal data, which can be a significant drawback for performance on large-scale networks.
+**索引**：
+- **SSZ**：尽管索引表现为“较差”，但 SSZ 支持在无需完全反序列化的情况下对序列化数据进行某种程度的直接访问，这对于区块
 
-**Data Type Compatibility**:
-- **SSZ**: Designed to be fully compatible with the data types and structures used within the Ethereum protocol, enhancing its utility for consensus mechanisms and network operations.
-- **RLP**: While flexible, the need for additional layers to support various data types can lead to inefficiencies and increased complexity in implementation.
+**示例：**
+- 整数 `1025` 作为 `uint16` 序列化后将变为 `01 04`（十六进制）。首先，将 `1025` 转换为十六进制得到 `0x0401`。在小端格式中，最低有效字节（LSB）排在最前面。因此，`0x0401` 在小端格式下是 `01 04`。字节数组 `[01, 04]` 即为序列化输出。
 
-**Deterministic Serialization**:
-- **SSZ**: Provides deterministic serialization results, ensuring that the same data structure serializes to the exact same byte sequence every time, which is crucial for consensus reliability.
-- **RLP**: RLP also provides deterministic serialization results.
+**无符号整数的反序列化过程：**
 
+- **输入**：读取表示已序列化 `uintN` 的字节数组。
+- **读取小端字节**：按小端顺序解释字节，以重构整数值。
+- **输出**：将字节数组转换回整数。
 
-For these reasons, there is a strong effort in Ethereum to completely migrate to SSZ serialization for everything and stop the usage of RLP serialization.
+**示例：**
+- 字节数组 `01 04`（十六进制）反序列化为整数 `1025`。读取第一个字节 `01` 作为整数的低位部分，`04` 作为高位部分。按大端格式重新组装后，得到 `0401`（十六进制），其对应的十进制值为 1025。
 
+### 布尔值
 
-## How SSZ Works - Basic Types
+在 SSZ 中，布尔值非常简单，每个布尔值由一个字节表示。
 
-Here’s how SSZ handles the serialization and deserialization of the basic types:
+**布尔值的序列化过程：**
 
-```mermaid
-flowchart TD
-    A[Start Serialization] --> B[Choose Data Type]
-    B --> C[Unsigned Integer]
-    B --> D[Boolean]
-    
-    C --> E[Convert Integer to \nLittle-Endian Byte Array]
-    E --> F[Serialized Output for Integer]
-    
-    D --> G["Convert Boolean to Byte \n(True to 0x01, False to 0x00)"]
-    G --> H[Serialized Output for Boolean]
-    
-```
+- **输入**：获取布尔值（`True` 或 `False`）。
+- **转换为字节**：
+   - 如果布尔值为 `True`，则序列化为 `01`（十六进制）。
+   - 如果布尔值为 `False`，则序列化为 `00`。
+- **输出**：结果的单字节即为布尔值的序列化形式。
 
-_Figure: Serialization Process for Basic Types._
+**示例：**
+- `True` 序列化为 `01`。
+- `False` 序列化为 `00`。
 
+**布尔值的反序列化过程：**
 
-```mermaid
-flowchart TD
-    A[Start Deserialization] --> B[Determine Data Type]
-    B --> C[Unsigned Integer]
-    B --> D[Boolean]
-    
-    C --> E[Read Little-Endian Byte Array]
-    E --> F[Reconstruct Original Integer Value]
-    F --> G[Deserialized Integer Output]
-    
-    D --> H[Read Byte]
-    H --> I["Translate Byte to Boolean \n(0x01 to True, 0x00 to False)"]
-    I --> J[Deserialized Boolean Output]
-    
-```
+- **输入**：读取单字节。
+- **解释字节**：
+   - 字节 `01` 表示 `True`。
+   - 字节 `00` 表示 `False`。
+- **输出**：对应字节的布尔值。
 
-_Figure: Deserialization Process for Basic Types._
+**示例：**
+- 字节 `01` 反序列化为 `True`。
+- 字节 `00` 反序列化为 `False`。
 
-### Unsigned Integers
+我们可以按照 [说明](https://eth2book.info/capella/appendices/running/) 使用 Python Eth PoS 规范运行 SSZ 序列化和反序列化命令，验证以上字节数组。
 
-Unsigned integers (`uintN`) in SSZ are denoted where `N` can be any of 8, 16, 32, 64, 128, or 256 bits. These integers are serialized directly to their little-endian byte representation, which is a form well-suited for most modern computer architectures and facilitates easier manipulation at the byte level.
-
-**Serialization Process for Unsigned Integers:**
-
-- **Input**: Take an unsigned integer of type `uintN`.
-- **Convert to Bytes**: Convert the integer into a byte array of length `N/8`. For instance, `uint16` represents 2 bytes.
-- **Apply Little-Endian Format**: Arrange the bytes in little-endian order, where the least significant byte is stored first.
-- **Output**: The resulting byte array is the serialized form of the integer.
-
-**Example:**
-- Integer `1025` as `uint16` would be serialized to `01 04` in hexadecimal. First, convert `1025` to hex which gives `0x0401`. In little-endian format, the least significant byte (LSB) comes first. So, `0x0401` in little-endian is `01 04`. The byte array `[01, 04]` is the serialized output.
-
-**Deserialization Process for Unsigned Integers:**
-
-- **Input**: Read the byte array representing a serialized `uintN`.
-- **Read Little-Endian Bytes**: Interpret the bytes in little-endian order to reconstruct the integer value.
-- **Output**: Convert the byte array back into the integer.
-
-**Example:**
-- Byte array `01 04` (in hex) is deserialized to the integer `1025`. Read the first byte `01` as the lower part and `04` as the higher part of the integer. It translates back to `0401` in hex when reassembled in big-endian format for human readability, which equals 1025 in decimal.
-
-### Booleans
-
-Booleans in SSZ are quite straightforward, with each boolean represented as a single byte.
-
-**Serialization Process for Booleans:**
-
-- **Input**: Take a boolean value (`True` or `False`).
-- **Convert to Byte**: 
-   - If the boolean is `True`, serialize it as `01` (in hex).
-   - If the boolean is `False`, serialize it as `00`.
-- **Output**: The resulting single byte is the serialized form of the boolean.
-
-**Example:**
-- `True` becomes `01`.
-- `False` becomes `00`.
-
-**Deserialization Process for Booleans:**
-
-- **Input**: Read a single byte.
-- **Interpret the Byte**: 
-   - A byte of `01` indicates `True`.
-   - A byte of `00` indicates `False`.
-- **Output**: The boolean value corresponding to the byte.
-
-**Example:**
-- Byte `01` is deserialized to `True`.
-- Byte `00` is deserialized to `False`.
-
-We can run SSZ serialization and deserialization commands using the python Eth PoS spec as per the [instructions](https://eth2book.info/capella/appendices/running/) and verify the above byte arrays.
 
 ```python
 >>> from eth2spec.utils.ssz.ssz_typing import uint64, boolean
-# Serializing 
+# 序列化
 >>> uint64(1025).encode_bytes().hex()
 '0104000000000000'
 >>> boolean(True).encode_bytes().hex()
@@ -153,7 +89,7 @@ We can run SSZ serialization and deserialization commands using the python Eth P
 >>> boolean(False).encode_bytes().hex()
 '00' 
 
-# Deserializing 
+# 反序列化
 >>> print(uint64.decode_bytes(bytes.fromhex('0104000000000000')))
 1025
 >>> print(boolean.decode_bytes(bytes.fromhex('01')))
@@ -162,13 +98,13 @@ We can run SSZ serialization and deserialization commands using the python Eth P
 0
 ```
 
-## How SSZ Works on Composite Types
+## SSZ 如何在复合类型上工作
 
-### Vectors
+### 向量
 
-Vectors in SSZ are used to handle fixed-length collections of homogeneous elements. Here’s a detailed breakdown of how SSZ handles the serialization and deserialization of vectors.
+在 SSZ 中，向量用于处理具有固定长度的同质元素集合。以下是 SSZ 如何处理向量的序列化和反序列化的详细说明。
 
-**SSZ Serialization for Vectors**
+**向量的 SSZ 序列化**
 
 ```mermaid
 flowchart TD
@@ -180,37 +116,36 @@ flowchart TD
     
 ```
 
-_Figure: SSZ Serialization for Vectors._
+_图：向量的 SSZ 序列化过程。_
+
+**固定长度定义**：
+- 向量使用特定的长度和元素类型进行定义，例如 `Vector[uint64, 4]` 表示一个包含四个 64 位无符号整数的向量。
+
+**元素序列化**：
+- 向量中的每个元素根据其类型独立序列化。
+- 对于基本类型，如整数或布尔值，这意味着将每个元素转换为字节表示。
+- 如果元素是复合类型，则根据其特定的序列化规则序列化每个元素。
+
+**连接**：
+- 每个元素的序列化输出按它们在向量中的顺序连接。
+- 由于向量的长度和每个元素的大小是已知且固定的，因此不需要额外的元数据（如长度前缀）在序列化输出中。
+
+**示例：**
+- 对于一个 `Vector[uint64, 3]` 向量，其元素为 `[256, 512, 768]`，每个元素 64 位或 8 字节长。序列化过程如下：
+
+**将每个整数转换为小端字节数组**：
+- `256` 作为 `uint64` 转换为 `00 01 00 00 00 00 00 00`。
+- `512` 作为 `uint64` 转换为 `00 02 00 00 00 00 00 00`。
+- `768` 作为 `uint64` 转换为 `00 03 00 00 00 00 00 00`。
+
+**连接这些字节数组**：
+- 结果的连接字节数组为 `00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00`。
+
+**序列化输出**：
+- `00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00`。
 
 
-**Fixed-Length Definition**: 
-- Vectors are defined with a specific length and type of elements they can hold, such as `Vector[uint64, 4]` for a vector containing four 64-bit unsigned integers.
-
-**Element Serialization**:
-- Each element in the vector is serialized independently according to its type. 
-- For basic types like integers or booleans, this means converting each element to its byte representation. 
-- If the elements are composite types, each element is serialized according to its specific serialization rules.
-
-**Concatenation**:
-- The serialized outputs of each element are concatenated in the order they appear in the vector. 
-- Since the length of the vector and the size of each element are known and fixed, no additional metadata (like length prefixes) is needed in the serialized output.
-
-**Example:**
-- For a `Vector[uint64, 3]` with the elements `[256, 512, 768]`, each element is 64 bits or 8 bytes long. The serialization would proceed as follows:
-
-**Convert Each Integer to Little-Endian Byte Array**:
-- `256` as `uint64` becomes `00 01 00 00 00 00 00 00`.
-- `512` as `uint64` becomes `00 02 00 00 00 00 00 00`.
-- `768` as `uint64` becomes `00 03 00 00 00 00 00 00`.
-
-**Concatenate These Byte Arrays**:
-- The resulting concatenated byte array will be `00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00`.
-
-**Serialized Output**:
-- `00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00`.
-
-
-**SSZ Deserialization for Vectors**
+**向量的 SSZ 反序列化**
 
 ```mermaid
 flowchart TD
@@ -222,38 +157,38 @@ flowchart TD
     
 ```
 
-_Figure: SSZ Deserialization for Vectors._
+_图：向量的 SSZ 反序列化过程。_
+
+**固定长度利用**：
+- 反序列化器使用预定义的向量长度和类型来解析序列化数据。
+- 它知道每个元素占多少字节，向量中有多少个元素。
+
+**元素反序列化**：
+- 字节流被分割为与每个元素大小对应的段。
+- 每个段根据向量中元素的类型独立反序列化。
+
+**重构**：
+- 将元素恢复为它们的原始形式（例如，将字节数组转换回整数或其他指定类型）。
+- 然后将这些元素聚合以重构原始向量。
+
+**示例：**
+- 给定一个 `Vector[uint64, 3]` 的序列化数据
+- 序列化字节数组：`00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00`。
+
+**将数据解析为段**：
+- 每个段由 8 个字节组成。
+- 第一个段：`00 01 00 00 00 00 00 00` → 表示整数 256。
+- 第二个段：`00 02 00 00 00 00 00 00` → 表示整数 512。
+- 第三个段：`00 03 00 00 00 00 00 00` → 表示整数 768。
+
+**将每个段从小端字节数组转换回整数**：
+- 使用小端格式，每个字节数组被读取并转换回相应的 `uint64` 整数。
+
+**重构**：
+- 重构后的向量是 `[256, 512, 768]`。
 
 
-**Fixed-Length Utilization**:
-- The deserializer uses the predefined length and type of the vector to parse the serialized data.
-- It knows exactly how many bytes each element takes and how many elements are in the vector.
-
-**Element Deserialization**:
-- The byte stream is split into segments corresponding to the size of each element.
-- Each segment is deserialized independently according to the type of elements in the vector.
-
-**Reconstruction**:
-- The elements are reconstructed into their original form (e.g., converting byte arrays back into integers or other specified types).
-- These elements are then aggregated to reform the original vector.
-
-**Example:**
-- Given the serialized data for a `Vector[uint64, 3]`
-- Serialized Byte Array: `00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00`.
-
-**Parse the Data into Segments**:
-- Each segment consists of 8 bytes.
-- First segment: `00 01 00 00 00 00 00 00` → Represents the integer 256.
-- Second segment: `00 02 00 00 00 00 00 00` → Represents the integer 512.
-- Third segment: `00 03 00 00 00 00 00 00` → Represents the integer 768.
-
-**Convert Each Segment from a Little-Endian Byte Array Back to an Integer**:
-- Using little-endian format, each byte array is read and converted back into the respective `uint64` integer.
-
-**Reconstruction**:
-- The reconstructed vector is `[256, 512, 768]`.
-
-We can run and verify it in python like below:
+以下是我们可以在 Python 中运行并验证的代码：
 
 ```python
 >>> from eth2spec.utils.ssz.ssz_typing import uint8, uint16, Vector
@@ -265,11 +200,12 @@ Vector[uint64, 3]<<len=3>>(256, 512, 768)
 
 ```
 
-### Lists
+### 列表
 
-Lists in SSZ are crucial for managing variable-length collections of homogeneous elements within a specified maximum length (`N`). This flexibility allows for dynamic management of the data structures such as transaction sets or variable state components, adapting to the changing needs of the network.
+SSZ 中的列表在管理具有指定最大长度（`N`）的同质元素的可变长度集合方面至关重要。这种灵活性使得数据结构（如交易集合或可变状态组件）能够动态管理，并适应网络需求的变化。
 
-**SSZ Serialization for Lists**
+**SSZ 列表序列化**
+
 
 ```mermaid
 flowchart TD
@@ -282,149 +218,82 @@ flowchart TD
     
 ```
 
-_Figure: SSZ Serialization for Lists._
+_Figure: SSZ 列表序列化_
 
-**Define the List**: 
-- Lists in SSZ are defined with a specific element type and a maximum length, noted as `List[type, N]`. This definition not only constrains the list's maximum capacity but also informs how elements should be serialized.
+**定义列表**:
+- SSZ 中的列表定义了特定的元素类型和最大长度，表示为 `List[type, N]`。此定义不仅约束了列表的最大容量，还说明了元素应如何进行序列化。
 
-**Element Serialization**:
-- Each element in the list is serialized based on its type. For `uint64` elements, the serialization process involves converting each integer into a byte array.
+**元素序列化**:
+- 列表中的每个元素根据其类型进行序列化。对于 `uint64` 元素，序列化过程涉及将每个整数转换为字节数组。
 
-**Concatenate Serialized Elements**:
-- The outputs of the serialized elements are concatenated sequentially. The total length of the serialized data varies depending on the number of elements present at the time of serialization.
+**串联序列化元素**:
+- 序列化元素的输出会按顺序连接在一起。序列化数据的总长度会根据序列化时存在的元素数量有所变化。
 
-**Include Length Metadata (Optional)**:
-- Depending on the implementation requirements, the length of the list might be explicitly included at the start of the serialized data to aid in parsing and validation during deserialization.
+**包含长度元数据（可选）**:
+- 根据实现需求，列表的长度可能会显式包含在序列化数据的开头，以便在反序列化过程中辅助解析和验证。
 
-**Example**: 
-- For a `List[uint64, 5]` containing the elements `[1024, 2048, 3072]`, the serialization process would involve:
-- Converting each integer to a byte array in little-endian format: `00 04 00 00 00 00 00 00`, `00 08 00 00 00 00 00 00`, `00 0C 00 00 00 00 00 00`.
-- Concatenating these arrays results in: `00 04 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 0C 00 00 00 00 00 00`.
+**示例**:
+- 对于一个包含 `[1024, 2048, 3072]` 元素的 `List[uint64, 5]`，序列化过程将包括：
+  - 将每个整数转换为小端格式的字节数组：`00 04 00 00 00 00 00 00`，`00 08 00 00 00 00 00 00`，`00 0C 00 00 00 00 00 00`。
+  - 将这些数组串联起来，得到：`00 04 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 0C 00 00 00 00 00 00`。
 
-**SSZ Deserialization for Lists**
+**SSZ 列表反序列化**
 
-```mermaid
-flowchart TD
-    A[Start Deserialization] --> B[Receive Serialized Byte Stream]
-    B --> C["Identify and Split Byte Stream Based \n on Element Size (8 bytes for uint64)"]
-    C --> D[Deserialize Each Byte Segment to uint64]
-    D --> E[Reassemble Elements into List]
-    E --> F[Output Deserialized List]
-    
-```
-
-_Figure: SSZ Deserialization for Lists._
-
-**Receive Serialized Data**: 
-- The serialized byte stream for the list is the input, containing sequences of byte arrays for each element.
-
-**Parse and Deserialize Each Element**:
-- Based on the element type, say `uint64`, parse the serialized stream into 8-byte segments.
-- Convert each byte array from little-endian format back into a `uint64`.
-
-**Reassemble the List**:
-- The deserialized elements are reassembled to recreate the original list.
-
-**Example**: 
-- Given the serialized data `00 04 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 0C 00 00 00 00 00 00` for a `List[uint64, 5]`
-- Split the data into segments of 8 bytes: `00 04 00 00 00 00 00 00`, `00 08 00 00 00 00 00 00`, `00 0C 00 00 00 00 00 00`.
-- Convert each segment from little-endian to integers: `1024`, `2048`, `3072`.
-- The reconstructed list is `[1024, 2048, 3072]`.
-
-We can run and verify the SSZ for the above example as below:
-
-```python
->>> from eth2spec.utils.ssz.ssz_typing import uint8, List, Vector
->>> List[uint64, 5](1024, 2048, 3072).encode_bytes().hex()
-'00040000000000000008000000000000000c000000000000'
->>> Vector[uint64, 3](1024, 2048, 3072).encode_bytes().hex()
-'00040000000000000008000000000000000c000000000000'
->>> print(List[uint64, 5].decode_bytes(bytes.fromhex('00040000000000000008000000000000000c000000000000')))
-List[uint64, 5]<<len=3>>(1024, 2048, 3072)
->>> 
-```
-
-Lists are variable sized objects in SSZ they are encoded differently from fixed sized vectors when contained within another object, so there is a small overhead. For example, below `Alice` and `Bob` objects have different encoding.
-
-```python
->>> from eth2spec.utils.ssz.ssz_typing import uint8, Vector, List, Container
->>> class Alice(Container):
-...     x: List[uint8, 3] # Variable sized
->>> class Bob(Container):
-...     x: Vector[uint8, 3] # Fixed sized
->>> Alice(x = [1, 2, 3]).encode_bytes().hex()
-'04000000010203'
->>> Bob(x = [1, 2, 3]).encode_bytes().hex()
-'010203'
->>> 
-```
-
-### Bitvectors
-
-Bitvectors in SSZ are used to manage fixed-length sequences of boolean values, typically represented as bits. This data structure is particularly efficient for compactly storing binary data or flags, which are common in Ethereum applications for indicating state conditions, permissions, or other binary settings.
-
-**SSZ Serialization for Bitvectors**
 
 ```mermaid
 flowchart TD
-    A[Start Serialization] --> B[Define Bitvector of Size N]
-    B --> C[Pack Bits into Bytes]
-    C --> D[Bits from LSB to\n MSB within each byte]
-    D --> E[Add Padding if N % 8 != 0]
-    E --> F[Output Serialized Byte Array]
+    A[开始反序列化] --> B[接收序列化字节流]
+    B --> C["根据元素大小（uint64 为 8 字节）\n识别并拆分字节流"]
+    C --> D[将每个字节段反序列化为 uint64]
+    D --> E[将元素重新组装成列表]
+    E --> F[输出反序列化后的列表]
     
-```
 
-_Figure: SSZ Serialization for Bitvectors._
-
-**Define the Bitvector**: 
-- A bitvector in SSZ is defined by its length `N`, which specifies the number of bits. For example, `Bitvector[256]` means a bitvector that contains 256 bits.
-
-**Convert Bits to Bytes**:
-- Each bit in the bitvector represents a boolean value, where `0` corresponds to `False` and `1` to `True`.
-- These bits are packed into bytes, with the least significant bit (LSB) first within each byte. This means the first bit in the bitvector corresponds to the LSB of the first byte.
-
-**Byte Array Formation**:
-- The bits are serialized into a byte array by packing 8 bits into each byte until all bits are accounted for.
-- If `N` is not a multiple of 8, the last byte will contain fewer than 8 bits of data, padded with zeros at the most significant bit positions.
-
-**Example**: For a `Bitvector[10]` with the pattern `1011010010`:
-- The first 8 bits (`10110100`) form the first byte.
-- The remaining 2 bits (`10`) are padded with six zeros to form the second byte: `10000000`.
-- The serialized output is `B4 80` in hexadecimal.
-
-**SSZ Deserialization for Bitvectors**
 
 ```mermaid
 flowchart TD
-    A[Start Deserialization] --> B[Receive Serialized Byte Array]
-    B --> C[Read Each Byte]
-    C --> D[Convert Bytes to Bits]
-    D --> E[Respect LSB to MSB \nOrder in Each Byte]
-    E --> F[Discard Padding if Present]
-    F --> G[Reconstruct Bitvector]
-    G --> H[Output Deserialized Bitvector]
+    A[开始反序列化] --> B[接收序列化字节流]
+    B --> C["根据元素大小（uint64 为 8 字节）\n识别并拆分字节流"]
+    C --> D[将每个字节段反序列化为 uint64]
+    D --> E[将元素重新组装成列表]
+    E --> F[输出反序列化后的列表]
+    
+
     
 ```
+_Figure: SSZ 位向量序列化_
 
-_Figure: SSZ Deserialization for Bitvectors._
+**定义位向量**: 
+- 在 SSZ 中，位向量由其长度 `N` 定义，指定了位的数量。例如，`Bitvector[256]` 表示一个包含 256 位的位向量。
 
-**Read Serialized Byte Array**: 
-- Start with a byte array that encodes the bitvector.
+**将位转换为字节**:
+- 位向量中的每个位代表一个布尔值，其中 `0` 对应 `False`，`1` 对应 `True`。
+- 这些位被打包到字节中，每个字节从最低有效位（LSB）开始排列。这意味着位向量中的第一个位对应于第一个字节的 LSB。
 
-**Extract Bits from Bytes**:
-- Convert each byte back into bits. Remember, the bits are stored LSB first within each byte.
-- If the bitvector's length `N` is not a multiple of 8, discard the extraneous padding bits in the final byte.
+**字节数组的形成**:
+- 位被序列化为字节数组，通过将 8 位打包到每个字节中，直到所有位都被处理完。
+- 如果 `N` 不是 8 的倍数，最后一个字节将包含少于 8 位的数据，并在最高有效位位置填充零。
 
-**Reconstruct the Bitvector**:
-- Reassemble the extracted bits into the original bitvector format, adhering to the specified length `N`.
+**示例**: 对于一个位向量 `Bitvector[10]`，其模式为 `1011010010`：
+- 前 8 位（`10110100`）形成第一个字节。
+- 剩余的 2_Figure: SSZ 位向量反序列化_
 
-**Example**: Given the serialized data `B4 80` for a `Bitvector[10]`:
-- Convert `B4` (`10110100` in binary) and `80` (`10000000` in binary) back into bits.
-- Extract the first 10 bits from the binary sequence: `1011010010`.
-- The reconstructed bitvector is `1011010010`.
+**读取序列化字节数组**: 
+- 从一个字节数组开始，该字节数组编码了位向量。
 
-You can run and verify it in python as below:
+**从字节中提取位**:
+- 将每个字节转换回位。记住，位在每个字节中是从 LSB 开始存储的。
+- 如果位向量的长度 `N` 不是 8 的倍数，请丢弃最后一个字节中的多余填充位。
+
+**重建位向量**:
+- 将提取的位重新组装成原始的位向量格式，遵循指定的长度 `N`。
+
+**示例**: 对于一个 `Bitvector[10]`，序列化数据为 `B4 80`：
+- 将 `B4`（`10110100`）和 `80`（`10000000`）转换回位。
+- 从二进制序列中提取前 10 位：`1011010010`。
+- 重建的位向量为 `1011010010`。
+
+你可以如下运行并验证它：
 
 ```python
 >>> from eth2spec.utils.ssz.ssz_typing import Bitvector
@@ -434,79 +303,56 @@ You can run and verify it in python as below:
 '80'
 ```
 
-Note that, functionally we could use either `Vector[boolean, N]` or `Bitvector[N]` to represent a list of bits. However, the latter will have a serialization up to eight times shorter in practice since the former will use a whole byte per bit.
+### 位列表
 
-```python
->>> from eth2spec.utils.ssz.ssz_typing import Vector, Bitvector, boolean
->>> Bitvector[5](1,0,1,0,1).encode_bytes().hex()
-'15'
->>> Vector[boolean,5](1,0,1,0,1).encode_bytes().hex()
-'0100010001'
-```
+SSZ 中的位列表与位向量类似，但它们设计用来处理具有指定最大长度 (`N`) 的布尔值的可变长度序列。
 
-### Bitlists
+**SSZ 位列表的序列化过程**
 
-Bitlists in SSZ are similar to bitvectors but are designed to handle variable-length sequences of boolean values with a specified maximum length (`N`). 
-
-**SSZ Serialization for Bitlists**
 
 ```mermaid
 flowchart TD
-    A[Start Serialization] --> B[Define Bitlist of Size N]
-    B --> C[Pack Bits into Bytes]
-    C --> D[Add Sentinel Bit]
-    D --> E[Pad Final Byte if Necessary]
-    E --> F[Output Serialized Byte Array]
-    
+    A[开始序列化] --> B[定义大小为 N 的位列表]
+    B --> C[将位打包成字节]
+    C --> D[添加哨兵位]
+    D --> E[如果需要，填充最终字节]
+    E --> F[输出序列化字节数组]
+
 ```
+_Figure: SSZ 位列表的序列化过程。_
 
-_Figure: SSZ Serialization for Bitlists._
+**定义位列表**：
+- 位列表通过其最大长度 `N` 来定义，`N` 确定了可以包含的最大位数。然而，实际的位数可能少于 `N`。
 
+**将位打包成字节**：
+- 位列表中的每一位表示一个布尔值，其中 `0` 对应 `False`，`1` 对应 `True`。
+- 这些位被序列化为字节数组，从每个字节的最低有效位（LSB）到最高有效位（MSB）打包，类似于位向量。
 
-**Define the Bitlist**: 
-- A bitlist is defined by its maximum length `N`, which determines the upper bound of bits that can be included. The actual number of bits, however, can be less than `N`.
+**添加哨兵位**：
+- 为了标记位列表的结束并区分其实际长度与最大容量，向位序列的末尾添加了一个哨兵位（`1`）。这一位对于确保反序列化过程准确识别位列表的长度至关重要。
 
-**Pack Bits into Bytes**:
-- Each bit in the bitlist represents a boolean value, where `0` corresponds to `False` and `1` to `True`.
-- These bits are serialized into a byte array, packed from the LSB to the MSB within each byte, similar to bitvectors.
+**字节数组的形成与填充**：
+- 在添加哨兵位后，位被打包进字节。如果总位数（包括哨兵位）不能整除 8，则需要对最后一个字节进行填充，以使其完整。
 
-**Add Sentinel Bit**:
-- To mark the end of the bitlist and distinguish its actual length from its maximum capacity, a sentinel bit (`1`) is added to the end of the bit sequence. This is crucial to ensure that the deserialization process accurately identifies the length of the bitlist.
+**SSZ 位列表的反序列化**
+_Figure: SSZ 位列表的反序列化过程。_
 
-**Byte Array Formation and Padding**:
-- After including the sentinel bit, the bits are packed into bytes, with any necessary padding applied to the last byte to complete it if the total number of bits (including the sentinel) does not divide evenly by 8.
+**接收序列化字节数组**：
+- 从编码位列表的字节数组开始，字节数组中包括了哨兵位。
 
+**从字节中提取位**：
+- 将每个字节转换回位，并保持顺序（从最低有效位到最高有效位）。
+- 对序列化数据中的每个字节继续进行此过程。
 
-**SSZ Deserialization for Bitlists**
+**识别并移除哨兵位**：
+- 在提取位时，从位序列的末尾找到第一个 `1`（哨兵位），以确定位列表数据的实际结束。
+- 所有紧随其后的位被视为填充位，应予以忽略。
 
-```mermaid
-flowchart TD
-    A[Start Deserialization] --> B[Receive Serialized Byte Array]
-    B --> C[Convert Bytes to Bits]
-    C --> D[Identify and Remove Sentinel Bit]
-    D --> E[Remove Padding Bits]
-    E --> F[Reconstruct Original Bitlist]
-    F --> G[Output Deserialized Bitlist]
-    
-```
+**重构位列表**：
+- 将提取的位（去掉哨兵位和任何填充位）重新组合成原始的位列表格式。
 
-_Figure: SSZ Deserialization for Bitlists._
+您可以像下面这样运行位列表的编码：
 
-**Receive Serialized Byte Array**: 
-- Start with the byte array that encodes the bitlist, including the sentinel bit.
-
-**Extract Bits from Bytes**:
-- Convert each byte back into bits, respecting the order (LSB to MSB).
-- Continue this process for each byte in the serialized data.
-
-**Identify and Remove the Sentinel Bit**:
-- As bits are extracted, locate the first `1` (sentinel bit) from the end of the bit sequence to determine the actual end of the bitlist data.
-- All bits following the sentinel bit are disregarded as padding.
-
-**Reconstruct the Bitlist**:
-- Reassemble the extracted bits (excluding the sentinel bit and any padding) into the original bitlist format.
-
-You can run the encoding of Bitlist like below:
 
 ```python
 >>> from eth2spec.utils.ssz.ssz_typing import Bitlist
@@ -514,7 +360,8 @@ You can run the encoding of Bitlist like below:
 '08'
 ```
 
-As a consequence of the sentinel, we require an extra byte to serialize a bitlist if its actual length is a multiple of eight (irrespective of the maximum length `N`). This is not the case for a bitvector.
+由于哨兵位的存在，如果位列表的实际长度是 8 的倍数（与最大长度 `N` 无关），我们需要额外的一个字节来序列化位列表。而位向量则不需要这种额外的字节。
+
 
 ```python
 >>> Bitlist[8](0,0,0,0,0,0,0,0).encode_bytes().hex()
@@ -523,75 +370,75 @@ As a consequence of the sentinel, we require an extra byte to serialize a bitlis
 '00'
 ```
 
-### Containers
+### 容器
 
-Containers in SSZ are fundamental structures used to group multiple fields into a single composite type. Each field within a container can be of any SSZ-supported type, including basic types like `uint64`, more complex types like other containers, vectors, or lists. Containers are analogous to structures or objects in programming languages, making them integral for representing complex and nested data structures in Ethereum.
+SSZ 中的容器是用于将多个字段组合成一个单一复合类型的基本结构。容器中的每个字段可以是任何 SSZ 支持的类型，包括基本类型如 `uint64`，更复杂的类型如其他容器、向量或列表。容器类似于编程语言中的结构体或对象，因此它们在表示以太坊中的复杂和嵌套数据结构时非常重要。
 
-**SSZ Serialization for Containers**
+**SSZ 容器的序列化过程**
+
 
 ```mermaid
 flowchart TD
-    A[Start Serialization] --> B[Define Container Schema]
-    B --> C[Serialize Each Field According to Type]
-    C --> D["Serialize Basic Types\n (uint64, boolean, etc.)"]
-    C --> E["Serialize Composite Types\n (Other containers, lists, vectors)"]
-    D --> F[Concatenate Serialized Outputs of Fields]
+    A[开始序列化] --> B[定义容器模式]
+    B --> C[根据类型序列化每个字段]
+    C --> D["序列化基本类型\n（uint64，布尔值等）"]
+    C --> E["序列化复合类型\n（其他容器、列表、向量等）"]
+    D --> F[连接字段的序列化输出]
     E --> F
-    F --> G[Output Serialized Container]
+    F --> G[输出序列化的容器]
+
     
 ```
 
-_Figure: SSZ Serialization for Containers._
+_Figure: SSZ 容器的序列化过程。_
 
-**Define the Container**: 
-- A container in SSZ is defined by its schema, which specifies the types and order of its fields. This schema is crucial because it dictates how data should be serialized and deserialized.
+**定义容器**：
+- SSZ 中的容器通过其模式定义，该模式指定容器字段的类型和顺序。这个模式至关重要，因为它决定了数据如何被序列化和反序列化。
 
-**Serialize Each Field**:
-- Each field in the container is serialized in the order defined by the schema.
-- The serialization method for each field depends on its type:
-- **Basic types** are converted directly to their byte representations.
-- **Composite types** (other containers, lists, vectors) are serialized recursively according to their own rules.
+**序列化每个字段**：
+- 容器中的每个字段按照模式中定义的顺序进行序列化。
+- 每个字段的序列化方法取决于其类型：
+  - **基本类型**：直接转换为其字节表示。
+  - **复合类型**（其他容器、列表、向量）：根据其自身的规则递归序列化。
 
-**Concatenate Serialized Fields**:
-- The serialized outputs of all fields are concatenated to form the complete serialized data of the container.
-- If a field is of a variable size (like a list or a vector with variable length), its serialized data includes a length prefix or it may use offsets to indicate the start of the data, depending on the specifics of the implementation and type.
+**连接序列化字段**：
+- 所有字段的序列化输出将被连接起来，形成容器的完整序列化数据。
+- 如果字段是可变大小（如具有可变长度的列表或向量），其序列化数据将包含一个长度前缀，或者根据实现和类型的具体要求，可能会使用偏移量来指示数据的起始位置。
 
-**SSZ Deserialization for Containers**
+**SSZ 容器的反序列化**
+
 
 ```mermaid
 flowchart TD
-    A[Start Deserialization] --> B[Receive Serialized Container Data]
-    B --> C[Parse Data According to \nContainer Schema]
-    C --> D[Deserialize Fields Based on Type]
-    D --> E[Deserialize Basic Types]
-    D --> F[Deserialize Composite Types]
-    E --> G[Reconstruct Container with Deserialized Fields]
-    F --> G
-    G --> H[Output Deserialized Container]
-    
+    A[开始反序列化] --> B[接收序列化的容器数据]
+    B --> C[根据容器模式解析数据]
+    C --> D[根据类型反序列化字段]
+    D --> E[反序列化基本类型]
+    D --> F[反序列化复合类型]
+
+_Figure: SSZ 容器的反序列化过程。_
 ```
 
-_Figure: SSZ Deserialization for Containers._
+**读取序列化数据**：
+- 从表示容器的序列化字节流开始。
 
-**Read Serialized Data**: 
-- Begin with the serialized byte stream that represents the container.
+**根据模式解析序列化数据**：
+- 根据容器的模式，解析序列化数据为其组成字段。
+- 这需要知道每个字段的类型和大小，以便正确提取和反序列化每个字段。
 
-**Parse Serialized Data According to Schema**:
-- Based on the container's schema, parse the serialized data into its constituent fields.
-- This requires knowing the type and size of each field to correctly extract and deserialize each one.
+**反序列化每个字段**：
+- 根据字段的类型对每个字段的数据进行反序列化。
+- 反序列化可能涉及将字节数组转换回整数，解码嵌套的容器，或从序列化形式重建列表和向量。
 
-**Deserialize Each Field**:
-- Each field's data is deserialized according to its type.
-- Deserialization might involve converting byte arrays back into integers, decoding nested containers, or reconstructing lists and vectors from their serialized forms.
+**重构容器**：
+- 每个字段反序列化后，将其放回定义的位置，从而重构容器。
 
-**Reconstruct the Container**:
-- As each field is deserialized, reconstruct the container by placing each field back into its defined position.
+**示例**：
 
-**Example**:
+让我们通过 Beacon Chain 中 `IndexedAttestation` 容器的具体示例来查看 SSZ 的序列化和反序列化过程。此示例将概述如何处理和处理 SSZ 中的复杂嵌套容器，特别是涉及固定大小和可变大小数据类型的容器。
+ 
+`IndexedAttestation` 容器看起来如下。
 
-Let's look into the SSZ serialization and deserialization process using the specific example of the `IndexedAttestation` container from the Beacon Chain. This example will outline how complex, nested containers are handled and processed in SSZ, particularly those involving both fixed-size and variable-size data types.
-
-The `IndexedAttestation` container looks like this.
 
 ```python
 class IndexedAttestation(Container):
@@ -600,7 +447,7 @@ class IndexedAttestation(Container):
     signature: BLSSignature
 ```
 
-It contains an `AttestationData` container,
+它包含一个 `AttestationData` 容器，
 
 ```python
 class AttestationData(Container):
@@ -611,7 +458,8 @@ class AttestationData(Container):
     target: Checkpoint
 ```
 
-which in turn contains two `Checkpoint` containers,
+其中包含两个 `Checkpoint` 容器，
+
 
 ```python
 class Checkpoint(Container):
@@ -619,44 +467,45 @@ class Checkpoint(Container):
     root: Root
 ```    
 
-**IndexedAttestation Container Structure**
+**IndexedAttestation 容器结构**
 
-The `IndexedAttestation` container includes several fields, some of which are fixed-size basic types and others are composite types including another container (`AttestationData`) and lists (like `attesting_indices`).
+`IndexedAttestation` 容器包括几个字段，其中一些是固定大小的基本类型，另一些是复合类型，包括另一个容器（`AttestationData`）和列表（如 `attesting_indices`）。
 
-Here's the structure:
+其结构如下：
 
-- **attesting_indices**: `List[ValidatorIndex, MAX_VALIDATORS_PER_COMMITTEE]` (variable size)
-- **data**: `AttestationData` (composite container)
-- **signature**: `BLSSignature` (fixed size)
+- **attesting_indices**: `List[ValidatorIndex, MAX_VALIDATORS_PER_COMMITTEE]`（可变大小）
+- **data**: `AttestationData`（复合容器）
+- **signature**: `BLSSignature`（固定大小）
 
-**AttestationData Container Structure**
+**AttestationData 容器结构**
 
-- **slot**: `Slot` (fixed size)
-- **index**: `CommitteeIndex` (fixed size)
-- **beacon_block_root**: `Root` (fixed size)
-- **source**: `Checkpoint` (composite container)
-- **target**: `Checkpoint` (composite container)
+- **slot**: `Slot`（固定大小）
+- **index**: `CommitteeIndex`（固定大小）
+- **beacon_block_root**: `Root`（固定大小）
+- **source**: `Checkpoint`（复合容器）
+- **target**: `Checkpoint`（复合容器）
 
-**Checkpoint Container Structure**
-- **epoch**: `Epoch` (fixed size)
-- **root**: `Root` (fixed size)
+**Checkpoint 容器结构**
+- **epoch**: `Epoch`（固定大小）
+- **root**: `Root`（固定大小）
 
-**Serialization Process**
+**序列化过程**
 
-- **Serialize Fixed and Variable Components**
-  - The serialization of an `IndexedAttestation` involves serializing each component based on its type:
+- **序列化固定和可变组件**
+  - `IndexedAttestation` 的序列化涉及根据字段类型序列化每个组件：
 
-- **Serialize Fixed-Size Elements**
-  - Each fixed-size element (`Slot`, `CommitteeIndex`, `Epoch`, `Root`, `BLSSignature`) is serialized to its corresponding byte format, typically little-endian for numeric types.
+- **序列化固定大小元素**
+  - 每个固定大小的元素（`Slot`、`CommitteeIndex`、`Epoch`、`Root`、`BLSSignature`）会序列化为相应的字节格式，通常对于数值类型采用小端格式。
 
-- **Serialize Variable-Size Elements**
-  - The `List[ValidatorIndex, MAX_VALIDATORS_PER_COMMITTEE]` is serialized by first recording the length of the list followed by the serialized form of each index.
-  - If a list or another variable-size element is empty or not at maximum capacity, it only consumes the space necessary for the actual data present, plus possibly some length or offset metadata.
+- **序列化可变大小元素**
+  - `List[ValidatorIndex, MAX_VALIDATORS_PER_COMMITTEE]` 的序列化会先记录列表的长度，然后序列化每个索引。
+  - 如果列表或其他可变大小元素为空或没有达到最大容量，则只会消耗实际数据所需的空间，并可能包含一些长度或偏移量元数据。
 
-- **Concatenate Serialized Data**
-  - All serialized bytes are concatenated in the order specified by the container's structure. Fixed-size fields are directly placed in order, while variable-size fields might include offsets or lengths as part of the serialization.
+- **连接序列化数据**
+  - 所有序列化字节按容器结构中指定的顺序连接。固定大小的字段直接按顺序放置，而可变大小的字段可能会在序列化中包含偏移量或长度作为一部分。
 
-**Example Serialization Output**
+
+**示例序列化输出**
 
 ```python
 from eth2spec.utils.ssz.ssz_typing import *
@@ -698,60 +547,61 @@ c888d8af5dffbbcf53b234ea8e3fde67fbb09120027335ec63cf23f0213cc439e8d1b856c2ddfc1a
 00000000c868010000000000
 ```
 
-**Breakdown of the Serialization Output**
+**序列化输出的拆解**
 
-To clearly explain the serialization process and the structure of the serialized data for the `IndexedAttestation` container in the example, let's break down the serialization into its individual components and understand how each part is represented in the byte stream. This unpacking helps illustrate how the SSZ format manages complex data structures.
+为了清楚地解释 `IndexedAttestation` 容器在示例中的序列化过程及其序列化数据的结构，以下将序列化过程拆解为其各个组成部分，帮助理解每个部分是如何在字节流中表示的。这一拆解有助于说明 SSZ 格式如何处理复杂的数据结构。
 
-**Part 1: Fixed Size Elements**
+**第1部分：固定大小元素**
 
-**4-byte Offset for Variable Size List (`attesting_indices`)**:
-- **Byte Offset**: `00`
-- **Value**: `e4000000`
-- **Explanation**: This indicates the start of the `attesting_indices` list in the serialized byte stream. The hexadecimal value `e4` converted to decimal is `228`, meaning the list starts at byte `228` from the beginning of the byte stream.
+**可变大小列表（`attesting_indices`）的 4 字节偏移量**：
+- **字节偏移**: `00`
+- **值**: `e4000000`
+- **解释**: 这表示 `attesting_indices` 列表在序列化字节流中的起始位置。十六进制值 `e4` 转换为十进制是 `228`，意味着列表从字节流的第 228 字节开始。
 
-**Slot (uint64)**:
-- **Byte Offset**: `04`
-- **Value**: `7d022f0000000000`
-- **Explanation**: Represents the `slot` field serialized as a 64-bit unsigned integer. The hexadecimal `7d022f00` in little-endian format translates to `3080829` in decimal, which is the slot number.
+**Slot（uint64）**：
+- **字节偏移**: `04`
+- **值**: `7d022f0000000000`
+- **解释**: 表示 `slot` 字段，序列化为一个 64 位无符号整数。小端格式下，`7d022f00` 转换为十进制 `3080829`，即槽位号。
 
-**Committee Index (uint64)**:
-- **Byte Offset**: `0c`
-- **Value**: `0900000000000000`
-- **Explanation**: This is the `index` field, representing a committee index as a 64-bit unsigned integer. The value `09` indicates committee index `9`.
+**委员会索引（uint64）**：
+- **字节偏移**: `0c`
+- **值**: `0900000000000000`
+- **解释**: 这是 `index` 字段，表示一个委员会索引作为 64 位无符号整数。值 `09` 表示委员会索引 `9`。
 
-**Beacon Block Root (Bytes32)**:
-- **Byte Offset**: `14`
-- **Value**: `4f4250c05956f5c2b87129cf7372f14dd576fc152543bf7042e963196b843fe6`
-- **Explanation**: This is a 256-bit hash stored as `Bytes32`, representing the root hash of the beacon block.
+**信标区块根（Bytes32）**：
+- **字节偏移**: `14`
+- **值**: `4f4250c05956f5c2b87129cf7372f14dd576fc152543bf7042e963196b843fe6`
+- **解释**: 这是一个 256 位的哈希值，存储为 `Bytes32`，表示信标区块的根哈希。
 
-**Source Checkpoint Epoch (uint64) and Root (Bytes32)**:
-- **Epoch Byte Offset**: `34`
-- **Epoch Value**: `1278010000000000`
-- **Root Byte Offset**: `3c`
-- **Root Value**: `d24639f2e661bc1adcbe7157280776cf76670fff0fee0691f146ab827f4f1ade`
-- **Explanation**: The source checkpoint contains an `epoch` (96274) and a `root`. The root is another 256-bit hash.
+**源检查点的 epoch（uint64）和根（Bytes32）**：
+- **Epoch 字节偏移**: `34`
+- **Epoch 值**: `1278010000000000`
+- **Root 字节偏移**: `3c`
+- **Root 值**: `d24639f2e661bc1adcbe7157280776cf76670fff0fee0691f146ab827f4f1ade`
+- **解释**: 源检查点包含 `epoch`（96274）和一个根哈希。根是另一个 256 位哈希。
 
-**Target Checkpoint Epoch (uint64) and Root (Bytes32)**:
-- **Epoch Byte Offset**: `5c`
-- **Epoch Value**: `1378010000000000`
-- **Root Byte Offset**: `64`
-- **Root Value**: `9bcd31881817ddeab686f878c8619d664e8bfa4f8948707cba5bc25c8d74915d`
-- **Explanation**: Similar to the source, the target checkpoint includes an `epoch` (96275) and a `root`, detailing the intended target of the attestation.
+**目标检查点的 epoch（uint64）和根（Bytes32）**：
+- **Epoch 字节偏移**: `5c`
+- **Epoch 值**: `1378010000000000`
+- **Root 字节偏移**: `64`
+- **Root 值**: `9bcd31881817ddeab686f878c8619d664e8bfa4f8948707cba5bc25c8d74915d`
+- **解释**: 与源检查点类似，目标检查点也包含 `epoch`（96275）和一个根哈希，指示证明的目标。
 
-**Signature (BLSSignature/Bytes96)**:
-- **Byte Offset**: `84`
-- **Value**: Concatenated over several lines due to its length (96 bytes total).
-- **Explanation**: This is the cryptographic signature of the attestation, verifying its authenticity.
+**签名（BLSSignature/Bytes96）**：
+- **字节偏移**: `84`
+- **值**: 被分为几行，因为其长度为 96 字节。
+- **解释**: 这是对证明的 BLS 签名，验证证明的真实性。
 
-**Part 2: Variable Size Elements**
+**第2部分：可变大小元素**
 
-**Attesting Indices (List[uint64, MAX_VALIDATORS_PER_COMMITTEE])**:
-- **Byte Offset**: `e4`
-- **Value**: `748300000000000066e9000000000000c868010000000000`
-- **Explanation**: This represents the list of validator indices who are attesting to the block. It starts from the offset `228` and contains indices such as `33652`, `59750`, and `92360`.
+**Attesting Indices（List[uint64, MAX_VALIDATORS_PER_COMMITTEE]）**：
+- **字节偏移**: `e4`
+- **值**: `748300000000000066e9000000000000c868010000000000`
+- **解释**: 这表示对区块进行证明的验证器索引列表。它从偏移量 `228` 开始，包含如 `33652`、`59750` 和 `92360` 等验证器的索引。
 
 
-## Resources
+
+## 资源
 - [Simple serialize](https://ethereum.org/en/developers/docs/data-structures-and-encoding/ssz/)
 - [SSZ specs](https://github.com/ethereum/consensus-specs/blob/dev/ssz/simple-serialize.md)
 - [eth2book - SSZ](https://eth2book.info/capella/part2/building_blocks/ssz/#ssz-simple-serialize)
