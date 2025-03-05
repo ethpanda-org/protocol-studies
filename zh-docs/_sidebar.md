@@ -1,7 +1,7 @@
 - [首页](readme.md)
 - **学习小组**
 - [EPFsg 概述](/eps/intro.md)
-- 演讲
+- 展示
   - [第 0 周](/eps/week0.md)
   - [第 1 周](/eps/week1.md)
   - [第 2 周](/eps/week2.md)
