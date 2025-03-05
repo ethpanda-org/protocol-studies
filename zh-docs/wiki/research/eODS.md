@@ -1,260 +1,257 @@
-# Enshrined Operator-delegator separation (eODS)
+# 代理人-委托人分离（eODS）
 
-> [!WARNING]
-> This document covers an active area of research, may be outdated at time of reading and subject to future updates, as the design space around Validator roles unbundling evolves.
+> ⚠️ 本文涉及一个活跃的研究领域，可能在阅读时已过时并有待更新，随着验证者角色解耦的设计空间不断发展。
 
-## Roadmap tracker
+## 路线图跟踪器
 
-| Upgrade |    URGE     |       Track       |                          Item                           |                                                                Cross-references                                                                 |
-|:-------:|:-----------:|:-----------------:|:-------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------------------------------------------:|
-|  eODS   | the Scourge | Staking economics | Censorship resistances, liquid staking decentralization | [SSF](/docs/wiki/research/SSF.md), [IL](/docs/wiki/research/cl-upgrades.md), [ePBS](/wiki/research/PBS/ePBS.md), [ET](/wiki/research/PBS/ET.md) |
+| 升级 |    驱动力    |     轨道      |                          项目                            |                                                              相关参考文献                                                                |
+|:----:|:------------:|:-------------:|:---------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------:|
+|  eODS |  the Scourge | Staking economics | 抗审查、流动质押去中心化                                      | [SSF](/docs/wiki/research/SSF.md), [IL](/docs/wiki/research/cl-upgrades.md), [ePBS](/wiki/research/PBS/ePBS.md), [ET](/wiki/research/PBS/ET.md) |
 
-## Relevant context 
+## 相关背景
 
-Principal–Agent problem of liquid staking, in which the interests of the Agent are not aligned with the interests of the Principal, is part of any capital delegation, and even more so present in today's staking ecosystem[^1].
+流动质押的委托人–代理人问题，在于代理人的利益与委托人的利益未必一致，这是任何资本委托中的常见问题，并且在当前质押生态中尤为突出[^1]。
 
-Since the early days of Beacon Chain, market structures enabling to provide liquidity for staking pools without running an actual validator software have emerged in Ethereum.
-Thus, staking has split naturally in two classes of participants, outside protocol level[^2]:
+自信标链（Beacon Chain）初期，以太坊中已出现允许为质押池提供流动性的市场结构，而无需运行实际的验证者软件。因此，质押自然分为两个类别的参与者，这些类别存在于协议层之外[^2]：
 
-|    Tier    |                                                        Current natural separation                                                        | Slashing risk |
-|:----------:|:----------------------------------------------------------------------------------------------------------------------------------------:|:-------------:|
-| Delegators |   ETH stakers with no minimum commitment and no strict requirement to participate in any other way beyond bringing in their principal    |   Slashable   |
-| Operators  | Node operators, home staking or providing validator services, with their reputation or some fixed amount of capital of their own at risk |   Slashable   |
+|    层级    |                                                       当前的自然分离                                                       |   惩罚风险   |
+|:----------:|:--------------------------------------------------------------------------------------------------------------------:|:-----------:|
+| 委托人     | 没有最低承诺且没有严格要求其他方式参与的ETH质押者，仅需提供其本金                                                        | 可被惩罚     |
+| 操作员     | 节点操作员、家用质押者或提供验证者服务的人员，承担其声誉或一定数额的资本风险                                              | 可被惩罚     |
 
-The two tiers are closely interlinked, as liquid staking protocols are not credible if their liquid staking token (LST) holders do not believe that the operators holding their principal are *good agents*. 
+这两个层级紧密相连，因为如果流动质押协议中的流动质押代币（LST）持有者不相信操作员能良好地管理他们的本金，那么流动质押协议便无法建立起可信度。
 
-The risk of slashing, coupled with the high amount of revenue paid out in aggregate to Gasper service providers via issuance, results in intermediate chains of **principal-agent relationships**[^3]. Delegators provide capital (Principal) to operators who participate in Gasper on their behalf, in order to earn staking rewards for the Principal and themselves. 
-However, if the validator misbehaves, the funds of the delegator are also slashed, as the actions of the validator (the Agent) affect the capital of the delegator (the Principal).
+惩罚的风险，再加上通过发行支付给Gasper服务提供者的高额奖励，导致了**委托人-代理人关系链**的中间环节[^3]。委托人将资本（本金）提供给代理人，代理人代表委托人参与Gasper，以便为委托人和自己赚取质押奖励。然而，如果验证者行为不当，委托人的资金也会被惩罚，因为验证者（代理人）的行为会影响委托人（本金）的资本。
 
-In order to be considered good agents, honest operators must commit to the Principal's interests:
-- perform validation duties properly (i.e. run and maintain good staking infrastructure, be diligent so that its online reputation is upheld by showing high participation rate, and running the prescribed protocol, hence never equivocate by signing conflicting blocks) 
-- agents must not be adversarial (malicious), deviating from the protocol arbitrarily, e.g. equivocating and getting slashed in the attempt to obtain under-evaluated stake for the purpose of attacking the network.
+为了被认为是良好的代理人，诚实的操作员必须承诺履行委托人的利益：
+- 正确执行验证职责（即运行并维护良好的质押基础设施，保持较高的在线声誉，表现出高参与率，并且遵循规定的协议，绝不签署冲突的区块）
+- 代理人不得恶意行为（恶意行为），任意偏离协议，例如通过签署相反区块进行攻击，从而让网络受到攻击。
 
-## What is eODS?
+## 什么是 eODS？
 
-eODS is an actively discussed design space[^4] within Ethereum, proposing an even further separation of the role of **Validator** (unbundling), to be implemented at protocol level, closing the loop in the Staking economics track of the Scourge, between ePBS and Execution tickets.
+eODS 是以太坊中一个正在积极讨论的设计领域[^4]，它提出了进一步解耦**验证者角色**（解除绑定），将在协议层面实现，并在“the Scourge”中的质押经济轨道中，弥合 ePBS 和执行票务之间的空白。
 
-### Unbundling the Validator role
+### 解耦验证者角色
 
-| Upgrade | Separation type    |
-| ------- | ------------------ |
-| ePBS    | proposer-builder   |
-| ET      | validator-proposer |
-| eODS    | operator-delegator |
+| 升级 | 分离类型          |
+| ---- | ----------------- |
+| ePBS | 提议者-构建者     |
+| ET   | 验证者-提议者     |
+| eODS | 操作员-委托人     |
 
-This separation addresses various inefficiencies associated with the limits of what the protocol sees[^5], and its capacity to react with automated defense systems, in the context of ETH staking.
+这种分离解决了与协议对所见数据的限制相关的各种低效问题[^5]，以及它在 ETH 质押中的自动防御系统反应能力。
 
-## The two-tier staking approach to SSF
+## SSF 的两层质押方法
 
-In the [SSF](/docs/wiki/research/SSF.md) research discourse, technical limitations associated with per slot BLS signatures aggregation generates the following paradigm:
-> We need to move away from the concept that every participant signs in every slot - Vitalik Buterin
+在[SSF](/docs/wiki/research/SSF.md)研究讨论中，基于每槽 BLS 签名聚合的技术限制产生了以下范式：
+> 我们需要摒弃每个参与者在每个槽都要签名的概念 – Vitalik Buterin
 
-In the above context, there's value in the proposal to **split staking** in two tiers of participants:[^23]
-  * **A high-complexity tier** called in to act every slot but has only ~ 10,000 participants, providing **Heavy node services**, and
-  * **A lower-complexity tier** only called up to participate occasionally, providing **Small(light) node services** with low computational overhead, hardware or technical know-how requirements.
+在上述背景下，提议将质押分为两层参与者有其价值[^23]：
+  * **高复杂度层级**：每个槽都参与的层级，但仅有约 10,000 名参与者，提供**重节点服务**，
+  * **低复杂度层级**：仅偶尔参与的层级，提供**小（轻）节点服务**，具有低计算开销、硬件或技术要求。
 
-The providers of heavy node services would be subject to slashing, but also highly rewarded for participating in the protocol's Finality gadget, while the providers of small node services would be entitled to lower rewards, but could be entirely exempt from slashing (do not actively participate in each slot), or could opt in to temporarily (i.e. for a few slots) become subject to slashing.
+提供重节点服务的参与者将面临惩罚，但也会因参与协议的最终性机制而获得高额奖励，而提供小节点服务的参与者则有资格获得较低的奖励，但可以完全免于惩罚（不在每个槽中积极参与），或者可以选择暂时（即几个槽）成为惩罚对象。
 
-## The role of Delegators
+## 委托人角色
 
-In his October 2023 paper, called "Protocol and staking pool changes that could improve decentralization and reduce consensus overhead", Vitalik poses a key question: **from the protocol’s perspective, what is the point of having delegators at all?**[^6]
+在2023年10月的论文中，Vitalik 提出了一个关键问题：“**从协议的角度来看，委托人到底有什么意义？**”[^6]
 
-Vitalik takes a thought experiment, hypothesizing a world where bounding the maximum slashing penalty to 2 ETH is a reality.[^7].
+Vitalik 进行了一个假设实验，假设最大惩罚限制为 2 ETH 的世界成为现实[^7]。
 
-Two scenarios are run and compared under the above premises:
-1. because the slashing and leaking penalties are capped, Rocket Pool reduces operator bond accordingly, to 2 ETH,  all ETH is staked and Rocket Pool as a LSP (liquid staking protocol) absorbs 100% of the market  share (not just among stakers, but also among ETH holders. As rETH becomes risk-free, almost all ETH holders become rETH holders or node operators).
-2. in the second scenario, Rocket Pool does not exist as an LSP. Minimum deposit amount is reduced to 2 ETH, and total staked ETH is capped at 6.25M. Also, the node operator’s return is decreased to 1%.
+在上述假设的前提下，运行并比较了两种情景：
+1. 由于惩罚和泄露惩罚是有上限的，Rocket Pool 相应地将操作员的保证金降低至 2 ETH，所有 ETH 都被质押，并且 Rocket Pool 作为流动质押协议（LSP）吸收了 100% 的市场份额（不仅是质押者中的市场份额，还是所有 ETH 持有者的份额。由于 rETH 无风险，几乎所有 ETH 持有者都成为 rETH 持有者或节点操作员）。
+2. 在第二种情景下，Rocket Pool 不作为 LSP 存在。最小存款额降低至 2 ETH，总质押 ETH 数量被限制为 6.25M。同时，节点操作员的回报降低至 1%。
 
-The two scenarios were run from both a staking economics perspective, and a cost-of-attack perspective.
-After performing the calculations, the final outcome in both cases was exactly the same, so, theoretically, the protocol would be better off cutting out the middleman, and drastically reduce staking rewards and cap total ETH staked to 6.25M.
+这两种情景从质押经济学和攻击成本的角度进行了对比。经过计算，得出的最终结果在两种情境下是完全相同的，因此，从理论上讲，协议最好直接去除中介，大幅降低质押奖励并限制总质押 ETH 至 6.25M。
 
-The scope of the argument above was not to advocate for reducing staking rewards, nor for capping total staked ETH, but to point out a key property that a well-functioning staking system should have: 
- 
->**Delegators should be doing something that actually matters** - *Vitalik Buterin*
+上述论证的范围并不是提倡减少质押奖励，或限制总质押 ETH，而是指出一个良好运作的质押系统应具备的关键属性：
 
-### Delegators role under eODS
+> **委托人应该做一些真正有意义的事情** – *Vitalik Buterin*
 
-If Delegators were to have a **meaningful role**, what would that be, and how can the protocol **incentivize** that role selection?
+### 在 eODS 下，委托人的角色
 
-Two possible solutions[^8] arise, under Operator-Delegator separation:
-1. **The curation of operator set**: Opinionated delegators may decide to choose between different operators based on e.g., fees or reliability.
-2. **The provision of light services**: The delegators may be called upon to provide non-slashable, yet critical services, like:
-   - input their view into censorship-resistance gadgets such as inclusion lists or multiplicity gadgets.
-   - sign off on their view of the current head of the chain, as alternative signal to that of the bonded Gasper operators. 
+如果委托人要发挥**有意义的角色**，那会是什么，协议如何**激励**这一角色选择？
 
-**Incentivizing the Delegator role**: 
+在操作员-委托人分离下，提出了两种可能的解决方案[^8]：
+1. **操作员集的策划**：意见导向型的委托人可以根据费用或可靠性等标准，选择不同的操作员。
+2. **提供轻服务**：委托人可能被召集来提供不受惩罚的、但至关重要的服务，例如：
+   - 输入他们对抗审查设备（如包容列表或多重性设备）的看法。
+   - 签署他们对链上当前头部的看法，作为对绑定 Gasper 操作员信号的替代信号。
 
-Delegators under this model do not contribute to the economic security of FFG, i.e. Delegators do not partake in Finality (non-slashable stake), but they are able to surface discrepancies in the gadget’s functioning. Their services can be compensated by re-allocated aggregated issuance.
+**激励委托人角色**：
 
-## The layers of Operator-Delegator Separation
-eODS taken in isolation, enshrines the separation, but brings no improvement to the existing market structure:
-| 1D-eODS   |           |
-| --------- | --------- |
-| OPERATOR  | DELEGATOR |
-| slashable | slashable |
+在这种模型下，委托人不直接为 FFG 的经济安全作出贡献，即委托人不参与最终性（不受惩罚的质押），但他们能够揭示设备功能中的差异。他们的服务可以通过重新分配的汇总发行来获得补偿。
 
-In order for eODS to be relevant, it must be considered holistically, together with other relevant, proposed, protocol changes:
+## 操作员-委托人分离的层级
+eODS 单独实施时，只是形式化地定义了分离，但未对现有市场结构带来改进：
+| 1D-eODS  |           |
+| -------- | --------- |
+| OPERATOR | DELEGATOR |
+| 可惩罚   | 可惩罚    |
 
-* Capping penalties:
-    | 1D-eODS + capping penalties |               |
-    | --------------------------- | ------------- |
-    | OPERATOR                    | DELEGATOR     |
-    | slashable                   | non-slashable |
+为了使 eODS 具有相关性，它必须与其他相关的、提议的协议变更一起进行全面考虑：
 
-    In this model, by capping the slashing and leaking penalties to only the operator’s stake, assets of delegators are no longer at risk. However, Barnabé argues[^4] that the role of Delegator is not very clear under 1D-eODS, because of the following reasons:
-    * Delegators in the two-tiered staking model are unlike delegators of current LSPs, who bear the slashing risk.
-    * Some agents would wish to delegate their assets to “two-tier operators” and subject themselves to the slashing conditions, in search for yield.
-    * Some agents would wish to not operate small node services themselves, yet participate in their provision by delegating operations instead.
+* 限制惩罚：
+    | 1D-eODS + 限制惩罚   |               |
+    | --------------------- | ------------- |
+    | 操作员                | 委托人        |
+    | 可惩罚                | 不可惩罚      |
 
-    More, in the context of MVI, implementing penalties slashing in the way presented above, would be economically equivalent to reducing staking yield to 1% and just making staking an explicitly altruistic activity.[^9]
+    在这种模型下，通过将惩罚和泄露惩罚限制为操作员的质押，委托人的资产不再面临风险。然而，Barnabé 认为[^4]在 1D-eODS 下，委托人的角色并不明确，原因如下：
+    * 在两层质押模型中的委托人与当前流动质押协议（LSP）的委托人不同，后者需要承担惩罚风险。
+    * 一些代理人希望将资产委托给“二层操作员”，并且自愿承担惩罚条件，以寻求收益。
+    * 一些代理人希望不自己操作小节点服务，而是通过委托运营来参与服务的提供。
 
-* The above issues can be resolved by the **Introduction of two distinct types of protocol services**, based on the [Two-tier staking approach](#the-two-tier-staking-approach-to-ssf):
-    * ***Heavy Services***
-    * ***Light Services***
+    此外，在 MVI（最小可行发行）背景下，按照上述惩罚方法实施惩罚，将在经济上等同于将质押收益降低至 1%，并将质押活动变成明确的利他活动[^9]。
+
+* 上述问题可以通过**引入两种不同的协议服务类型**来解决，基于[两层质押方法](#the-two-tier-staking-approach-to-ssf)：
+    * ***重服务***
+    * ***轻服务***
+
+    这一*设计哲学*产生了验证者角色的两维分离（2D 操作员-委托人分离），每个维度内都包含了委托人与操作员的市场结构：
+
+    | 2D-eODS（彩虹质押）  |                 |               |
+    | -------------------- | --------------- | ------------- |
+    | 轻操作员             | 轻委托人        | 不可惩罚      |
+    | 重操作员             | 重委托人        | 可惩罚        |
+
+### 轻服务的经济学
+轻服务使用质押作为*Sybil控制*机制和*权重函数*[^10]。
+
+协议将提供轻服务的生态系统，如抗审查设备，这些设备使用低硬件和经济要求提供服务。  
+抗审查设备在协议中奖励那些帮助协议通过某些机制（如包容列表）“看到”被审查的输入的参与者。  
+
+这些轻服务的补偿通过重新分配汇总发行来提供，类似于今天用于同步委员会的模式[^11]。
+
+轻持有者（委托人）可以将其资产委托给轻服务操作员，由操作员代表委托人提供服务并收取费用，这使得操作员的激励与委托人的奖励最大化。在轻操作员的竞争市场中，结合重新委托机制允许从表现不佳的操作员中即时退出，轻操作员将为边际利润和成本效益提供服务。
+
+**部分可惩罚的轻服务**
+
+一些轻服务可能需要可惩罚的质押。可以实施变种的惩罚上限方法，其中只有操作员的质押是可惩罚的。
+
+| 2D-eODS（彩虹质押） | +   限制惩罚               |
+| ------------------ | -------------------------- |
+| 轻操作员 可惩罚    | 轻委托人 不可惩罚         |
+| 重操作员 可惩罚    | 重委托人 可惩罚           |
+
+### 重服务的经济学
+重服务使用质押作为*经济安全*[^12]。
+
+如果它们的质押参与 FFG（最终性保障机制）安全故障（冲突的最终化检查点），则所有的质押将被丧失。
+
+重服务的要求，如以太坊的最终性保障机制（FFG），将被加强，以实现单槽最终性（SSF）。
+
+可能有助于促进安全质押环境的形式化协议工具：
+* 用于在其上构建流动质押协议的流动质押模块（LSM）样式原语
+* 形式化部分池或 DVT 网络
+
+所有这些都允许快速的重新委托和其他特性。
+
+### 机制设计（重服务与轻服务）
+|                               | 重服务                                                               | 轻服务                                                                 |
+| ----------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| 服务类型                      | Gasper                                                               | 抗审查设备                                                            |
+| 奖励动态                      | 通常情况下相关收益带来奖励，故障期间反相关会更好                       | 反相关带来奖励（表面不同信号）                                          |
+| 惩罚风险                      | 操作员和委托人均会面临惩罚                                             | 无惩罚或仅操作员面临惩罚                                               |
+| 操作员角色                    | 运行完整节点提供 Gasper 验证服务                                      | 运行小节点提供轻服务                                                  |
+| 委托人角色                    | 为 Gasper 提供经济安全                                               | 为良好服务质量的轻操作员提供权重                                      |
+| 操作员资本要求                | 高资本效率（每个操作员的质押较高）+ 高资本投资                        | 实际上不受限制（操作员接收权重）+ 小节点固定成本                      |
+| 独立质押者的接入方式          | 主要通过 LSP（例如 DVT 节点）参与                                    | 所有轻服务都可以获得高接入率                                          |
+
+## 解锁再质押？
+
+eODS（2D 模型）可以被视为再质押的部分形式化，因为再质押者能够承诺为新类别的协议 AVS（主动验证服务）提供服务[^13]，其奖励来自新铸造的 ETH 的创建（即 Gasper 是一个协议 AVS，具有已知的发行计划）[^14]。
+
+ETH 持有者可以直接作为操作员或间接作为委托人进入这些 AVS 的提供。
+
+## 独立质押者在这个新世界中的角色是什么？
+Gasper（以及在 SSF 情景中的变种）是以太坊协议中最重的 AVS。它获得了最大份额的汇总发行，因此有许多方有兴趣为所需质押提供资金，在委托质押方案中，委托人将质押提供给代理人，代理人代表他们参与 Gasper。
+
+由于质押的中介作用，有必要防止单一流动质押提供商成为以太坊总供应量的主要质押提供者。为了给协议提供足够的安全性，MVI（最小可行发行）[^15]措施至关重要，旨在通过产生足够的压力来保持 Gasper 的经济权重处于适当比例。
+
+由于独立质押者无法通过其质押发行可信的流动质押代币，因此资本效率较低，MVI 强加的竞争压力不适合他们。在 eODS 的背景下，这一劣势可以得到极大改善。
+
+### 独立质押者在 eODS 下的角色
+在其“解耦质押：迈向彩虹质押”研究帖[^16]中，Barnabé 提出了独立质押者理想地体现的两个核心价值主张：
+
+* **增强网络的韧性**：独立质押者增强网络对大型操作员故障的韧性，例如，当大型操作员下线时，独立质押者可以继续推进（动态可用的）链。这将不是他们的主要操作线路，由于资本和成本效率的限制，但它可以在最坏的情况下提供强有力的回退。
   
-    This *design philosophy* produces a separation of the role of Validator in 2 dimensions (2D Operator-Delegator Separation), each dimension inducing within itself a market structure of delegators and operators:
+* **首选熵的生成者**：独立质押者可以作为抗审查代理人，为协议提供更多的信息，服务于更广泛的用户群体。执行这种轻服务对于大量低功率参与者来说是可行的。多重性设备可以奖励增加首选熵的操作员[^16]。
 
-    | 2D-eODS (rainbow staking) |                 |               |
-    | ------------------------- | --------------- | ------------- |
-    | Light OPERATOR            | Light DELEGATOR | non-slashable |
-    | Heavy OPERATOR            | Heavy DELEGATOR | slashable     |
+首选熵是指协议代理人向协议表面展示的信息。审查代理人的首选熵较低，因为他们决定限制某些首选项的表达，例如可能与他们自己的管辖偏好相抵触的活动。  
+提供服务的独立质押者节点集是高度去中心化的，因此能够表达较高的首选熵。这一经济价值转化为集体成员的收入。
 
-     ### Economics of light services 
-    Light services use stake as *sybil-control* mechanism and as *weight functions*.[^10]
+## 为什么要分离？
 
-    The protocol will offer an ecosystem of light services such as censorship resistance gadgets, which are provided using weak hardware and economic requirements. 
-    Censorship-resistant, in protocol gadgets reward participants that help the protocol "see" censored inputs via some mechanism like inclusion lists. 
-    
-    These light services are compensated by re-allocating aggregate issuance towards their provision, a pattern already in use today for sync committees.[^11]
+### 社会层的杠杆作用
+过度依赖社会层和道德来保护协议免受质押场景中的去中心化风险，并抵制流动质押代币（LST）以及其相关危险的主导地位的出现，存在一定风险。
 
-    Light holders (Delegators) can delegate their assets to light service operators, performing the service on behalf of the delegator for a fee, which aligns the incentives of the operator to maximize the reward for the delegator. In a competitive marketplace of light operators, along with re-delegation allowing for instant withdrawal from a badly performing operator, light operators would be expected to provide the service for marginal profitability and with cost efficiency.
-    
-    **Partially slashable light services**
+### 已建立的模型
+eODS 将意味着将已经建立的质押模型中的一种变体形式化，并分为两个参与者类别：委托人（质押者）和节点操作员。
 
-    Some light services may require slashable stake. A variant of the penalties capping approach could be enforced, with only the operator stake is slashable. 
+### 为委托人提供更强的共识参与形式
+为了改善委托人选择权[^17]，我们可以：
 
-    | 2D-eODS (rainbow staking) | +   penalties capping         |
-    | ------------------------- | ----------------------------- |
-    | Light OPERATOR  slashable | Light DELEGATOR non-slashable |  |
-    | Heavy OPERATOR slashable  | Heavy DELEGATOR  slashable    |
+* 改善质押池中的投票工具
 
-   ### Economics of heavy services
-    Heavy services use stake as *economic security*[^12]
-    
-    Should their stake participate in an FFG safety fault (conflicting finalized checkpoints), all of their stake will be lost.
+  在当前的范式中，质押池中的投票仅限于治理代币持有者（而非 ETH 持有者）。有一些尝试的乐观治理方法，允许 ETH 持有者否决 LSP 的治理投票，但（引用 Vitalik 的话）代币投票并不够强大，最终任何一种无激励的委托人选择方式都只是代币投票的一种形式。
 
-    The requirements of heavy services such as FFG, Ethereum’s Finality gadget, will be strengthened to achieve Single-Slot Finality (SSF). 
-    
-    Possible enshrined protocol gadgets that will help foster a safe staking environment:
-    * liquid staking module (LSM)-style primitives to build liquid staking protocols on top of
-    * enshrined partial pools or DVT networks
-    
-    All allowing for fast re-delegation among other features.
+* 改善池之间的竞争
 
-    ### Mechanism design (Heavy vs. Light)
-    |                               | Heavy services                                                               | Light services                                                             |
-    | ----------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-    | Service archetype             | Gasper                                                                       | Censorship-resistance gadgets                                              |
-    | Reward dynamics               | Correlation yields rewards usually, anti-correlation is good during faults   | Anti-correlation yields rewards (surface different signals)                |
-    | Slashing risk                 | Operators and delegators                                                     | None or operators only                                                     |
-    | Role of operators             | Run full node to provide Gasper validation services                          | Run small node to provide light services                                   |
-    | Role of delegates             | Contribute economic security to Gasper                                       | Lend weight to light operators with good service quality                   |
-    | Operator capital requirements | High capital efficiency (high stake-per-operator) + high capital investments | Not really a constraint (operators receive weight) + small node fixed cost |
-    | Solo staker access            | Primarily as part of LSPs (e.g., as DVT nodes)                               | High access for all light services                                         |
+  小型流动质押协议面临的挑战是，它们的市值较小，流动性较差，难以信任且缺少应用程序的支持。限制惩罚和 1D-eODS 理论上可以帮助解决这些问题，但由于[上述原因](#the-layers-of-operator-delegator-separation)，实施惩罚上限并不可行。
 
-## Unlocking re-staking? 
+* 形式化委托
 
-eODS (the 2D model) can be considered a partial enshrinement of re-staking, thanks to re-stakers being able to commit to this new class of protocol AVS (actively validated service)[^13] for which rewards are issued from the creation of newly-minted ETH(i.e. Gasper is an protocol AVS with a well known issuance schedule)[^14]. 
-    
-ETH holders are then allowed to enter into the provision of these AVS, either directly as operators, or indirectly as delegators.
+  eODS 为委托人提供更强的共识参与形式，委托人可以：
+  - 作为资本提供者，为参与链上最终性（重服务、可惩罚）的操作员提供支持，或
+  - 作为参与抗审查设备（如包容列表或多重性设备）的参与者（轻服务，不可惩罚），或
+  - 作为最终性参与者的替代信号进行签署（轻服务，不可惩罚）。
 
-## Where do Solo Stakers fit in this new world?
-Gasper (and a variant of it in SSF scenario) is the heaviest AVS of the Ethereum protocol. It receives the highest share of aggregate issuance, so there are many parties interested in providing the required stake, in an delegated staking scheme[^3], with Delegators providing stake to Operators who participate in Gasper on their behalf.
+### 减少 BLS 签名数量（SSF 场景）
+以太坊在不断改进并朝着成为全球规模网络的目标前进。
 
-Given the induced intermediation of stake, it is necessary to prevent the emergence of a single dominant liquid staking provider collateralized by the majority of the ETH supply. Minimum Viable Issuance (MVI)[^15] measures are critical in order to target sufficient security for the protocol, by creating sufficient pressure to keep the economic weight of Gasper in the right proportion. 
+在这种场景中，单槽最终性不仅是可取的，而且可能是强制性的，朝向 SSF 的过程中需要做出良好的权衡。
 
-Due to the fact that solo stakers are unable to issue credible liquid staking tokens from their collateral and have thus low capital efficiency, MVI-imposed competitive pressures is not well-suited for them. In the context of eODS, this disadvantage can be greatly improved.
+在上述背景下，我们可以假设每个槽可以处理的 BLS 签名的上限在 10 万至 180 万之间。  
+eODS 提出了减少验证者数量作为重服务提供者（<10,000），即使在假设单槽最终性的情况下，减少每个槽中需要处理的 BLS 签名数量。
 
-### The role of solo stakers, under eODS
-In his "Unbundling staking: Towards rainbow staking" research post[^16], Barnabé offers two core value propositions which solo stakers embody ideally:
+### 与活跃研发空间的协同效应
 
-* **Bolster network resilience**: Solo stakers bolster the resilience of the network to failures of larger operators, e.g. by progressing the (dynamically available) chain while large operators go offline. It would not be their main line of operators due to capital and cost-efficiency limitations, but it could be a strong fallback in the worst case scenario.
-  
-* **Generators of preference entropy**: Solo stakers may contribute as censorship-resistance agents, allowing the protocol to see more and serve a wider spectrum of users. Performing such a light service is at hand for a wide class of low-powered participants. Multiplicity gadgets could reward the contributions of operators who increase preference entropy[^16]. 
+**执行票务（Execution tickets）**
 
-Preference entropy denotes information surfaced by protocol agents to the protocol.Agents who censor have lower preference entropy, as they decide to restrict the expression of certain preferences, such as activities which may contravene their own jurisdictional preferences. 
-The set of solo stakers who operate nodes to provide services is highly decentralized, and is thus able to express high preference entropy. This economic value translates into revenue for members of the set.
+eODS 在验证者角色[解耦](#unbundling-the-validator-role)的世界中表现良好。执行票务[^18]的核心是将执行与共识分离，这有助于为重操作员实现 MVI[^15]。如果执行服务与共识服务分离（在 ET 或类似的验证者-提议者分离下），重操作员将不再关心奖励的波动性，并能减少在确定执行服务（即有效负载）的输出时进行时间博弈[^19]。
 
-## Why separate?
+**包容列表与多重性设备（Inclusion lists & Multiplicity gadgets）**
 
-### Social layer leverage
-There are risks in relying too much on the social layer and morality to protect the protocol against centralization in the staking scene and countering the emergence of a dominant LST with its associated perils
+轻服务通过将其纳入抗审查设备（如包容列表或多重性设备）来约束有效负载服务。
 
-### Already an established model
-eODS would mean enshrining a variant of the already established staking model with two classes of participants: delegators (stakers) and node operators
+由诚实验证者准备的包容列表[^20]作为抗审查信号并防止来自可识别验证者的系统性审查。验证者通过分叉选择来维护包容列表的有效性和满足条件。
 
-### Enabling stronger forms of consensus participation for Delegators.
-In order to improve delegate selection powers[^17], we can:
+多重性设备[^21]与包容列表相关，但它提出了将构建包容集的责任分配给委员会而不是单个领导者（如包容列表），从而避免了依赖单个方的诚实或理性。这种方式获取包容集的共识也能增加责任追究，并允许激励机制。
 
-* improve voting tools within pools
-  
-  Under the current paradigm, voting within staking pools is limited to governance token-holders (not ETH holders). There are attempts of Optimistic governance, where ETH holders can veto LSP governance votes, but (paraphrasing Vitalik) token voting is not strong enough, and ultimately any form of unincentivized delegate selection is just a type of token voting.
+虽然轻服务对执行有效负载生产者的具体约束机制（例如包容列表）仍需进一步研究和开发，但在 eODS 下将*生产者*与*执行者*分离将改进当前包容列表设计，在该设计中，验证者既是生产者又是执行者。
 
-* improve competition between pools
-  
-  The challenges of smaller liquid staking protocols that have small market capitalization are that they are less liquid, harder to trust, and less supported by applications. Capping penalties and 1D-eODS could theoretically help with these challenges, but the actual implementation of the bounding of penalties is not feasible, for the [reasons expressed above](#the-layers-of-operator-delegator-separation).
-
-* enshrine delegation
-  
-  eODS offers stronger forms of consensus participation for Delegators, either 
-  - as capital providers to Operators who participate in chain Finality on their behalf (heavy services, slashable), or
-  - as participants in censorship resistance gadgets like Inclusion lists or Multiplicity gadgets (light services, not slashable), or
-  - sign off as alternative signal to Finality participants (light services, not slashable).
-  
-### Reduce the number of BLS signatures (SSF scenario)
-Ethereum is constantly improving and growing on its way to becoming the envisioned global-scale network.
-
-In this scenario, single-slot finality is not only desirable but most likely mandatory, and good trade-offs are needed on the path towards SSF.
-
-In the above context, we can assume a limit between $100k - 1.8 million$ BLS signatures that could be processed every slot. 
-eODS proposes a smaller number of Validators, as heavy services providers ($<10,000$), reducing the number of BLS signatures that need to be processed every slot, even assuming single slot finality. 
-
-### Synergies with active R&D space
-
-**Execution tickets**
-
-eODS fits well in a world where the role of the Validator [is disambiguated](#unbundling-the-validator-role). The essence of Execution Tickets[^18] is to separate execution from consensus, and that helps achieving MVI[^15] for Heavy Operators. If execution services are separated from consensus services under ET (or a similar attester-proposer separation), heavy operators would be less concerned with reward variability and playing Timing games[^19] when finalizing the output of the execution service (the payload)
-
-**Inclusion lists & Multiplicity gadgets**
-
-Light services act as a constraint to payload services, by including them in censorship-resistant gadgets such as IL or MG.
-
-Inclusion lists[^20] prepared by honest validators function as censorship signals and defense against systematic censorship from identifiable validators. Attesters uphold the validity and the satisfaction of an inclusion list, via the fork choice.
-
-Multiplicity gadgets[^21] are related to IL, but propose a mechanism of assigning the responsibility of constructing an inclusion set to a committee instead of a single leader (like IL), thus avoiding the reliance on the honesty or rationality of a single party. Obtaining consensus over the set of items to include could also increase accountability and allow for incentive schemes.
-
-While the exact constraining mechanism of Light services (e,g, IL) over execution payload producers needs to be further researched and developed, separating *producers* from *enforcers* under eODS would bring an improvement to today's IL design, where Validators act as both producers and enforcers.
-
-Separating services, the Light operators become producers of the list, but the validity of the execution payload with respect to Gasper is enforced by Heavy operators, who attest and finalize the valid history of the chain, ignoring invalid payloads. 
+通过分离服务，轻操作员成为列表的生产者，而执行负载的有效性将由重操作员强制执行，后者会验证并最终确定链的有效历史，忽略无效的有效负载。
 
 **MAX_EFFECTIVE_BALANCE**
 
-EIP-7251[^22] will allow a single message to carry more stake. Enshrining the operator delegator separation would provide a way for the protocol to functionally distinguish “operator stake” from “delegator stake” on such a message, further separation of each tier in heavy services providers and light services providers.
+EIP-7251[^22]将允许通过单个消息携带更多的质押。形式化操作员-委托人分离将为协议提供一种功能性区分“操作员质押”和“委托人质押”的方式，进一步分离重服务提供者和轻服务提供者。
 
-### Future protocol services
-eODS provides an interface to integrate further “protocol services” in a plug-and-play manner.
+### 未来协议服务
+eODS 提供了一个接口，以插拔式方式集成更多的“协议服务”。
 
-## The road ahead
-From a high level view, the two dimensions of eODS could be implemented as follows:
--   the Vertical dimension of the separation, being the Light - Heavy services separation can be done in practice, by increasing MAX_EFFECTIVE_BALANCE[^22] and later implementing a balance threshold of e.g. 2048 ETH to determine which  validators enter which complexity tier.
--   the Horizontal dimension of the separation, being the Operator-Delegator separation can be done by the means presented in [this section](#the-layers-of-operator-delegator-separation).
+## 前进的道路
+从高层视角来看，eODS 的两个维度可以通过以下方式实施：
+-   分离的垂直维度，即轻-重服务的分离可以通过增加 MAX_EFFECTIVE_BALANCE[^22] 和后续实施一个平衡阈值（例如 2048 ETH）来确定哪些验证者进入哪个复杂度层级。
+-   分离的水平维度，即操作员-委托人分离可以通过[本节](#the-layers-of-operator-delegator-separation)中提出的方法来实现。
 
-Further R&D is required on the exact MVI to be targeted for each (heavy & light) type of protocol services, and the practical applications and implementation of eODS. 
+进一步的研发需要针对每种（重与轻）类型的协议服务，确定目标 MVI，并实施 eODS 的实际应用。
 
-Regarding the enshrinement of liquid staking, Vitalik states:
-> It may still be better to enshrine some things outright, but it's valuable to note that this "enshrine some things, leave other things to users" design space exists.[^7]
+关于流动质押的形式化，Vitalik 表示：
+> “有些事情可能仍然最好直接形式化，但值得注意的是，存在这种‘形式化一些事情，让其他事情留给用户’的设计空间。”[^7]
 
-## [References]
+
+## [参考资料]
 
 [^1]: https://eprint.iacr.org/2023/605
 
