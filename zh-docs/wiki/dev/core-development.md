@@ -1,27 +1,23 @@
-# Core development 
+## 核心开发
 
-> :warning: This article is a [stub](https://en.wikipedia.org/wiki/Wikipedia:Stub), help the wiki by [contributing](/contributing.md) and expanding it.
+> :warning: 本文是一个[小作品](https://en.wikipedia.org/wiki/Wikipedia:Stub)，欢迎通过[贡献](/contributing.md)来扩展和完善。
 
-The work on core protocol specification, implementation and testing is commonly referred to as core development. Core devs are contributors the client software, its validation and related tooling for building the protocol, all domains covered in this wiki.
+核心协议的规范制定、实现和测试工作通常被称为核心开发。核心开发者是指为客户端软件、其验证以及构建协议的相关工具提供贡献的人员，这些领域都涵盖在本 Wiki 中。
 
-There are many implementation of both [consensus](/wiki/CL/cl-clients.md) and [execution](/wiki/EL/el-clients.md) layer developed by various independent teams. Together with teams working on research, testing and other infrastracture, core developers are maintaining the base technology used by everyone building on Ethereum.
+目前有多个不同团队独立开发的[共识层](/wiki/CL/cl-clients.md)和[执行层](/wiki/EL/el-clients.md)客户端实现。除了研究、测试和基础设施团队外，核心开发者还负责维护所有以太坊构建者所使用的基础技术。
 
-![Space Core Devs](../../images/space-core-devs.png)
+![核心开发者](../../images/space-core-devs.png)
 
-[Hsiao-Wei Wang](https://github.com/hwwhww) shared the graphic above in her presentation _[A Journey of an Ethereum Core Dev/Researcher”](https://www.youtube.com/watch?v=0lBrd2_fPPU)_ she gave at ETHGlobal Tokyo in April 2023. The graphic symbolizes the connection between a space station and the efforts involved from various teams to bring it to life.
+[Hsiao-Wei Wang](https://github.com/hwwhww) 在 2023 年 4 月的 ETHGlobal Tokyo 会议上分享了上图，出自她的演讲 _[以太坊核心开发者 / 研究人员的旅程](https://www.youtube.com/watch?v=0lBrd2_fPPU)_。该图形象地展示了一个空间站与各团队合作建设它的努力之间的联系。
 
-Teams working on separate clients are distributed across different organizations, companies or non-profits. They implement the same specification in different languages with various features and performance profiles. The [client diversity](https://ethereum.org/developers/docs/nodes-and-clients/client-diversity) is a fundamental principle embraced by Ethereum. The range of different clients can ensure stability and security of the network while keeping the core development decentralized and open to everyone. 
+负责不同客户端的团队分布在各个组织、公司或非营利机构中。他们使用不同的编程语言实现相同的规范，并具备各自的特性和性能优化策略。[客户端多样性](https://ethereum.org/developers/docs/nodes-and-clients/client-diversity) 是以太坊所坚持的一项核心原则。这种多样化的客户端生态可以确保网络的稳定性和安全性，同时保持核心开发的去中心化和开放性。
 
-Although different teams come from different organization, they all work together and collaborate on improving the whole network. Progress is achieved through discussions in public channels, mainly carried out in weekly meetings. These calls are public and tracked in [project management repo](https://github.com/ethereum/pm), including ACD - Execution and Consensus Layer calls, various "Breakout Room" and working group calls. Outside of calls, discussions are held in the Ethereum R&D Discord channel, Eth Magicians forum and EthResearch forum. 
+尽管这些团队来自不同的组织，他们仍然协作推进整个网络的改进。这种进展主要通过公共渠道进行讨论，尤其是每周例会。这些会议是公开的，并在[项目管理仓库](https://github.com/ethereum/pm)中记录，包括 ACD（执行和共识层呼叫）、各种“专题讨论室”以及工作组会议。此外，讨论也会在 Ethereum R&D Discord 频道、Eth Magicians 论坛和 EthResearch 论坛上进行。
 
-# Appendix
+## 附录
 
-[A Day in the Life of a Dev: Ethereum’s Justin Florentine](https://www.coindesk.com/consensus-magazine/2023/02/22/a-day-in-the-life-of-a-dev-ethereums-justin-florentine/)
-
-[Protocol Guild](https://protocol-guild.readthedocs.io/en/latest/)
-
-[Protocol Guild: Funding Core Protocol Stewardship | Cheeky Gorilla - Protocol Guild ETHDenver 2024 Presentation](https://www.youtube.com/watch?v=9Tc2g7pu-gc&ab_channel=ETHDenver)
-
-[Protocol Guild Pledge](https://tim.mirror.xyz/srVdVopOFhD_ZoRDR50x8n5wmW3aRJIrNEAkpyQ4_ng)
-
-[Capital and enclosure in software commons: Linux & Ethereum](https://trent.mirror.xyz/GDDRqetgglGR5IYK1uTXxLalwIH6pBF9nulmY9zarUw)
+- [以太坊开发者的一天：Justin Florentine](https://www.coindesk.com/consensus-magazine/2023/02/22/a-day-in-the-life-of-a-dev-ethereums-justin-florentine/)
+- [协议公会（Protocol Guild）](https://protocol-guild.readthedocs.io/en/latest/)
+- [协议公会：核心协议管理资金 | Cheeky Gorilla - 2024 ETHDenver 演讲](https://www.youtube.com/watch?v=9Tc2g7pu-gc&ab_channel=ETHDenver)
+- [协议公会承诺](https://tim.mirror.xyz/srVdVopOFhD_ZoRDR50x8n5wmW3aRJIrNEAkpyQ4_ng)
+- [软件公地中的资本与封闭性：Linux & 以太坊](https://trent.mirror.xyz/GDDRqetgglGR5IYK1uTXxLalwIH6pBF9nulmY9zarUw)
