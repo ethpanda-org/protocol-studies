@@ -1,22 +1,22 @@
-# Core development coordination 
+# 核心开发协调
 
-> :warning: This article is a [stub](https://en.wikipedia.org/wiki/Wikipedia:Stub), help the wiki by [contributing](/contributing.md) and expanding it.
+> :warning: 本文是一个[存根条目](https://en.wikipedia.org/wiki/Wikipedia:Stub)，请通过 [贡献](/contributing.md) 来帮助 wiki 扩展它。
 
-Because of the approach of client diversity and decentralization, Ethereum core development is spread across many teams from various organizations. Roughly estimated, there is around 200+ client developers, researchers, testers and other contributors split across ~20 teams. 
+由于以太坊采用了客户端多元化和去中心化的方法，其核心开发工作分布在不同组织的多个团队中。粗略估计，大约有 200 多名客户端开发者、研究人员、测试人员和其他贡献者，分散在约 20 个团队中。
 
-To effectively maintain and implement various initiatives affecting the Ethereum protocol, all of these people need be able to reach consensus and collaborate in a productive manner. Generally, this is possible thanks to free and open source nature of Ethereum and it's design and development based unix philosophy but still requires lot of coordination work. 
+为了有效维护和实施影响以太坊协议的各种计划，所有这些人都需要能够达成共识，并以高效的方式进行协作。一般来说，这在很大程度上得益于以太坊的自由开源性质以及其基于 Unix 哲学的设计和开发方式，但仍然需要大量的协调工作。
 
-## Ethereum PM repository
+## 以太坊 PM 存储库
 
-The [ethereum/pm](https://github.com/ethereum/pm) repository is used for Ethereum project management purposes. It serves as a coordination for planning developer calls and archiving their recordings. 
+[ethereum/pm](https://github.com/ethereum/pm) 存储库用于以太坊项目管理。它主要用于协调开发者会议的计划，并存档会议记录。
 
-*main use:*
- - Execution and Consensus Layer AllCoreDevs meetings
+*主要用途：*
+ - 执行层和共识层的 AllCoreDevs 会议
 
-*secondary uses:*
- - Breakout Rooms on various protocol-related topics (e.g. EOF, account abstraction, etc)
- - There's a Google Calendar tracking upcoming protocol meetings.
+*次要用途：*
+ - 关于各种协议相关主题的分组讨论（例如 EOF、账户抽象等）
+ - 提供 Google 日历，跟踪即将举行的协议会议。
 
-### Resources
+### 资源
 
-[Ethereum Governance by Tim Beiko](https://hackmd.io/@timbeiko/eth-governance)
+[以太坊治理 - Tim Beiko](https://hackmd.io/@timbeiko/eth-governance)
