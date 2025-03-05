@@ -34,7 +34,7 @@ Unix起源于简化[MULTICS](https://en.wikipedia.org/wiki/Multics)复杂性的�
 > “在某种程度上，我意识到我距离操作系统只有三周的时间。我需要一个编辑器、汇编器和内核覆盖层——就叫它操作系统吧。一周，一周，一周，我们就有了Unix。”\
 > — [_Ken Thompson 在一场采访中提到_](https://www.youtube.com/watch?v=EY6q5dv_B-o)
 
-1972年，丹尼斯还写了《影响力》 [C 语言 ](<https://en.wikipedia.org/wiki/C_(programming_language)>).
+1972年，丹尼斯还写出了颇具影响力的 [C 语言 ](<https://en.wikipedia.org/wiki/C_(programming_language)>).
 
 ![Ken Thompson 和 Dennis Ritchie](img/overview/ken-thompson-dennis-ritchie.jpg)
 **Ken Thompson 和 Dennis Ritchie.**
