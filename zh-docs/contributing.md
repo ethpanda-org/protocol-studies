@@ -1,47 +1,49 @@
-# Contribute to the Protocol Wiki
+# 贡献到协议维基
 
-The Protocol Wiki is an open and collaborative project. Whether you are part of the [Study Group](/eps/intro.md) or not, we welcome your contributions! Help us to build the documentation and improve availability of learning resources on Ethereum core R&D.
+协议维基是一个开放且协作的项目。无论您是否是[学习小组](/eps/intro.md)的一员，我们都欢迎您的贡献！帮助我们建立文档并提高以太坊核心研发的学习资源可用性。
 
-*We are not aiming to rewrite other existing Ethereum documentation* but rather create a cohesive collection of technical resources for aspiring core developers and researchers.
+*我们并不打算重写现有的以太坊文档*，而是创建一个连贯的技术资源集合，供有志于成为核心开发者和研究者的人使用。
 
-When creating contributions, consider whether it doesn't exist in another form elsewhere. Use it and reference it in your text but do not copy its content. Focus on adding it into a big picture, connecting it with related topics. 
+在创建贡献时，请考虑是否在其他地方已存在相同内容。可以引用并参考它，但不要复制内容。重点是将其融入大局，将其与相关主题连接起来。
 
-Write contributions based on what you learned about the protocol along the way, what experience you gathered and missing pieces that slowed you down. Consider it as explaining to your peers, reflect on your own journey as a core developer/researcher.
+根据您在学习协议过程中学到的知识，您自己的经验，以及那些让您感到困惑的内容来撰写贡献。把它当作是向同行解释，反思您作为核心开发者/研究者的旅程。
 
-## Contributing
+## 贡献指南
 
-Before you start with editing, please read the code of conduct, following guide and make yourself familiar with the overall wiki structure. 
+在开始编辑之前，请阅读行为准则、相关指南，并熟悉整体维基结构。
 
-The wiki source is hosted in Github repository at [github.com/eth-protocol-fellows/protocol-studies](https://github.com/eth-protocol-fellows/protocol-studies). Github repo is the main coordination and hosting platform but wiki source is also mirrored on [radicle](https://app.radicle.xyz/nodes/seed.radicle.garden/rad:zkV49UANVb2w2g5eE4Le197Wuasz) and [independent centralized host](https://git.ethquokkaops.io/eth-protocol-fellows/protocol-studies). 
+维基源文件托管在Github仓库 [github.com/eth-protocol-fellows/protocol-studies](https://github.com/eth-protocol-fellows/protocol-studies) 上。Github仓库是主要的协作和托管平台，但维基源文件也在[radicle](https://app.radicle.xyz/nodes/seed.radicle.garden/rad:zkV49UANVb2w2g5eE4Le197Wuasz)和[独立的集中式主机](https://git.ethquokkaops.io/eth-protocol-fellows/protocol-studies)上镜像托管。
 
-> The wiki is served from `wiki-pages` branch which is regularly updated from `main`. When contributing, open a PR to a branch related to the change or `main` for smaller quick fixes. PRs from other branches are reviewed before merging to `main` and collected updates are then pushed to update the `wiki-pages`.
+> 维基来自 `wiki-pages` 分支，定期从 `main` 分支更新。当贡献时，请对相关分支或小修复使用 `main` 提交PR。来自其他分支的PR在合并到 `main` 之前会被审核，并将收集的更新推送以更新 `wiki-pages`。
 
-Explore existing issues or open a new one for missing content, suggest improving existing content or wiki frontend features. If you identify missing or unfinished content, feel free to open a PR. First, check existing PRs or branches to make sure your work is not redundant. 
+探索现有问题或开设新问题，建议改进现有内容或维基前端功能。如果您发现缺失或未完成的内容，可以随时打开PR。首先检查现有的PR或分支，确保您的工作不会重复。
 
-We are not aiming to recreate other existing wikis. If the same content is well explained elsewhere, just link it and provide additional context. 
+我们并不打算重建其他现有的维基。如果相同内容已经在其他地方得到很好的阐述，只需链接到它并提供额外的上下文。
 
-### What does(n't) belong here
+### 什么是（不）属于此处
 
-The scope of this wiki is limited to technical resources of the Ethereum core protocol infrastructure. This means its specifications, implementations, testing, research or related tooling. 
+此维基的范围限于以太坊核心协议基础设施的技术资源。包括其规范、实现、测试、研究或相关工具。
 
-It **does not** cover onchain protocols/dapps, layer 2s/rollups or any other tools which are not dependencies of core infrastructure. In other words, stuff which would be covered by EIPs, not ERCs.
+它**不**涵盖链上协议/dapps、第二层/rollups或任何与核心基础设施无关的工具。换句话说，内容应涵盖EIP，而不是ERC。
 
-### Structure and collaboration
+### 结构与协作
 
-The wiki is supposed to cover all important parts of Ethereum core protocol and its development. The protocol architecture and related topics is reflected in the wiki format. The whole wiki lives under `/docs/wiki` and the `/docs/_sidebar.md` defines the main documentation structure. 
-High level areas are abstracted to directories which include all subtopics. Focus your contributions to wiki itself. Week pages in `eps` directory are meant for weekly presentations information, not main place for resources. 
+维基应涵盖以太坊核心协议及其开发的所有重要部分。协议架构及相关主题在维基格式中得到体现。整个维基存放在 `/docs/wiki` 下，`/docs/_sidebar.md` 定义了主要文档结构。
+高层领域被抽象为目录，其中包含所有子主题。专注于对维基本身的贡献。`eps` 目录下的周页面主要用于每周演示信息，而非资源的主要存放地。
 
-For contributors, we recommend focusing on specific topics contained in corresponding documents. It's best to own a single topic and work out all the details. Create a new document and add the topic to the sidebar if it's not there yet. Join the [discord server](https://discord.gg/epfsg), let others know what you are working on in the group channel and collaborate with other contributors writing about related topics. If you are working with multiple people on a significant piece of content, you can have a dedicated branch in the repo for easier coordination. 
+对于贡献者，建议专注于对应文档中的具体主题。最好能负责一个主题并详细处理所有细节。如果该主题尚未出现，可以创建新文档并将其添加到侧边栏。如果您在多个主题上进行合作，可以在仓库中创建专用分支以便更容易地协调。
 
-## Editing wiki
+## 编辑维基
 
-The wiki is a collection of regular markdown files which can be edited directly using github interface or your favorite markdown editor. When making commits and opening PRs, please provide a commentary explaining your contribution.
+维基是由常规Markdown文件组成的集合，可以直接通过Github界面或您喜欢的Markdown编辑器编辑。提交和打开PR时，请提供说明您贡献的注释。
 
-The web docs version is generated by [Docsify](https://docsify.js.org/). Learn about its [config](https://docsify.js.org/#/configuration) and [features](https://docsify.js.org/#/plugins) options. The configuration and web design is also open to improvements or suggestions. 
+Web文档版本由[Docsify](https://docsify.js.org/)生成。了解其[配置](https://docsify.js.org/#/configuration)和[功能](https://docsify.js.org/#/plugins)选项。配置和网页设计也可以进行改进或提供建议。
 
-For more extensive edits or changes to configuration, use Docsify to preview the web locally. You just need git and node.js. 
+对于更广泛的编辑或配置更改，您可以使用Docsify在本地预览网页。只需安装git和node.js。
 
-Install docsify, clone the repository and host it locally. 
+安装docsify，克隆仓库并在本地托管。
+
+
 
 ```
 npm i docsify-cli -g
@@ -50,89 +52,93 @@ cd protocol-studies
 docsify serve ./docs
 ```
 
-## Style guide
+## 风格指南
 
-Wiki pages follow standard Markdown which can be rendered by Github or Docsify. For details on using it, look into the Markdown [guide](https://www.markdownguide.org/). 
+维基页面遵循标准的Markdown格式，可通过Github或Docsify渲染。有关如何使用它的详细信息，请参考Markdown[指南](https://www.markdownguide.org/)。
 
-The audience of this wiki is technical and the content should reflect that. There are many guides on technical and documentation writing you can learn from, for example you can check [this lecture](https://www.youtube.com/watch?v=vtIzMaLkCaM) to get started.
+本维基的受众是技术人员，因此内容应反映这一点。您可以学习许多关于技术和文档写作的指南，例如，您可以查看[这个讲座](https://www.youtube.com/watch?v=vtIzMaLkCaM)来入门。
 
- Here are main guidelines to follow when writing this wiki:
+以下是撰写此维基时要遵循的主要指南：
 
-- Write in an objective, clear and explanatory tone
-- Avoid unnecessary simplifications, describe the technical reality
-- Avoid using too long and complex sentences or paragraphs
-    - Use concise and clear statements 
-    - Break down your text using blockquotes, bullet points or images 
-- Always link your resources and verify them
-- Use bullet points or tables for topics which require enumerating 
-- Highlight keywords to support scanning and skimming through the article
-- Provide visualizations to explain the topic better
-- When using acronyms or a technical jargon, make sure to introduce it first 
-- Ethereum is changing fast, write the content to be as much future proof as possible 
-- Don't use LLMs to generate the text
-    - We don't accept texts fully generated by AI, however we recommend using it to fix grammar or phrasing
-- Consider creating tutorials and hands-on guides documenting technical steps
-- Add recommended reading at the top, point to topics which are dependencies of yours
-- For mathematical notations, you can use Katex
-- You can use mermaid diagrams for visualizations
+- 以客观、清晰和解释性的语气写作
+- 避免不必要的简化，描述技术现实
+- 避免使用过长和复杂的句子或段落
+    - 使用简洁明了的陈述
+    - 使用块引用、项目符号或图片来分解文本
+- 总是链接您的资源并验证它们
+- 对需要枚举的主题使用项目符号或表格
+- 高亮关键词以支持扫描和浏览文章
+- 提供可视化图形来更好地解释主题
+- 在使用首字母缩写或技术术语时，确保先介绍它
+- 以太坊发展迅速，写作时尽可能让内容具有未来性
+- 不要使用LLM生成文本
+    - 我们不接受完全由AI生成的文本，但推荐使用它来修正语法或措辞
+- 考虑创建教程和实践指南，记录技术步骤
+- 在顶部提供推荐阅读，指向您内容的依赖主题
+- 对于数学符号，您可以使用Katex
+- 可以使用mermaid图表进行可视化
 
-Goal is to produce a credible neutral text which is formal, well-structured, and maintains a clear progression of ideas. The content should be purely technical and shouldn't waste space on introducing high level/well known concepts. Introductory topics are necessary and can use comparisons, historical anecdotes, and concrete examples to make complex concepts more accessible.
+目标是生成可信、正式、结构良好并保持清晰思路的文本。内容应完全是技术性的，不应浪费空间介绍高层次/已知概念。引言部分可以使用比较、历史轶事和具体例子来使复杂的概念更易于理解。
 
+### 内容标准化
 
-### Content standardization
+维基使用美式英语，而不是英式英语。术语、大小写和命名应在所有页面中保持一致。可以参考[以太坊.org指南](https://ethereum.org/contributing/style-guide/content-standardization)。
 
-The wiki uses American English over British spelling. Terminology, capitalization and nomenclature should match across all pages. Use [Ethereum.org guide](https://ethereum.org/contributing/style-guide/content-standardization) for the reference. 
+鼓励使用图片和可视化。如果您使用了第三方创建的图像，请确保其许可允许使用并提供原始链接。对于自己创建的可视化，建议使用[excalidraw.com](https://github.com/excalidraw/excalidraw)。
 
-Usage of images and visualizations is encouraged. If you are using an image created by a third party, make sure its license allows it and provide link to the original. For creating your own visualizations, we suggest [excalidraw.com](https://github.com/excalidraw/excalidraw). 
+可以在适合的地方使用[emoji](https://docsify.js.org/#/emoji?id=emoji)或[图标](https://icongr.am/fontawesome)，例如在块引用中。
 
-Feel free to use [emojis](https://docsify.js.org/#/emoji?id=emoji) or [icons](https://icongr.am/fontawesome) where it fits, for example in blockquotes. 
+### 资源链接
 
-### Linking resources
+添加外部链接时，您可以直接在文本中使用它，也可以放在页面底部的“资源”部分。
 
-When adding an external link, you can use it directly in the text or on the bottom of the page in "Resources" section.
+添加链接时，使用描述性的名称，如[inevitableeth.com](https://inevitableeth.com/)而不是诸如[这个维基](https://inevitableeth.com/)之类的通用短语。
 
-When linking resources use descriptive names, such as [inevitableeth.com](https://inevitableeth.com/) instead of generic phrases like [this wiki](https://inevitableeth.com/).
+不要让读者在文本中被过多的资源淹没。
 
-Don't overwhelm reader with too many resources within the text.
+当链接到本维基中的页面时，使用相对路径，并且如果它引用了页面中的特定主题，请使用指向标题ID的链接。
 
-When linking a page within this wiki, use a relative path and if it references specific topic within the page, use a link to heading IDs. 
+对于其他重要链接，在页面底部添加一个资源部分，其中列出资源。资源应有名称或简短描述，并提供链接和其存档镜像的备用链接。强烈建议添加指向archive.org上最新快照的链接。资源部分链接示例：
 
-For other important links, add a section on the bottom of the page with list of resources. Resources should have a name or short description with a link and alternative link to its archived mirror. We strongly suggest adding a link to the latest snapshot from archive.org. Example of a link in a resource section: 
+[JSON-RPC API参考](https://ethereum.org/en/developers/docs/apis/json-rpc)，[已存档](https://web.archive.org/web/20240117035335/https://ethereum.org/en/developers/docs/apis/json-rpc)
 
-[JSON-RPC API reference](https://ethereum.org/en/developers/docs/apis/json-rpc), [archived](https://web.archive.org/web/20240117035335/https://ethereum.org/en/developers/docs/apis/json-rpc)
+### 页面内通知
 
-### In-page notices
+我们在页面顶部使用块引用通知，提供适当的上下文，告知读者页面内容的相关性。
 
-We use blockquote notices at the top of the page to provide readers with appropriate context regarding the content of the page. 
+#### 活跃的研究
 
-#### Active research
+维基页面如果涉及未来的更新，即涵盖活跃研究主题的页面，需在页面顶部添加通知：
 
-Wiki pages that are subject to future updates, i.e. pages covering active research topics require a notice to be added on top of the pages:
 
 ```
-* Warning message artifact using the following format:
+* 警告消息使用以下格式：
 > [!WARNING]
-> This document covers an active area of research, may be outdated at time of reading and subject to future updates, as the design space around evolves.
+> 本文涵盖一个活跃的研究领域，可能在阅读时已过时，并且随着设计空间的发展，可能会进行未来更新。
 ```
 
-#### Roadmap tracker
+#### 路线图追踪器
 
-To help user navigate across research topics, we are using a roadmap tracker with the following format:
+为了帮助用户浏览研究主题，我们使用了路线图跟踪，格式如下：
  ``` 
-| Upgrade |    URGE     |   Track   |               Topic               |                                     Cross-references                                      |
+| 升级 |    URGE     |   跟踪   |               主题              |                                     交叉引用                                      |
 |:-------:|:-----------:|:---------:|:---------------------------------:|:-----------------------------------------------------------------------------------------:|
-|  ePBS   | the Scourge | MEV track | Endgame block production pipeline | intersection with: [ET](/wiki/research/ET.md), [PEPC](), [IL]() |
+|  ePBS   | the Scourge | MEV track |终极区块生产管道 | 和: [ET](/wiki/research/ET.md), [PEPC](), [IL]() |
 ```
-Ideally, references point to a local wiki pages.
+理想情况下，参考指向本地维基页面。
 
-#### Incomplete pages
+#### 不完整页面
 
-Pages with minimal content which need more work to cover the topic need to include a notice: 
+页面内容较少，需要更多工作来覆盖主题时，需要添加通知：
+
+
 
 ```
-> :warning: This article is a [stub](https://en.wikipedia.org/wiki/Wikipedia:Stub), help the wiki by [contributing](/contributing.md) and expanding it.
+> :警告: 本文是一个[存根](https://en.wikipedia.org/wiki/Wikipedia:Stub), 请通过 [贡献](/contributing.md) 帮助维基扩展它。
 ```
 
-## Anything else?
 
-This page is also opened for contributors! Suggest improvements to our style and guidelines in the github repo. 
+## 其他？
+
+此页面也开放给贡献者！建议改进我们的风格和指南，请在github仓库中提出建议。
+
