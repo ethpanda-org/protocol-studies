@@ -54,7 +54,7 @@ docsify serve ./docs
 
 ## 风格指南
 
-维基页面遵循标准的Markdown格式，可以通过Github或Docsify渲染。有关如何使用它的详细信息，请参考Markdown[指南](https://www.markdownguide.org/)。
+维基页面遵循标准的Markdown格式，可通过Github或Docsify渲染。有关如何使用它的详细信息，请参考Markdown[指南](https://www.markdownguide.org/)。
 
 本维基的受众是技术人员，因此内容应反映这一点。您可以学习许多关于技术和文档写作的指南，例如，您可以查看[这个讲座](https://www.youtube.com/watch?v=vtIzMaLkCaM)来入门。
 
