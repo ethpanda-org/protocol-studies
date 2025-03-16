@@ -1,148 +1,106 @@
-# Execution Tickets (ET)
+# Execution Tickets（ET）
+
 > [!WARNING]
-> This document covers an active area of research, may be outdated at time of reading and subjected to future updates, as the design space around ePBS, ET and Inclusion lists (IL) evolves.
+> 本文档涉及一个活跃的研究领域，可能在阅读时已过时，并会随着 ePBS、ET 和 Inclusion Lists（IL）的设计空间演变而更新。
 
-## Roadmap tracker
+## 路线图跟踪器
 
-| Upgrade |    URGE     |   Track   |               Topic               |                                                          Cross-references                                                          |
-| :-----: | :---------: | :-------: | :-------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------: |
-|   ET    | the Scourge | MEV track | Endgame block production pipeline | intersection with: [IL](/wiki/research/inclusion-lists.md), [ePBS](/wiki/research/PBS/ePBS.md), [PEPC](/wiki/research/PBS/PEPC.md) |
+| 升级  |      URGE      |   跟踪   |         主题         |                                                        交叉引用                                                        |
+| :--: | :-----------: | :-----: | :-----------------: | :------------------------------------------------------------------------------------------------: |
+|  ET  | the Scourge  | MEV 轨道 | 终局区块生产流水线 | 交叉参考：[IL](/wiki/research/inclusion-lists.md)、[ePBS](/wiki/research/PBS/ePBS.md)、[PEPC](/wiki/research/PBS/PEPC.md) |
 
+## 相关背景
 
+最近对**内置提议者-构建者分离（PBS）**的提案和开发，旨在减少执行区块构建对少数中心化的、链下实体（中继器）的依赖。这些中继器在当前 MEV 体系下充当验证者（作为区块提议者）和专业化的、高级区块构建者之间的中介。
 
-## Relevant context
-Recent proposals and development towards enshrining Proposer-Builder Separation ([PBS](/wiki/research/PBS/pbs.md)) seek to diminish execution block construction reliance on a few centralized, off-chain entities (relays), that in the context of current MEV, act as intermediaries between Validators as payload proposers and specialized, more sophisticated block builders. Today, with [MEV-boost](/wiki/research/PBS/mev-boost.md), validators-as-proposers forfeit their rights to build execution payloads, in an open-bids permissionless auction, Builders offering Proposers a well-sequenced payload against payment.
+目前，借助 [MEV-boost](/wiki/research/PBS/mev-boost.md)，验证者作为提议者放弃了执行区块的构建权利，通过**开放竞价的无许可拍卖**，由构建者提供一个精心排序的区块，并支付相应费用。
 
 ![MEV-boost](/docs/wiki/research/img/MEV-boost.webp)
 
-## Attester-Proposer Separation (APS) a.k.a. Validator-Proposer Separation
+## 证明者-提议者分离（APS）即验证者-提议者分离
 
-MEV-boost is an out-of-protocol side-car, outside of the protocol's reach and control. This limitation is addressed within the context of PBS, by the [APS](#attester-proposer-separation-aps-aka-validator-proposer-separation-design-rationale) (Attester-Proposer Separation) design philosophy with the aim of getting some of this infrastructure back into the the protocol's fold. 
+MEV-boost 是协议外的附加组件，不受协议的直接控制。PBS 通过 [APS](#证明者-提议者分离-aps-即验证者-提议者分离) 设计理念，试图将部分基础设施纳入协议。
 
-APS design rationale is closely related to **ePBS - enshrined Proposer-Builder Separation** design space.
+APS 设计理念与**内置提议者-构建者分离（ePBS）**密切相关。
 
-According to the EPS wiki page on ePBS [[1]](#resources) and Barnabé's notes on PBS [[2]](#resources), we can identify two main components of ePBS:
-1. the market structure - the parties engaged in the market and their engaging conditions. 
-2. the allocation mechanism - the space of contracts the engaged parties may enter into.
-   
-ePBS as proposed today, enshrines both a specific market structure and an allocation mechanism mostly inherited from MEV-Boost:
+根据 ePBS 相关资料 [[1]](#资源) 和 Barnabé 关于 PBS 的笔记 [[2]](#资源)，我们可以识别 ePBS 的两个主要组成部分：
 
-Validators-as-proposers auction their payload production rights to builders. 
-This would be an improvement compared to current MEV-boost, as this would unbundle the Validator role between proposer and builder, level the playing field for builders and there would be a trustless, protocol defined market structure to ensure a *fair exchange* between market parties. 
+1. **市场结构**——参与市场的各方及其交互条件。
+2. **分配机制**——参与方可以签订的合约类型。
 
-However, this setup would still need the complex mechanics of the fair exchange within MEV-boost, except that the complexity is being moved in-protocol. 
-Barnabé argues [[3]](#resources) that ePBS in its current proposed version does not answer some fundamental questions:
-- is it the market structure *or* the allocation mechanism that we consider too centralized under MEV-boost?
-- if the answer is the former, is it worth to enshrine the same mechanism that we consider both a technical debt (a bug) and a flawed design philosophy, that only exists now outside of protocol?
- - wouldn't it be better **for the protocol** to not be split between two worlds and just be concerned about allocating *proposing rights* and not worrying about allocating *building rights*?
+目前提议的 ePBS 方案同时内置了市场结构和分配机制，这两个部分主要继承自 MEV-Boost。
 
-![](/docs/wiki/research/img/ET_2worlds.webp)
+- **验证者作为提议者，将其区块生产权利拍卖给构建者。**
+- 这一机制相比当前的 MEV-Boost 方案有所改进，因为它将验证者的角色拆分为提议者和构建者，提升了构建者的公平竞争环境，并由协议定义一个**无信任的市场结构**，以确保市场参与者之间的**公平交换**。
+- 然而，该方案仍然需要类似于 MEV-Boost 的复杂公平交换机制，只是复杂性被移入协议内部。
 
-**Allocation mechanisms for APS market structure**:
+Barnabé 指出 [[3]](#资源)，当前的 ePBS 版本未能解答一些基本问题：
 
-A permissionless market allowing buyers to purchase the right to propose execution payloads. 
-These rights confer the ticket holder (that can be a different party than the Validator) with a random allocation, to propose an execution payload.
+- 我们认为 MEV-Boost 过于中心化的原因是**市场结构**还是**分配机制**？
+- 如果问题出在市场结构上，为什么要内置一种我们已经视为**技术债务**（即漏洞）和**错误设计理念**的机制？
+- **协议是否应该仅关注“提议权”的分配，而不涉及“构建权”的分配？**
 
-![](/docs/wiki/research/img/ETvsPBS.webp)
+![两种世界观对比](/docs/wiki/research/img/ET_2worlds.webp)
 
-**block-auction ePBS vs slot-auction ePBS**
+### APS 市场结构的分配机制
+
+一个**无许可市场**允许买家购买执行区块提议权。这些权利赋予持票者（可以是非验证者）一个随机分配的提议时机。
+
+![ET vs PBS](/docs/wiki/research/img/ETvsPBS.webp)
+
+### **区块拍卖 ePBS vs 插槽拍卖 ePBS**
 
 ![](/docs/wiki/research/img/ba-ePBS.webp)
 ![](/docs/wiki/research/img/sa-ePBS.webp)
 
-The improvement sa-ePBS brings, comes however with the technical cost of dealing with equivocations and head split views, and that [is not a trivial problem to solve](#open-issues).
+sa-ePBS 带来的改进同时引入了**处理等值性和头部分裂视图的技术挑战**，这一问题仍然未解决，详见[开放问题](#开放问题)。
 
-[ET](#execution-tickets-et-1) and [APS-Burn](/wiki/research/APS/aps.md) are two of the possibile allocation mechanisms for implementing in-protocol Attester-Proposer Separation. The Beacon proposers can commit to execution proposers only, so there would be no commitments to the contents of the execution payload, which solves the timing games issues that the block-auction ePBS version faces.
+[ET](#execution-tickets-et) 和 [APS-Burn](/wiki/research/APS/aps.md) 是实现**协议内证明者-提议者分离（APS）**的两种可能分配机制。
 
-## Execution Tickets (ET)
+## Execution Tickets（ET）
 
-Execution tickets are orthogonal to ePBS, in the sense that a new paradigm is being proposed: 
-a validator/attester–proposer separation, where the proposer is recruited by the protocol and could once again delegate the role of construction to another entity, the builder.
-The delivery of the beacon block, however, would remain the validator's prerogative.
+ET 采用了一种**新的范式**：
 
-ETs allow execution proposers to purchase “tickets” from a enshrined permissionless market, redeeming execution proposing rights at some indeterminate time into the future.
+- **验证者/证明者-提议者分离**，其中提议者由协议选定，并可以再次将区块构建任务委托给构建者。
+- **信标区块的发布仍然是验证者的特权**。
+- **ET 允许执行提议者从内置的无许可市场购买“票据”**，以在未来某个不确定时间兑换执行提议权。
 
-Execution proposers buy the rights to propose payloads from the ET Market, an abstract module at the moment of writing, [still in research and development](#open-issues). 
+### **ET 如何遏制时序博弈？**
 
-### How do ET contain Timing games?
+时序博弈指的是**提议者尽可能延迟区块提议，以最大化收益**。在区块拍卖 ePBS 方案中，执行区块在信标区块发布时就已确定，因此验证者可能会**故意延迟信标区块的发布**，以等待更高出价。
 
-Timing games occur when a proposer delays as much as possible the proposing of their block in order to maximize the value it could get for it. In block-auction ePBS, as the execution payloads are determined at the release of the beacon block, the timing games will be played by validators that could attempt to delay the delivery of the beacon block for as much time as possible, in order to commit to the highest bid possible.
-
-ETs proposes, an even further consensus-execution separation to ePBS, with no commitments from validator-as-proposer to the execution payload, thus containing timing games to execution proposing phase, so that the consensus-critical functions are not subject to validators having the incentives to act rationally:
+ET 提供了更彻底的**共识-执行分离**，即**验证者作为提议者无需承诺执行区块内容**，从而将时序博弈限制在执行提议阶段，确保共识关键功能不受验证者的逐利行为影响。
 
 ![](/docs/wiki/research/img/ET.webp)
 
-## ET high-level view
-The execution ticket mechanism can be succinctly described as [[4]](#resources) :
+## **ET 运行机制**
 
-* An in-protocol market for buying and selling tickets.
-Tickets entitle the owner to future block proposal rights. Tickets would be one-time use and only valid in a randomly assigned slot.
+ET 机制简要描述如下 [[4]](#资源)：
 
-* A lottery for selecting the beacon block proposer and attesters. This is the existing Proof-of-Stake lottery, where validators are randomly selected to propose beacon blocks. Under execution tickets, the beacon block will no longer contain the execution payload (the final list of executed transactions for a block), but instead has an inclusion list that specifies a set of transactions that must be present in the execution block.
+- **内置市场**：用于买卖票据，持票者可在**随机分配的时隙**中使用一次。
+- **提议者抽签**：现有 PoS 机制决定信标区块提议者和证明者。
+- **执行区块提议者抽签**：额外抽签决定执行区块提议权。
 
-* A lottery for selecting the execution block proposer and attesters: a second lottery to determine the winning ticket. The ticket owner has permission to propose the execution block for the slot and include the transactions  onchain. The state is then updated. The execution block proposer posts a collateral per ticket they own as an assurance that they will produce a single execution block during the execution round of the slot that their ticket is assigned. If they equivocate or are offline, the bond will be slashed retroactively. 
+## **ET 流程**
 
-## ET flow:
-Execution tickets flow for one slot is [[4]](#resources):
-
-1. During the beacon round, the randomly selected beacon proposer has the right to propose a beacon block.
-2. This proposer proposes the beacon block that contains the inclusion list.
-3. The beacon attesters vote on the validity and timeliness of the beacon block.
-4. During the execution round, a randomly selected execution ticket has the right to propose an execution block.
-5. The owner of the ticket is the execution proposer and proposes an execution block.
-6. The execution attesters vote for on the timeliness and validity of the execution block.
+1. 信标提议者发布包含**包含列表**的信标区块。
+2. 信标证明者投票验证区块的有效性和及时性。
+3. 抽签选出执行提议者，由其发布执行区块。
+4. 执行证明者投票验证执行区块的有效性和及时性。
 
 ![](/docs/wiki/research/img/ETflow.jpeg)
 
-## Counterarguments to the APS market structure that ET embodies
-- C1. From a censorship-resistance point of view, we may want to keep validators active in the construction of execution payloads. 
+## **开放问题**
 
-  - counter to counterargument C1:
+- ET 市场如何设计，票据定价机制如何运作？
+- ET 可能导致多条有效分支，如何调整**分叉选择规则**？
+- 如何设计**第二层权益证明机制**以支持 ET？
 
-    CC1. Validators forego this ability entirely today when they use MEV-Boost, and could very well forego it entirely  when they would use ePBS. Improvement proposals as Inclusion lists [[6]](#resources) and Multiplicity gadgets [[7]](#resources) could remedy this by imposing on whomever owns the execution ticket with binding but non-efficiency-decreasing constraints on payload construction.
+## **资源**
 
-- C2. ET would no longer guarantee that Validators get the option to build execution payloads as they seem fair. 
+[[1] ePBS 相关文档](/docs/wiki/research/PBS/ePBS.md)
 
-  - counter to counterargument C2:
+[[2] Barnabé 的 PBS 研究笔记](https://barnabe.substack.com/p/pbs)
 
-    CC2. The definition of fairness could be very different between Validators, and the market has revealed in practice the preference of most validators to not exercise this building right themselves, delegating the construction to other parties. 
+[[4] ethresearch 讨论 ET](https://ethresear.ch/t/execution-tickets/17944)
 
-- C3. Separating Validator and Proposer roles creates a market structure where the ticket holder could become an *active monopolist*, imposing [monopoly pricing](https://arxiv.org/abs/2311.12731) and possibly front-running time sensitive flow. The above is in contrast with the status quo under MEV-Boost featuring the Validator as a *passive monopolist* [[5]](#resources) in the proposer role.
-
-  - counter to counterargument C3:
-
-    CC3. In their work *When to Sell Your Blocks* [[5]](#resources), Quintus and Conor note that if validators tend towards rationality in the long run, the difference between validators-as-proposers and ticket-holders-as-proposers may tend to diminish a lot, meaning that the improvement of Validator-Proposer role separation could come from the benefits the separation itself can bring to ET and subsequently for the protocol, and that such a separation of roles would most likely not create a worst situation than the status quo.
-
-## Open issues
-
-Execution Tickets are in active research, some of the known open issues are:
-
-* What would be the exact design of the ET market and the mechanics behind the ticket pricing mechanism?
-
-* What are the fork-choice implications of execution ticketing?
-    * there might be multiple valid entries in fork-choice within the same slot
-    * payload equivocation causes a head split view
-
-* How do execution tickets alter the designs of preconfirmations
-
-* How do we construct the “second” staking mechanism for execution ticket holders
-
-## Resources
-
-[[1] Wiki page on ePBS](/docs/wiki/research/PBS/ePBS.md)
-
-[[2] Barnabé's notes on PBS](https://barnabe.substack.com/p/pbs)
-
-[[3] reconsidering the market structure of PBS by Barnabé](https://mirror.xyz/barnabe.eth/LJUb_TpANS0VWi3TOwGx_fgomBvqPaQ39anVj3mnCOg#heading-the-pains-of-being-proposer-as-validator)
-
-[[4] ethresearch post on Execution tickets](https://ethresear.ch/t/execution-tickets/17944)
-
-[[5] When to Sell Your Blocks flashbots post](https://collective.flashbots.net/t/when-to-sell-your-blocks/2814)
-
-[[6] EIP-7547 Inclusion lists](https://eips.ethereum.org/EIPS/eip-7547)
-
-[[7] ROP-9: Multiplicity gadgets](https://efdn.notion.site/ROP-9-Multiplicity-gadgets-for-censorship-resistance-7def9d354f8a4ed5a0722f4eb04ca73b)
-
-[[8] PEPC FAQ](https://efdn.notion.site/PEPC-FAQ-0787ba2f77e14efba771ff2d903d67e4#a2d2d17abe90414e88d667ad10d91afe)
-
-[[9] Potuz's ePBS specification notes](https://hackmd.io/@potuz/rJ9GCnT1C)
