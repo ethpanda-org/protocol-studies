@@ -1,97 +1,125 @@
-- [Home](readme.md)
-- **Study Group**
-- [EPFsg overview](/eps/intro.md)
-- Presentations
-  - [Week 0](/eps/week0.md)
-  - [Week 1](/eps/week1.md)
-  - [Week 2](/eps/week2.md)
-  - [Week 3](/eps/week3.md)
-  - [Week 4](/eps/week4.md)
-  - [Week 5](/eps/week5.md)
-  - [Node Workshop](/eps/nodes_workshop.md)
-  - [Week 6 | Dev](/eps/week6-dev.md)
-  - [Week 6 | Research](/eps/week6-research.md)
-  - [Week 7 | Dev](/eps/week7-dev.md)
-  - [Week 7 | Research](/eps/week7-research.md)
-  - [Week 8 | Dev](/eps/week8-dev.md)
-  - [Week 8 | Research](/eps/week8-research.md)
-  - [Week 9 | Dev](/eps/week9-dev.md)
-  - [Week 9 | Research](/eps/week9-research.md)
-  - [Week 10 | Dev](/eps/week10-dev.md)
-  - [Week 10 | Research](/eps/week10-research.md)
-- [Contributing](contributing.md)
-- **Protocol Wiki**
-- The Protocol
-  - [Prehistory](/wiki/protocol/prehistory.md) 
-  - [Architecture](/wiki/protocol/architecture.md)
-  - [Design rationale](/wiki/protocol/design-rationale.md)
-  - [Evolution](/wiki/protocol/history.md)
-- Execution Layer
-  - [EL Specs](/wiki/EL/el-specs.md)
-  - [Client architecture](/wiki/EL/el-architecture.md)
-  - [EL Clients](/wiki/EL/el-clients.md)
+# 以太坊协议学习小组
+
+- [首页](readme.md)
+- **学习小组**
+  - [从这里开始](/eps/intro.md)
+  - [学习小组内容](/eps/schedule.md)
+    - **第 1 周：介绍**
+      - [学习准备](/eps/week0.md)
+      - [第 1 讲：介绍](/eps/week1.md)
+      - [第 2 讲：共识层](/eps/week3.md)
+      - [第 3 讲：执行层](/eps/week2.md)
+      - [第 4 讲：测试](/eps/week4.md)
+      - [第 5 讲：路线图](/eps/week5.md)
+      - [节点工作坊](/eps/nodes_workshop.md)
+    - **第 2 周：开发概览**
+      - [第 6 讲：技术规范](/eps/week6-dev.md)
+      - [第 7 讲：执行层客户端](/eps/week7-dev.md)
+      - [第 8 讲：共识层客户端](/eps/week8-dev.md)
+      - [第 9 讲：运维](/eps/week9-dev.md)
+      - [第 10 讲：预编译合约](/eps/week10-dev.md)
+    - **第 3 周：研究概览**
+      - [第 11 讲：DAS](/eps/week6-research.md)  
+      - [第 12 讲：Verkle 树](/eps/week7-research.md)
+      - [第 13 讲：MEV](/eps/week8-research.md)
+      - [第 14 讲：Portal 网络](/eps/week9-research.md)
+      - [第 15 讲：SSF](/eps/week10-research.md)
+    - **第 4 周：核心特性** 
+      - [第 16 讲：Gasper](/eps/day16.md)
+      - [第 17 讲：EVM](/eps/day17.md)
+    - **第 5 周：网络**
+      - [第 18 讲：devp2p](/eps/day18.md)
+      - [第 19 讲：libp2p](/eps/day19.md)
+- [贡献指南](contributing.md)
+
+## 协议百科
+
+- **协议**
+  - [史前时代](/wiki/protocol/prehistory.md)
+  - [架构](/wiki/protocol/architecture.md)
+  - [设计理念](/wiki/protocol/design-rationale.md)
+  - [演进历程](/wiki/protocol/history.md)
+
+- **执行层**
+  - [执行层规范](/wiki/EL/el-specs.md)
+  - [客户端架构](/wiki/EL/el-architecture.md)
+  - [执行层客户端](/wiki/EL/el-clients.md)
     - [Besu](/wiki/EL/clients/besu.md)
     - [Reth](/wiki/EL/clients/reth.md)
   - [EVM](/wiki/EL/evm.md)
-    - [Precompiled Contracts](/wiki/EL/precompiled-contracts.md)
-  - [Block Building](/wiki/EL/block-production.md)
-  - [Data Structures](/wiki/EL/data-structures.md)
-  - [Transaction anatomy](/wiki/EL/transaction.md)
+    - [预编译合约](/wiki/EL/precompiled-contracts.md)
+  - [区块构建](/wiki/EL/block-production.md)
+  - [数据结构](/wiki/EL/data-structures.md)
+  - [交易解析](/wiki/EL/transaction.md)
   - [JSON-RPC](/wiki/EL/JSON-RPC.md)
   - [DevP2P](/wiki/EL/devp2p.md)
-  - [RLP Serialization](/wiki/EL/RLP.md)
-- Consensus Layer
-  - [Overview](/wiki/CL/overview.md)
-  - [Client architecture](/wiki/CL/cl-architecture.md)
-  - [CL Networking](/wiki/CL/cl-networking.md)
-  - [CL Specs](/wiki/CL/cl-specs.md)
+  - [RLP 序列化](/wiki/EL/RLP.md)
+  - [EOF](/wiki/EL/eof.md)
+
+- **共识层**
+  - [概览](/wiki/CL/overview.md)
+  - [客户端架构](/wiki/CL/cl-architecture.md)
+  - [共识层网络](/wiki/CL/cl-networking.md)
+  - [共识层规范](/wiki/CL/cl-specs.md)
   - [Beacon API](/wiki/CL/beacon-api.md)
-  - [CL Clients](/wiki/CL/cl-clients.md)
-  - [SSZ Serialization](/wiki/CL/SSZ.md)
-    - [Merkleization](/wiki/CL/merkleization.md)
-  - [Weak Subjectivity](/wiki/CL/syncing.md)
-- Development
-  - [Core development](/wiki/dev/core-development.md)
-  - [Coordination](/wiki/dev/pm.md)
-  - [Dev Resources](/wiki/dev/cs-resources.md)
-- Testing and security
-  - [Testing overview](/wiki/testing/overview.md)
-  - [Incidents](/wiki/testing/incidents.md)
+  - [共识层客户端](/wiki/CL/cl-clients.md)
+  - [SSZ 序列化](/wiki/CL/SSZ.md)
+    - [默克尔化](/wiki/CL/merkleization.md)
+  - [弱主观性](/wiki/CL/syncing.md)
+
+- **开发**
+  - [核心开发](/wiki/dev/core-development.md)
+  - [协调工作](/wiki/dev/pm.md)
+  - [开发资源](/wiki/dev/cs-resources.md)
+
+- **测试与安全**
+  - [测试概览](/wiki/testing/overview.md)
+  - [安全事件](/wiki/testing/incidents.md)
   - [Hive](/wiki/testing/hive.md)
   - [Kurtosis](/wiki/testing/kurtosis.md)
-  - [Formal verification](/wiki/testing/formal-verification.md)
-- Research
-  - [Roadmap overview](/wiki/research/roadmap.md)
-  - [Scaling](/wiki/research/scaling/scaling.md)
-    - [Core Changes](/wiki/research/scaling/core-changes/core-changes.md)
+  - [形式化验证](/wiki/testing/formal-verification.md)
+
+- **研究**
+  - [路线图概览](/wiki/research/roadmap.md)
+  - [扩展性](/wiki/research/scaling/scaling.md)
+    - [核心变更](/wiki/research/scaling/core-changes/core-changes.md)
     - [EIP-4844](/wiki/research/scaling/core-changes/eip-4844.md)
   - [MEV](/wiki/research/PBS/mev.md)
-    - [MEV-boost](/wiki/research/PBS/mev-boost.md)
+    - [MEV-Boost](/wiki/research/PBS/mev-boost.md)
   - [PBS](/wiki/research/PBS/pbs.md)
     - [ePBS](/wiki/research/PBS/ePBS.md)
-      - [ePBS Design Specs](/wiki/research/PBS/ePBS-Specs.md)
+      - [ePBS 设计规范](/wiki/research/PBS/ePBS-Specs.md)
     - [PTC](/wiki/research/PBS/PTC.md)
     - [PEPC](/wiki/research/PBS/PEPC.md)
     - [TBHL](/wiki/research/PBS/TBHL.md)
     - [ET](/wiki/research/PBS/ET.md)
   - [eODS](/wiki/research/eODS.md)
-  - Preconfirmations
-    - [Preconfirmations](/wiki/research/Preconfirmations/Preconfirmations.md)
-    - [Based Sequencing with Preconfs](/wiki/research/Preconfirmations/BasedSequencingPreconfs.md)
-  - [Light clients](/wiki/research/light-clients.md)
-- [Cryptography](/wiki/Cryptography/intro.md)
+  - [PeerDAS](/wiki/research/peerdas.md)
+  - **预确认**
+    - [预确认概览](/wiki/research/Preconfirmations/Preconfirmations.md)
+    - [基于预确认的排序](/wiki/research/Preconfirmations/BasedSequencingPreconfs.md)
+  - [轻客户端](/wiki/research/light-clients.md)
+  - **账户抽象**
+    - [EIP-7702](/wiki/research/account-abstraction/eip-7702.md)
+
+- **密码学**
+  - [概览](/wiki/Cryptography/intro.md)
   - [ECDSA](/wiki/Cryptography/ecdsa.md)
   - [BLS](/wiki/Cryptography/bls.md)
   - [Keccak256](/wiki/Cryptography/keccak256.md)
-  - Commitments
+  - **承诺方案**
     - [KZG](/wiki/Cryptography/KZG.md)
-  - [Post-Quantum Cryptography](/wiki/Cryptography/post-quantum-cryptography.md)
-- [Protocol Fellowship](/wiki/epf.md)
-- [Pectra FAQ](/wiki/pectra-faq.md)
+  - [后量子密码学](/wiki/Cryptography/post-quantum-cryptography.md)
 
-- **Wiki Info**
-  - [GitHub Repository](https://github.com/eth-protocol-fellows/protocol-studies)
+- [协议研究员项目](/wiki/epf.md)
+- [Pectra 常见问题](/wiki/pectra-faq.md)
+
+---
+
+## 维基信息
+
+- [GitHub 仓库](https://github.com/eth-protocol-fellows/protocol-studies)
 
 <form action="https://epf.wiki/#/eps/intro" target="_blank">
-  <input type="submit" value="Join the protocol" class="btn-primary" />
+  <input type="submit" value="加入协议学习小组" class="btn-primary" />
 </form>
