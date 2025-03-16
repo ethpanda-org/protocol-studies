@@ -76,7 +76,7 @@ EIP 提案可以通过硬分叉引入新的预编译合约，然而，由于测�
 
 以下是目前提出的预编译合约：
 - [EIP-2537：用于 BLS12-381 曲线操作的预编译合约](https://eips.ethereum.org/EIPS/eip-2537)
-- [EIP-7212：用于 secp256r1 曲线支持的预编译合约](https://eips.ethereum.org/EIPS/eip-7212)
+- [EIP-7212：用于 secp256r1 曲线支持的预编译合约](https://github.com/ethereum/RIPs/blob/master/RIPS/rip-7212.md)
 - [EIP-7545：用于 Verkle 证明验证的预编译合约](https://eips.ethereum.org/EIPS/eip-7545)
 - [EIP-5988：添加 Poseidon 哈希函数的预编译合约](https://eips.ethereum.org/EIPS/eip-5988)
 
