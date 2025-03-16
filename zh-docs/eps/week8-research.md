@@ -1,30 +1,32 @@
-本次研究讲座聚焦于 MEV（最大可提取价值）与抗审查性，讨论当前的状态及正在研究的提案。
+# 学习小组 第13周 | 协议服务
 
-观看 [Barnabé Monnot](https://twitter.com/barnabemonnot) 在 StreamETH 频道或 YouTube 上的演讲。幻灯片[点此查看](https://github.com/eth-protocol-fellows/protocol-studies/blob/main/docs/eps/presentations/week8-research.pdf)。
+本次研究讲座专注于 MEV 和审查抗性，讨论了当前的状态和正在开展的提案。
+
+观看由 [Barnabé Monnot](https://twitter.com/barnabemonnot) 主讲的演讲，可以在 StreamETH 频道或 YouTube 上观看。幻灯片 [可以在此处查看](https://github.com/eth-protocol-fellows/protocol-studies/blob/main/docs/eps/presentations/week8-research.pdf)。
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/hhYTtQ-GU1s?si=569qf27XN7l4ZL1Q" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-## 预备阅读
+## 预阅读
 
-在开始第 8 周的研究内容前，请先熟悉前几周的资源，特别是第 5 周的内容。理解协议当前架构、MEV 的存在及 PBS（提案-构建者分离）的影响至关重要。
+在开始本周内容之前，请先熟悉前几周的资源，尤其是第5天关于路线图的内容。理解协议的当前架构、MEV 的存在以及 PBS 的影响是非常重要的。
 
-此外，你可以通过以下资源进行准备：
+此外，您可以通过阅读以下资源为讲座做好准备：
 
 - [MEV 基础知识](https://ethereum.org/en/developers/docs/mev/)
-- [RIG 研究项目](https://rig.ethereum.org/)
-- [MEV 和 PBS 相关知识库](https://github.com/eth-protocol-fellows/protocol-studies/tree/pbs/docs/wiki/research/PBS)
+- [RIG 项目](https://rig.ethereum.org/)
+- [MEV 和 PBS 维基](https://epf.wiki/#/wiki/research/PBS/pbs)
 
-## 讲座概要
+## 大纲
 
-- 协议服务、MEV 的影响及密码经济学
-- PBS 及相关提案
-- ePBS（增强 PBS）不同方案
-- MEV 烧毁（MEV Burn）
-- 彩虹质押（Rainbow Staking）
+- 协议服务与 MEV、加密经济学的影响
+- PBS 和相关提案
+- ePBS 种类
+- MEV 销毁
+- 彩虹质押
 
-## 额外阅读与练习
+## 额外阅读和练习
 
-- [RIG 研究组开放问题](https://efdn.notion.site/RIG-Open-Problems-ROPs-c11382c213f949a4b89927ef4e962adf)
-- [以太坊审查现状统计](https://dotpics.info/)
-- [彩虹质押：解耦质押的探索](https://ethresear.ch/t/unbundling-staking-towards-rainbow-staking/)
-- [PBS 相关研究笔记](https://barnabe.substack.com/p/pbs)
+- [RIG 开放问题](https://efdn.notion.site/RIG-Open-Problems-ROPs-c11382c213f949a4b89927ef4e962adf)
+- [审查统计数据](https://dotpics.info/)
+- [彩虹质押](https://ethresear.ch/t/unbundling-staking-towards-rainbow-staking/)
+- [PBS 备忘录](https://barnabe.substack.com/p/pbs)
