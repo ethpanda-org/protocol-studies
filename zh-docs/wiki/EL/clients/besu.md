@@ -1,131 +1,131 @@
-# Besu Execution Client
+# Besu 执行客户端
 
-This is a brief summary of important information you need to know when starting to contribute to Besu, a Java implementation of the execution client. 
+这是开始为 Besu（一个 Java 实现的执行客户端）贡献代码时需要了解的关键信息简要总结。
 
-Codebase repository: https://github.com/hyperledger/besu/
-Docs: https://besu.hyperledger.org
+代码库仓库：https://github.com/hyperledger/besu/
+文档：https://besu.hyperledger.org
 
-## Code directory explanation
+## 代码目录说明
 
-### Modules
-+  It is a multi-module [gradle](https://gradle.org/) project. You can take a look to settings.gradle to see all modules:
-    + Each module has its own build.gradle:
-		+ You can specify its module name: `archiveBaseName`
-		+ You can specify its dependencies but without versions.
-	+ Each module has its own source code here: /src/main/java
-+ **There are top-level modules**:
-	+ `config`:
-		+ Where most of the configuration is assembled, validated.
-		+ You can find the genesis information.
-	+ `besu:`
-		+ All the CL arguments are being defined.
-		+ Is where the main method is located.
-+ **There are complementary modules**:
-	+ `crypto`:
-		+ Everything relative to cryptographic keys.
-	+ `data types`:
-		+ Data types being used by Besu.
+### 模块
++  这是一个多模块的 [gradle](https://gradle.org/) 项目。你可以查看 settings.gradle 文件来查看所有模块：
+    + 每个模块都有自己的 build.gradle 文件：
+		+ 你可以指定模块名称：`archiveBaseName`
+		+ 你可以指定模块的依赖，但不带版本号。
+	+ 每个模块都有自己的源代码，位于：/src/main/java
++ **有以下顶级模块**：
+	+ `config`：
+		+ 大部分配置在这里进行汇总和验证。
+		+ 你可以找到创世区块的信息。
+	+ `besu:`：
+		+ 所有的命令行参数（CL 参数）在这里定义。
+		+ 这里是 main 方法所在的位置。
++ **有补充模块**:
+	+ `crypto`：
+		+ 所有与加密密钥相关的内容。
+	+ `data types`：
+		+ Besu 使用的数据类型。
 	+ `metrics`:
-		+ OpenTelemetry/Prometheus not tight to internal Besu.
-	+ `ethereum`:
-		+ Is not a module but contains modules :
-			+ api :
-				+ All interaction you want to have with ethereum, world state.
+		+ OpenTelemetry/Prometheus 与 Besu 内部不紧密相关。
+	+ `ethereum`：
+		+ 不是一个独立的模块，但包含以下模块：
+			+ api：
+				+ 与以太坊、世界状态交互的所有内容。
 			+ core: 
-				+ Storing date, quorum setup.
+				+ 存储数据、设置法定人数。
 	+ `evm`:
-		+ EVM behavior
-		+ In this module you can find each opcode operation implementation.
-+ **There are enterprise modules:** 
+		+ EVM 行为
+		+ 在此模块中，你可以找到每个操作码（opcode）操作的实现。
++ **有企业模块：** 
 	+ enclave, plugin-api, privacy-contracts
 
 ### Gradle
-+ gradlew (file) :
-	+ It is a bash script that will check if gradle is installed or not ( will install the wrapper for you and download the whole distribution)
-	+ Gradle itself is managed as part of a wrapper that is used by calling this script.
-+ gradle (folder):
++ gradlew（文件）：
+	+ 这是一个 bash 脚本，用于检查是否安装了 Gradle（如果没有，它会为你安装 Gradle Wrapper 并下载整个分发包）。
+	+ Gradle 本身作为一个 wrapper 被管理，通过调用这个脚本来使用。
++ gradle（文件夹）：
 	+ gradle-wrapper.properties:
-		+ distributionURL : points to the distribution to be used when calling ./gradlew
-	+ versions.gradle (file):
-		+ It is where all module's versions are defined. It is used by gradlew.
-+ build.gradle (file):
+		+ distributionURL：指向在调用 ./gradlew 时使用的分发包。
+	+ versions.gradle（文件）：
+		+ 定义了所有模块的版本。gradlew 使用此文件。
++ build.gradle（文件）：
 	+ plugins:
-		+ `spotless`: Code formatting, check licensing, etc,
-			+ Command:  `./gradlew spotlessApply`
-		+ `errorprone`:  Compliance with best practices in Java.
-			+ Command:  `./gradlew errorProne`
+		+ `spotless`：代码格式化、检查许可等，
+			+ 命令： `./gradlew spotlessApply`
+		+ `errorprone`：确保遵循 Java 的最佳实践。
+			+ 命令：`./gradlew errorProne`
 	+ distribution:
-		+ It defines where the building output is left by taking all projects into an application:
-			+ .tar .zip distributions. You can see a .tar or .zip under builder/distributions.
-+ build (folder):
-	+ It's not a module.
-	+ distributions (folder):
-		+ Location of the Besu distribution.
-		+ If you go deeper to build/distribution/besu-{version}-SNAPSHOT/lib you can see each version of each component and libraries.
+		+ 它定义了构建输出的存放位置，将所有项目打包成应用程序：
+			+ .tar 和 .zip 分发包。你可以在 builder/distributions 下看到 .tar 或 .zip 文件。
++ build（文件夹）：
+	+ 这不是一个模块。
+	+ distributions（文件夹）：
+		+ Besu 分发包的位置。
+		+ 如果你进入 build/distribution/besu-{version}-SNAPSHOT/lib，你可以看到每个组件和库的每个版本。
 
-### Testing
-+ Unit tests:
-	+ Each module has its unit testing under src/test/java
-+ Integration tests:
-	+ Each module has its integration test under src/integration-test/java:
-	+ Are more rare.
-	+ Are run outside of the inner internals of the code.
-	+ Are involved in more expensive runs.
-+ Acceptance tests:
-	+ Are located under the acceptance-test-module.
-	+ Runs multiple Beau's nodes to create consensus algorithms between them and performs task adjusting and propagating blocks.
-+ Reference tests:
-	+ Taken after Ethereum tests, borrowed by the Ethereum foundation.
-	+ Are the same for all clients: https://github.com/ethereum/tests
-	+ Are stored in JSON:
-		+ Location: `ethereum/referencetests/`
-+ Other info:
-	+ JUnit 4
+### 测试
++ 单元测试：
+	+ 每个模块在 src/test/java 下都有其单元测试。
++ 集成测试：
+	+ 每个模块在 src/integration-test/java 下都有其集成测试：
+	+ 相对较少。
+	+ 在代码内部结构之外运行。
+	+ 涉及更复杂的执行。
++ 验收测试：
+	+ 位于 acceptance-test-module 下。
+	+ 运行多个 Beau 节点，在它们之间创建共识算法，并执行任务调整和区块传播。
++ 参考测试：
+	+ 从以太坊测试中获得，借用自以太坊基金会。
+	+ 所有客户端都相同：https://github.com/ethereum/tests
+	+ 以 JSON 格式存储：
+		+ 位置：`ethereum/referencetests/`
++ 其他信息：
+	+ 使用 JUnit 4。
 
-###  Development tasks:
-+ Some useful commands:
+###  开发任务：
++ 一些有用的命令：
 	+ `git pull --recurse-submodules`.
 	+ `./gradlew spotlessApply`
-	+ `./gradlew check` (it is run by CI every time you make a PR to Besu repository)
+	+ `./gradlew check`（每次向 Besu 仓库提交 PR 时，CI 会运行此命令）
 	+  `./gradlew assemble`
-	+  In case you want to connect your MM to your local Besu node, you should run Besu with these options:
+	+  如果你想将你的 MM 连接到本地的 Besu 节点，应该使用以下选项运行 Besu：
 		+ bin/besu --network=dev --rpc-http-enabled --rpc-http-cors-origins=chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn
 		+ RPC URL: http://localhost:8545
 
-###  Important classes:
+###  重要类：
 + `BesuControllerBuilder`:
-	+ Manages all the components that are going to be used and needed to setup the client.
-	+ On the build method you can see if you are building the correct domain object.
-	+ It returns a BesuController.
+	+ 管理将用于设置客户端的所有组件。
+	+ 在 build 方法中，你可以检查是否正在构建正确的域对象。
+	+ 返回一个 BesuController。
 + `BesuCommand`:
-	+ Represents the main Besu CLI command.
+	+ 代表主要的 Besu CLI 命令。
 + `ForkIdManager`:
-    + Responsible for building and representing the latest fork synchronized.
-	+ We always need to know where we are in terms of our own chain. This check is done constantly.
-	+ It is created on EthProtocolManager which is created on BesuControllerBuilder. 
+    + 负责构建并表示最新同步的分叉。
+	+ 我们始终需要知道自己链上的位置。此检查会不断进行。
+	+ 它在 EthProtocolManager 中创建，而 EthProtocolManager 是在 BesuControllerBuilder 中创建的。
 + `ProtocolSchedule`:
-	+ Keeps track of all the configuration items as part of a specific range of block numbers for a chain.
+	+ 跟踪区块链中与特定区块号范围相关的所有配置项。
 + `ProtocolSpec`:
-	+ Let's you configure every aspect of how things work inside the protocol.
+	+ 允许你配置协议内部如何工作的各个方面。
 + `MainnetProtocolSpec`:
-	+ You will find every spec since frontier.
-	+ Each new spec is built on top of the previous one and add or change what is necessary.
+	+ 你将会找到自 Frontier 起的所有规范。
+	+ 每个新的规范都是在之前的基础上构建的，并且添加或更改必要的内容。
 + `MainnetEVMs`:
-	+ Provides to the EVM the appropriate operations for mainnet hard forks.
-	+ It is an aggregate state where most of the time you will be adding new features to the spec itself.
-	+ New operations will be registered here.
+	+ 为主网硬分叉提供适当的 EVM 操作。
+	+ 它是一个聚合状态，通常你会在这里为规范添加新特性。
+	+ 新操作将在这里注册。
 + `JsonRpcMethodsFactory`:
-	+ A builder class for RPC methods.
-	+ From here you can understand how to create new RPC methods.
+	+ 用于 RPC 方法的构建类。
+	+ 通过它你可以了解如何创建新的 RPC 方法。
 
 
-### Important libraries:
+### 重要库：
 + https://doc.libsodium.org/:
-	+ Sodium is a modern, easy-to-use software library for encryption, decryption, signatures, password hashing, and more.
+	+ Sodium 是一个现代且易于使用的软件库，提供加密、解密、签名、密码哈希等功能。
 + https://github.com/nss-dev/nss:
-	+ Network Security Services (NSS) is a set of libraries designed to support cross-platform development of security-enabled client and server applications. NSS supports TLS 1.2, TLS 1.3, PKCS #5, PKCS#7, PKCS #11, PKCS #12, S/MIME, X.509 v3 certificates, and other security standards.
+	+ 网络安全服务（NSS）是一组旨在支持跨平台开发安全客户端和服务器应用程序的库。NSS 支持 TLS 1.2、TLS 1.3、PKCS #5、PKCS #7、PKCS #11、PKCS #12、S/MIME、X.509 v3 证书以及其他安全标准。
 
-## References
+## 参考资料
 
 + https://www.youtube.com/watch?v=4pCxwuNRaKg
 + https://github.com/hyperledger/besu
