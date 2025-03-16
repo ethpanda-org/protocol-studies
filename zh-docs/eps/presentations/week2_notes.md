@@ -1,19 +1,19 @@
-# Week 2 Lecture
+# 第 2 周讲座
 
-## Overview
+## 概览
 
-### Block Validation
+### 区块验证
 
-go
+```go
 func stf(parent types.Block, block types.Block, state state.StateDB) (state.StateDB, error) {
     if err := core.VerifyHeaders(parent, block); err != nil {
-            // header error detected
+            // 头部验证错误
             return nil, err
     }
     for , tx := range block.Transactions() {
         res, err := vm.Run(block.Header(), tx, state)
         if err != nil {
-                // transaction invalid, block is invalid
+                // 交易无效，区块无效
                 return nil, err
         }
         state = res
@@ -27,12 +27,13 @@ func newPayload(execPayload engine.ExecutionPayload) bool {
     }
     return true
 }
+```
 
-https://github.com/ethereum/go-ethereum/blob/63aaac81007ad46b208570c17cae78b7f60931d4/consensus/beacon/consensus.go#L229C23-L229C35
+[代码来源](https://github.com/ethereum/go-ethereum/blob/63aaac81007ad46b208570c17cae78b7f60931d4/consensus/beacon/consensus.go#L229C23-L229C35)
 
-### Block Building
+### 区块构建
 
-go
+```go
 func build(env Environment, pool txpool.Pool, state state.StateDB) (types.Block, state.StateDB, error) {
     var (
         gasUsed = 0
@@ -42,7 +43,7 @@ func build(env Environment, pool txpool.Pool, state state.StateDB) (types.Block,
         tx := pool.Pop()
         res, gas, err := vm.Run(env, tx, state)
         if err != nil {
-            // tx invalid
+            // 交易无效
             continue
         }
         gasUsed += gas
@@ -51,75 +52,82 @@ func build(env Environment, pool txpool.Pool, state state.StateDB) (types.Block,
     }
     return core.Finalize(env, txs, state)
 }
+```
 
-### State Transition Function
-* walkthrough go-ethereum
+### 状态转换函数
 
-### EVM
+* 代码解析：go-ethereum
 
-* arithmetic
-* bitwise
-* environment
-* control flow
-* stack ops
+### EVM（以太坊虚拟机）
+
+* 算术操作
+* 位运算
+* 运行环境
+* 控制流
+* 栈操作
     * push, pop, swap
-* system
-    * call, create, return, sstorge
-* memory
+* 系统调用
+    * call, create, return, sstore
+* 内存操作
     * mload, mstore, mstore8
 
-### p2p
+### P2P 网络
 
-* execution layer operates on devp2p
-* devp2p => sub-capability eth/68, eth/69, snap, whisper, les, wit
-* eth/1 -> eth/2 -> eth/6.1 -> eth/6.2 
+* 执行层运行在 devp2p 之上
+* devp2p 的子协议包括 eth/68、eth/69、snap、whisper、les、wit
+* eth/1 -> eth/2 -> eth/6.1 -> eth/6.2
 
-#### Responsibility
+#### 主要职责
 
-* historical data
+* 历史数据
     * GetBlockHeader
     * GetBlockBodies
     * GetReceipts
-* pending transactions
+* 未确认交易
     * Transactions
     * NewPooledTransactionHashes
     * GetPooledTransactions
-* state
-    snap
+* 状态数据
+    * snap
 
-    R1      -> 
+```
+    R1      ->
    / \
   x   x
- / \ / \ 
+ / \ / \
 a  b c  d
 
-    R200      -> 
+    R200      ->
    / \
   1   2
- / \ / \ 
+ / \ / \
 r  a c  d
 
-^^^ contiguous state retrieval
+^^^ 连续状态检索
 
 R200
 
 a b c d
+```
 
+#### “修复阶段”
 
-"healing phase"
+* 获取 R200 -> (1, 2)
+* 获取 1 -> (r, a)
 
-* get R200 -> (1, 2)
-* get 1 -> (r, a)
-
+```
 r a c d
+```
 
-* get 2 -> (c, d)
+* 获取 2 -> (c, d)
 
-"healing done"
+```
+“修复完成”
+```
 
+#### 启动 Snap 同步
 
-#### Start snap
+* 以弱主观性检查点启动 -> 区块哈希
+* 获取与哈希关联的区块
+* 针对该区块的状态启动 Snap 同步
 
-* start weak subjectivity-checkpoint -> block hash
-* get block associated with hash
-* start snap against block's state
