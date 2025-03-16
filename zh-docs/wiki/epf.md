@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD013 -->
+
 # 以太坊协议奖学金
 
 EPF是一个为所有有兴趣开始贡献以太坊核心协议的人设立的计划。由以太坊基金会协议支持组织，该计划按年度 cohort 划分，每个 cohort 持续4到5个月。该计划最初由 Piper Merriam 作为CDAP发起，并随着每个 cohort 的推进而发展。
