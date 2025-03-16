@@ -1,42 +1,64 @@
-> [Subjective](https://dictionary.cambridge.org/dictionary/english/subjective): influenced by or based on personal beliefs or feelings, rather than based on facts  
-> [Objective](https://dictionary.cambridge.org/dictionary/english/objective): based on real facts and not influenced by personal beliefs or feelings (scroll down on the link)
+# 客观性与主观性：区块链同步中的弱主观性
 
-## Background
+## 背景
 
-Let's make a distinction between "objectivity" and "subjectivity" in the context of information theory and blockchains. If a piece of information is *completely verifiable* for its *correctness* it is *objective*. If its correctness is not *fully verifiable* (some degree of belief goes into it) then it is "subjective". In reality, most pieces of information lie in the spectrum in between objectivity and subjectivity. 
+在信息论和区块链的语境下，我们需要区分“客观性”和“主观性”。如果一条信息的**正确性可以被完全验证**，那么它是**客观的**；如果它的正确性无法被**完全验证**（即某种程度上依赖于信任或共识），那么它就是**主观的**。实际上，大多数信息都处于客观性与主观性的光谱之间。
 
-For example, prior to the merge, if a client started with a genesis block then it could *objectively* verify every block that came after it. To do this a client would ask for the latest "final"(will come to this later) head of the blockchain from its peers and then backtrack all the way to genesis by querying for parent blocks (a.k.a the history). Since the parent hash is encoded into a block it is easy to verify all the queried parent blocks. When the client reaches genesis it can deem the entire history as *correct* and itself as ***synced***. 
+例如，在以太坊合并（The Merge）之前，如果一个客户端从创世区块开始同步，它可以**客观地**验证其后的每一个区块。具体来说，客户端会向其对等节点请求最新的“最终确定”（Final）区块，并沿着区块的**父哈希**（Parent Hash）一路回溯到创世区块（Genesis），从而验证整个历史数据。当客户端成功回溯至创世区块时，它就可以认定整个历史**正确**，并标记自身为***已同步（synced）***。
 
-> different syncing mechanisms exist today. What is described above is the general overview of a "full" sync
+> 目前存在不同的同步机制，这里描述的是“完整同步”（Full Sync）的基本流程。
 
-Altering the history of the chain required an ungodly amount of computational power(Proof-of-Work) making the verified history(pre-merge) *objective*. But there is still some amount of trust put into the genesis block being correct. But it can be argued that it is *weakly objective* rather than *subjective* because most clients come packaged with the genesis block and its checksum.  
+在合并之前，想要篡改区块链的历史需要**巨大的算力**（工作量证明，Proof-of-Work），因此被验证过的历史数据（在 PoW 时代）是**客观的**。不过，创世区块的正确性仍然依赖于某种程度的信任，但由于大多数客户端都自带创世区块及其校验和（Checksum），所以可以认为它是**弱客观的（Weakly Objective）**，而非完全主观的。
 
-> A "final" block was considered to be the 7th block from the current head of the blockchain, since reversing 6 blocks worth of PoW was considered difficult.
+> 早期，以太坊中的“最终确定”区块通常指**倒数第 7 个区块**，因为重组 6 个区块的 PoW 计算量极大，几乎不可行。
 
-With the merge, Ethereum brought in membership(validators) and voting for its new consensus mechanism. Moreover, the consensus mechanism was logically isolated from the history and execution mechanism, referred to as the consensus layer(CL) and the execution layer(EL). While the history mechanism mostly remains the same, the latest final block required for syncing is obtained from the consensus layer. In return, the EL verifies the correctness of a block's execution (smart contracts etc.) for the CL to take a vote on the block and gather *consensus*. However, the change in the consensus mechanism made genesis syncing ["unsafe"](https://docs.teku.consensys.io/concepts/weak-subjectivity#sync-outside-the-weak-subjectivity-period). * *Enter weak-subjectivity* *
+在合并后，以太坊引入了**验证者（Validator）机制**和**投票机制**，并且**共识机制**被从**历史和执行机制**中逻辑上隔离，即**共识层（Consensus Layer, CL）** 和 **执行层（Execution Layer, EL）**。虽然历史数据的同步方式基本保持不变，但用于同步的最新“最终确定”区块则来自共识层。同时，执行层负责验证区块的执行正确性（例如智能合约的运行结果），然后共识层对区块进行投票并达成共识。然而，由于共识机制的变化，使得**创世区块同步变得“不安全”**（[参考资料](https://docs.teku.consensys.io/concepts/weak-subjectivity#sync-outside-the-weak-subjectivity-period)）。* 这就引出了弱主观性（Weak Subjectivity）。*
 
-> The new consensus mechanism also brought in several non-trivial nuances with it. Understanding these nuances is critical for understanding weak subjectivity(next section). This is a great starter: https://ethos.dev/beacon-chain
+> 新的共识机制带来了许多复杂的变化，理解这些变化对于理解弱主观性至关重要。推荐阅读：[以太坊信标链概述](https://ethos.dev/beacon-chain)。
 
-## Syncing in Weak Subjectivity
+---
 
-When a validator exits the chain, its right to participate in the consensus process is revoked. The validator can no longer vote/attest for any future blocks. However, *the validator can re-vote/re-attest for any of the **past** blocks*. If enough exited validators re-attest a past block (a past fork block), they create an alternate history of the chain. A sync-**ed** node that is at the canonical head wouldn't care about the equivocation (alternate history) since it has already processed the validator exit. However, a node that is sync-**ing** does not have any way of knowing the future state of the validator and might follow the wrong chain. To avoid this, the direction of syncing is reversed for the beacon chain. This is the first major difference between beacon block syncing and execution block syncing.
+## 弱主观性下的同步机制
 
-The second difference lies in the anchor of trust in information. Since the history of the chain can be changed under certain conditions the sync target cannot be objectively verified i.e. we can never concretely prove its existence in the canonical chain. Hence, there is a significant amount of trust placed in the sync target and it remains subjective. Because of the trust involved, sync targets (named weak subjectivity checkpoints) are shared out-of-band since random peer connections in the p2p layer of Ethereum cannot be trusted. It is important to note that, since the sync target is a "finalized" checkpoint it remains *weakly* subjective. In other words, its allows some degree of verification for its correctness (probably just not for its existence).
+在以太坊权益证明（Proof-of-Stake, PoS）机制下，当一个验证者**退出网络**，它的**共识投票权**会被撤销，这意味着它不能再为未来的区块投票或进行证明（Attestation）。但**该验证者仍然可以对过去的区块重新投票/证明**。如果足够多的已退出验证者对某个**过去的区块**（即某个分叉的历史区块）重新投票，他们就可能形成一个**替代历史**（Alternative History）。
 
-The third difference lies in the timing of the chain. A node that is out-of-sync for enough time can also be subject to the same attack. Theoretically, the amount of time should allow enough validators to exit and launch an attack. This time period is known as the ***weak subjectivity period***. This time period also applies to the sync target. If the backfilling process (beacon chain) or the execution layer takes too much time to sync, then the target becomes *stale*. Therefore, while the execution layer is syncing (backfilling is usually fast enough), new beacon blocks are continuously imported without checking their execution payload of the new heads. This is referred to as *optimistically* importing blocks.
+- **对于一个已经完成同步（Synced）的节点**，它已经处理过这些验证者的退出，因此它不会受到影响。
+- **但对于正在同步（Syncing）的新节点**，它无法判断这些验证者的状态，从而可能错误地同步到错误的链上。
 
-Therefore a weak subjectivity sync follows the steps defined below:
-1. *Obtain a weak subjectivity checkpoint out-of-band*
-2. *Backfill blocks all the way back to genesis from the weak subjectivity checkpoint*
-3. *Update the target header for the execution chain*
-4. *Optimistically follow the head of the chain and continuously update the target header for the execution chain*
-5. *Once the EL is synced, then mark the CL slots as verified post-verification. The node may now be considered fully synced*
+为了防止这一问题，以太坊信标链（Beacon Chain）采用了一种**反向同步**（Backfill Syncing）方式，这是信标链同步与执行层同步的第一个主要区别。
 
-## Useful Links
+### 1. **同步目标的主观性**
+由于以太坊的链历史在某些条件下是可以被改变的，因此**同步目标（Sync Target）无法被完全客观地验证**，即它的**存在性不能被严格证明**。因此，信任在同步过程中起着关键作用，使得同步目标**带有主观性**。
 
-1. https://docs.prylabs.network/docs/how-prysm-works/optimistic-sync
-2. https://ethereum.org/en/developers/docs/consensus-mechanisms/pos/weak-subjectivity/
-3. https://www.symphonious.net/2019/11/27/exploring-ethereum-2-weak-subjectivity-period/
-4. https://blog.ethereum.org/2014/11/25/proof-stake-learned-love-weak-subjectivity
-5. https://notes.ethereum.org/@adiasg/weak-subjectvity-eth2
-6. https://blog.ethereum.org/2016/05/09/on-settlement-finality
+为了提高安全性，**同步目标（称为弱主观性检查点，Weak Subjectivity Checkpoint）不会通过 p2p 网络随意传播，而是通过“带外渠道”（Out-of-Band）获取**。由于它是一个**最终确定的（Finalized）检查点**，它仍然具有一定的**弱客观性**——换句话说，我们可以在一定程度上验证它的正确性，但无法验证它的**存在性**。
+
+### 2. **弱主观性周期**
+如果一个节点长时间未同步，它同样可能受到类似的攻击。理论上，如果**足够多的验证者**在这段时间内**退出**并且重新投票，那么它们就可以创建一个伪造的历史。这段时间被称为 **“弱主观性周期”（Weak Subjectivity Period）**。
+
+这个周期同样适用于同步目标。如果一个节点同步的速度过慢（例如执行层的同步耗时过长），那么同步目标就会变得**过时（Stale）**，从而带来安全风险。
+
+因此，在同步执行层时，新的信标区块会被**乐观地（Optimistically）导入**，但不会立即验证其执行有效性，直到同步完成后再进行验证。这种机制称为 **“乐观同步”（Optimistic Syncing）**。
+
+---
+
+## 弱主观性同步流程
+
+基于以上分析，**弱主观性同步**流程如下：
+
+1. **通过带外渠道获取一个弱主观性检查点**
+2. **从该检查点反向回溯区块，直至创世区块**
+3. **更新执行链的目标头部（Target Header）**
+4. **乐观地跟随链的最新头部，并持续更新执行链的目标头部**
+5. **执行层完成同步后，验证共识层的区块并将其标记为已验证，节点才可视为完全同步**
+
+---
+
+## 参考资料
+
+1. [Prysm 客户端：乐观同步](https://docs.prylabs.network/docs/how-prysm-works/optimistic-sync)
+2. [以太坊官方文档：弱主观性](https://ethereum.org/en/developers/docs/consensus-mechanisms/pos/weak-subjectivity/)
+3. [以太坊 2.0 的弱主观性周期](https://www.symphonious.net/2019/11/27/exploring-ethereum-2-weak-subjectivity-period/)
+4. [Vitalik Buterin：权益证明与弱主观性](https://blog.ethereum.org/2014/11/25/proof-stake-learned-love-weak-subjectivity)
+5. [以太坊 2.0 的弱主观性解析](https://notes.ethereum.org/@adiasg/weak-subjectvity-eth2)
+6. [以太坊博客：最终性概述](https://blog.ethereum.org/2016/05/09/on-settlement-finality)
+
