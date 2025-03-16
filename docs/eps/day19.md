@@ -1,41 +1,29 @@
-# 学习小组第 19 讲 | 共识层网络与 libp2p
+# Study Group Lecture 19 | CL Networking, libp2p
 
-学习小组的入门部分现已结束，我们即将进入更深入的学习阶段，由核心开发者带来一系列实时讲座。  
-**第二周** 的主题是 **以太坊网络（Networking）**。
+The introductory part of the study group is now over and we are now starting the deeper dive with live sessions from core developers. The second week of the main phase of the study group is dedicated to networking. 
 
-本周的第二场直播讲座将聚焦 **共识层网络**，该网络基于 **libp2p** 协议。  
-讲座由经验丰富的 **[DappLion](https://github.com/dappplion)** 主讲，他是共识层的贡献者，SigP Lighthouse 团队成员，曾担任 Lodestar 客户端的负责人，目前主要专注于 **PeerDAS**。
+The second live session the week is focused on consensus layer networking which is based on libp2p. The lecture is given by [DappLion](https://github.com/dappplion), a seasoned consensus layer contributer, part SigP Lighthouse team, previously lead of Lodestar client, his main focus is currently PeerDAS.
 
-📅 **直播时间**：  
-[2025 年 3 月 19 日（星期三），UTC 时间 15:00](https://www.timeanddate.com/worldclock/converter.html?iso=20250319T150000&p1=1440&p2=37&p3=136&p4=237&p5=923&p6=204&p7=671&p8=16&p9=41&p10=107&p11=28)  
-📌 **加入直播**：[点击此处进入会议](https://meet.ethereum.org/eps-office-hours)  
-🎥 **讲座录像**（直播结束后提供）
+> Join the live talk by DappLion on [Wednesday, 19.3. at 3PM UTC](https://www.timeanddate.com/worldclock/converter.html?iso=20250319T150000&p1=1440&p2=37&p3=136&p4=237&p5=923&p6=204&p7=671&p8=16&p9=41&p10=107&p11=28) to watch the lecture and ask questions directly. [Use this link to connect.](https://meet.ethereum.org/eps-office-hours) 
 
----
 
-## 预习材料
+## Pre-reading
 
-在学习第 19 天的内容之前，请先熟悉前几周的相关内容，特别是 **第 2 天** 的共识层（CL）讲座以及 **第 6 天** 的规范内容（至少了解共识层部分）。  
-你需要对 **Beacon Chain**、其网络功能以及以太坊共识层的不同机制有基本了解。
+Before starting with the Day 16 content, make yourself familiar with resources in previous weeks, especially day 2 on CL and day 6 on specs (at least the CL part). You should have general understanding of Beacon Chain, its networking features and different mechanism in Ethereum consensus layer. 
 
-此外，你可以通过以下资源进行预习：
+Additionally, you can get ready by studying the following resources.
 
-- [libp2p 简介 - David Dias](https://www.youtube.com/watch?v=CRe_oDtfRLw)
-- libp2p [文档](https://docs.libp2p.io/) 和 [规范](https://github.com/libp2p/specs)
+- [Introduction to libp2p - David Dias](https://www.youtube.com/watch?v=CRe_oDtfRLw)
+- libp2p [docs](https://docs.libp2p.io/) and [specs](https://github.com/libp2p/specs)
 
----
+## Outline
 
-## 课程大纲
-
-- 共识层网络协议（CL Networking Protocol）
+- CL networking protocol
 - libp2p
 - PeerDAS...
 
----
+## Additional reading and exercises
 
-## 额外阅读与练习
-
-- [解密 libp2p Gossipsub：一种可扩展且灵活的 P2P Gossip 协议 - Raúl Kripalani](https://www.youtube.com/watch?v=BUc4xta7Mfk)
-- [libp2p 在以太坊中的应用：从区块扩散到 PeerDAS 和 FullDAS - Csaba Kiraly](https://www.youtube.com/watch?v=sI_Qr1vHUk4)
-
----
+-  [Demystifying libp2p Gossipsub: A Scalable and Extensible p2p Gossip Protocol by Raúl Kripalani ](https://www.youtube.com/watch?v=BUc4xta7Mfk)
+-  [libp2p in Ethereumfrom block diffusionto PeerDAS and FullDAS - Csaba Kiraly ](https://www.youtube.com/watch?v=sI_Qr1vHUk4)
+  
