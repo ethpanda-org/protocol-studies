@@ -8,7 +8,7 @@ TBHL 修改了以太坊传统的时隙结构，在一个时隙时间框架内引
 
 ## 时隙结构与操作阶段
 
-![TBHL 的时隙结构](/docs/wiki/research/img/scaling/Slot-Anatomy-of-TBHL-Mike.png)
+![TBHL 的时隙结构](../img/scaling/Slot-Anatomy-of-TBHL-Mike.png)
 
 _图 — TBHL 的时隙结构。由 Mike Neuder 和 Justin Drake 提供。_
 
