@@ -1,36 +1,34 @@
-# Merkleization and Hash Tree Roots 
+# Merkle化与哈希树根
 
+在以太坊共识机制中，所有参与节点必须始终如一且高效地达成对系统状态的一致性。通过 [Simple Serialize (SSZ)](/wiki/CL/SSZ.md) 框架，Merkle化过程将序列化数据转化为 Merkle 树结构。Merkle化方案的目标是确保在受限环境（如轻客户端、执行环境等）中，能够访问轻量级的证明，用以做出重要决策。本文讨论了 Merkle化的细节及其在确保节点之间共享状态的可扩展性与安全性方面的重要性。
 
-In Ethereum consensus mechanism, it's critical for all participating nodes to agree on the state of the system consistently and efficiently. The [Simple Serialize (SSZ)](/wiki/CL/SSZ.md) framework facilitates this through Merkleization, a process that transforms serialized data into a Merkle tree structure. The goal of the Merkleization scheme is to ensure that constrained environments (light clients, execution environments, etc.) can have access to light-weight proofs which they can use to make important decisions. This wiki page discusses the intricacies of Merkleization and its importance in ensuring a shared state across nodes in a scalable and secure manner.
+## 术语与方法
 
+- **Merkle化：** 指构建 Merkle 树并推导出其根。
+- **哈希树根：** Merkle化的特定应用，用于计算复杂 SSZ 容器的根哈希。
 
-## Terminology and Methods
+## Merkle化的必要性
 
-- **Merkleization:** Refers to constructing a Merkle tree and deriving its root.
-- **Hash Tree Root:** A specific application of Merkleization, used to compute the root hash of complex SSZ container.
+加密哈希函数提供了解决方案，通过生成数据集的紧凑且唯一的表示（如 Beacon 状态）。通过对 Beacon 链的序列化状态进行哈希，节点可以快速且高效地通过交换这些小哈希输出进行状态比较。
 
-## The Need for Merkleization
+## Merkle化过程
 
-Cryptographic hash functions provide a solution by generating a compact, unique representation of a data set for a Beacon state. By hashing the serialized state of a Beacon chain, nodes can quickly and efficiently compare states by exchanging these small hash outputs.
+Merkle化过程将序列化数据分解为 32 字节的块，这些块作为 Merkle 树的叶子。然后，这些块成对组合并进行哈希计算，直到树的顶层，最终得到一个哈希——即 Merkle 根哈希。此根哈希作为整个数据集的唯一指纹。关键步骤如下：
 
-## Process of Merkleization
+- **分块：** 将序列化数据分为 32 字节的块。
+- **树构建：** 将块成对组合并哈希每对数据，形成树的下一层。重复此步骤，直到只剩一个哈希：Merkle 根。
+- **填充：** 如果块的数量不是 2 的幂，则会添加额外的零值块，以平衡树的结构，确保树是平衡的。
 
-Merkleization involves breaking down the serialized data into 32-byte chunks, which serve as the leaves of a Merkle tree. These chunks are then combined pair-wise, hashed together, and the process is repeated up the tree until a single hash—the Merkle root—is derived. This root hash acts as a unique fingerprint for the entire dataset. The key steps are as below:
+## Merkle化的优势
 
-- **Chunking:** Divide the serialized data into 32-byte chunks.
-- **Tree Construction:** Pair up the chunks and hash each pair to form the next level of the tree. Repeat this step until only one hash remains: the Merkle root.
-- **Padding:** If the number of chunks isn't a power of two, additional zero-value chunks are added to round out the tree, ensuring that the tree is balanced.
+- **性能效率：** 虽然树的哈希需要大约两倍于原始数据的计算量，但缓存机制可以存储那些不常变化的子树根。这显著减少了计算开销，因为只有修改过的数据部分需要重新哈希。
+- **轻客户端支持：** Merkle 树结构支持创建 Merkle 证明——这些小数据块能够证明特定状态部分的包含性和完整性，而无需整个数据集。这对于资源有限的轻客户端至关重要，它们依赖这些证明与以太坊安全地交互。
 
-## Benefits of Merkleization
+如果你想了解更多关于 Merkle 树结构的信息，可以参考 [这里](https://eth2book.info/capella/part2/building_blocks/merkleization/) 和 [这里](https://github.com/protolambda/eth2-docs?tab=readme-ov-file#ssz-hash-tree-root-and-merkleization)。
 
-- **Performance Efficiency:** While the tree requires hashing approximately twice the original data amount, caching mechanisms can store the roots of subtrees that don't change often. This significantly reduces the computational overhead as only altered parts of the data need re-hashing.
-- **Light Client Support:** The Merkle tree structure supports the creation of Merkle proofs—small pieces of data that prove the inclusion and integrity of specific parts of the state without needing the entire dataset. This feature is crucial for light clients, which operate with limited resources and rely on these proofs to interact with Ethereum securely.
+## 一般化索引
 
-If you want to learn more about the Merkle tree structure, you can refer [here](https://eth2book.info/capella/part2/building_blocks/merkleization/) and [here](https://github.com/protolambda/eth2-docs?tab=readme-ov-file#ssz-hash-tree-root-and-merkleization). 
-
-## Generalized Indices
-
-To facilitate direct referencing and verification within the tree, each node (both leaves and internals) is assigned a generalized index. This index is derived from the node’s position within the tree:
+为了便于直接引用和验证树中的元素，每个节点（包括叶节点和内部节点）都会被分配一个一般化索引。该索引根据节点在树中的位置进行推导：
 
 ```mermaid
 graph TD;
@@ -50,21 +48,21 @@ graph TD;
     3 --> 7
 ```
 
-_Figure: Merkle Tree Generalized Indices and Depth Levels._
+_图：Merkle 树的一般化索引和深度层级_
 
-- **Root Index:** 1 (depth = 0)
-- **Subsequent Levels:** $2^{depth} + index$ where index is the node's zero-indexed position at that depth.
+- **根节点索引：** 1（深度 = 0）
+- **后续层级：** $2^{depth} + index$，其中 `index` 是节点在该层级的零索引位置。
 
-## Multiproofs Using Generalized Indices
+## 使用一般化索引的多重证明
 
-Multiproofs using generalized indices provide an efficient way to verify specific elements within a Merkle tree without needing to know the entire tree structure. This concept is crucial in Ethereum and cryptographic applications where data integrity and verification speed are paramount. Let's break down the process using an example to understand how multiproofs work:
+使用一般化索引的多重证明提供了一种高效的方式来验证 Merkle 树中特定元素，而无需知道整个树的结构。在以太坊和加密应用中，这一概念至关重要，因为数据的完整性和验证速度至关重要。我们通过一个例子来说明多重证明的工作原理：
 
-**Understanding the Structure**
-- A Merkle tree is structured in layers, where each node is either a leaf node (containing actual data) or an internal node (containing hashes of its child nodes).
-- Generalized indices numerically represent the position of each node in the tree, calculated as $2^{depth} + index$, starting from the root (index 1).
+**理解结构**
+- Merkle 树是分层结构，每个节点要么是叶节点（包含实际数据），要么是内部节点（包含子节点的哈希值）。
+- 一般化索引数值表示每个节点在树中的位置，计算方式为 $2^{depth} + index$，从根节点（索引为 1）开始。
 
-**Tree Layout for the Example**
-- The tree is structured as follows, with `*` indicating the nodes required to generate the proof for the element at index 9:
+**示例中的树布局**
+- 树结构如下，`*` 表示生成索引 9 元素证明所需的节点：
 
 ```mermaid
 graph TD;
@@ -82,72 +80,71 @@ graph TD;
     6---13(("13"));
     7---14(("14"));
     7---15(("15"));
-
 ```
 
-_Figure: Merkle Tree Layout_
+_图：Merkle 树布局_
 
-**Determining Required Nodes**
-- **Identifying Required Hashes**: To validate the data at index 9, you need the hashes of the data at indices 8, 9, 5, 3, and 1.
-- **Pairwise Hashing**: Combine the hashes of indices 8 and 9 to compute the hash corresponding to their parent node, which should be `hash(4)`.
-- **Further Hash Combinations**:
-  - `hash(4)` is then combined with the hash from index 5 to produce the hash of their parent node, `hash(2)`.
-  - This result is combined with the hash from index 3 to work up to the next level.
-- **Final Verification**: The combined result from the previous step is hashed with the root from the opposite branch (index 3) to produce the ultimate tree root (`hash 1`).
-- **Integrity Check**: If the calculated root matches the known good root (`hash 1`), the data at index 9 is verified as accurate. If the data was incorrect, the resulting root would differ, indicating an error or tampering.
+**确定所需的节点**
+- **识别所需的哈希值：** 为了验证索引 9 的数据，需要获取索引 8、9、5、3 和 1 的哈希值。
+- **成对哈希：** 将索引 8 和 9 的哈希值结合，计算其父节点的哈希，即 `hash(4)`。
+- **进一步的哈希组合：**
+  - 将 `hash(4)` 与索引 5 的哈希值结合，计算父节点的哈希 `hash(2)`。
+  - 将此结果与索引 3 的哈希值结合，继续向上计算。
+- **最终验证：** 将前一步的合并结果与来自相对分支（索引 3）的根进行哈希，得到最终的树根（`hash 1`）。
+- **完整性检查：** 如果计算出的根与已知的正确根（`hash 1`）相匹配，则验证索引 9 的数据是准确的。如果数据不正确，则计算出的根会有所不同，表明存在错误或篡改。
 
-There are helper functions in the consensus specs to calculate the multiproofs and generalized indices. You can find [here.](https://github.com/ethereum/consensus-specs/blob/dev/ssz/merkle-proofs.md#merkle-multiproofs)
+在共识规范中，有帮助的函数用于计算多重证明和一般化索引。你可以 [在这里](https://github.com/ethereum/consensus-specs/blob/dev/ssz/merkle-proofs.md#merkle-multiproofs) 查找相关内容。
 
-## Calculating Hash Tree Roots
 
-The hash tree root of an SSZ object is computed recursively. For basic types and collections of basic types, the data is packed into chunks and directly Merkleized. For composite types like containers, the process involves hashing the tree roots of each component. In the below sections we will see the working examples to understand the process.
+## 计算哈希树根
 
-### Packing and Chunking
+SSZ 对象的哈希树根是递归计算的。对于基本类型和基本类型的集合，数据会被打包成块并直接进行 Merkle 化。对于复合类型（如容器），该过程涉及哈希每个组件的树根。在以下部分，我们将通过实际示例来理解这一过程。
 
-Packing and chunking enable the Merkleization with SSZ by formatting the serialized data and dividing them into pieces which are then hashed to a Merkle tree. Here's how the process works:
+### 打包与分块
 
-**Serializing the Data**
-- **Serialization** involves converting a data structure (basic types, lists, vectors, or bitlists/bitvectors) into a linear byte array using SSZ serialization rules.
-- Each element is serialized based on its type. 
+打包与分块使得通过 SSZ 实现 Merkle 化成为可能，通过格式化序列化数据并将其分割成多个小块，接着进行哈希生成 Merkle 树。以下是该过程的具体操作：
 
-**Padding the Serialization**
-- After serialization, the byte array might not perfectly align with the 32-byte chunk size used in Merkle trees.
-- **Padding** is added to the serialized data to extend the last segment to a full 32-byte chunk. This padding consists of zero bytes (0x00).
+**序列化数据**
+- **序列化**是将数据结构（基本类型、列表、向量或位图/位向量）转换为线性字节数组，遵循 SSZ 序列化规则。
+- 每个元素会根据其类型进行序列化。
 
-**Dividing into Chunks**
-- The padded serialized data is then split into multiple 32-byte segments or "chunks."
-- These chunks are the basic units used in the Merkleization process.
+**序列化数据的填充**
+- 序列化后，字节数组可能与 Merkle 树中使用的 32 字节块大小不完全对齐。
+- **填充**是将序列化数据扩展至完整的 32 字节块。填充使用零字节（0x00）。
 
-**Padding to Full Binary Tree**
-- The number of chunks from the previous step may not be a power of two, which is required to form a balanced binary tree (full binary tree).
-- Additional zero chunks (chunks filled entirely with zero bytes) are added as necessary to bring the total count up to the nearest power of two.
-- This ensures that the resulting Merkle tree is complete and balanced, facilitating efficient cryptographic operations.
+**分块**
+- 填充后的序列化数据被分割成多个 32 字节的片段或“块”。
+- 这些块是 Merkle 化过程中使用的基本单元。
 
-**Applying the Merkleization Process**
-- With the chunks prepared, they are arranged as the leaves of a binary Merkle tree.
-- Merkleization proceeds by hashing pairs of chunks together, layer by layer, until a single hash remains. This final hash is known as the Merkle root.
+**填充为完整二叉树**
+- 从上一步得到的块数可能不是 2 的幂，而这是形成平衡二叉树（完整二叉树）的必要条件。
+- 必要时，会添加零填充块（完全由零字节填充的块）以使块数达到最接近的 2 的幂。
+- 这确保了生成的 Merkle 树是完整且平衡的，从而促进高效的加密操作。
 
-**Practical Example:**
-Suppose we have a list of integers that need to be packed and chunked:
-- **Integers**: [10, 20, 30, 40] (Suppose each integer occupies 8 bytes).
-- **Serialized Data**: A continuous byte array created from these integers.
-- **Padding**: If the total serialized length is not a multiple of 32, padding bytes are added.
-- **Chunks**: The data is divided into 32-byte chunks.
-- **Zero Padding for Tree**: If the number of chunks is not a power of two, additional zero-filled chunks are appended.
-- **Merkleization**: The chunks are then used as leaves in a Merkle tree to compute the root.
+**应用 Merkle 化过程**
+- 准备好块后，它们被安排为二叉 Merkle 树的叶子节点。
+- Merkle 化通过成对哈希块，逐层向上，直到只剩下一个哈希值。最终的哈希值即为 Merkle 根。
 
-### Mixing in the Length
+**实际示例：**
+假设我们有一个整数列表需要进行打包与分块：
+- **整数**：[10, 20, 30, 40]（假设每个整数占 8 字节）。
+- **序列化数据**：由这些整数生成的连续字节数组。
+- **填充**：如果序列化后的总长度不是 32 的倍数，则添加填充字节。
+- **分块**：数据被分割成 32 字节的块。
+- **树的零填充**：如果块数不是 2 的幂，则添加填充零的块。
+- **Merkle 化**：这些块作为叶子节点，用于计算 Merkle 根。
 
-Mixing in the length is a crucial step in the Merkleization process, particularly when handling lists and vectors. This step ensures that the final hash tree root accurately reflects both the content and the structure of the data, including its length. Let's break down how this concept is applied and why it's important.
+### 混合长度
 
-**Purpose of Mixing in the Length**
+在 Merkle 化过程中，混合长度是一个关键步骤，特别是在处理列表和向量时。此步骤确保最终的哈希树根准确反映数据的内容和结构，包括其长度。让我们分解这个概念及其重要性。
 
-Mixing in the length is used to ensure that two different lists or vectors with similar contents but different lengths generate different hash tree roots. This is critical because without incorporating the length into the hash, two lists—one longer than the other but otherwise identical up to the length of the shorter list—would have the same hash tree root if only the content is hashed. This could lead to potential security vulnerabilities and inconsistencies within the data validation process.
+**混合长度的目的**
 
-**An example of Mixing in the Length**
+混合长度用于确保具有相似内容但不同长度的两个列表或向量生成不同的哈希树根。没有将长度纳入哈希计算，如果仅对内容进行哈希，两个列表（一个比另一个长，但直到短列表长度为止完全相同）会有相同的哈希树根，这可能导致潜在的安全漏洞和数据验证过程中的不一致。
 
-The example below illustrates that without including the length of the list, the Merkle root hashes for `a_root_hash` and `b_root_hash` remain the same despite representing two lists of different lengths. However, when the length is incorporated, the Merkle root hash `a_mix_len_root_hash` differs from both `a_root_hash` and `b_root_hash`. This distinction is crucial when dealing with lists or vectors of varying lengths in the merkleization.
+**混合长度的示例**
 
+下面的示例说明了如果不包含列表的长度，`a_root_hash` 和 `b_root_hash` 的 Merkle 根哈希将保持相同，尽管它们表示的是两个长度不同的列表。然而，当包含长度时，Merke 根哈希 `a_mix_len_root_hash` 与 `a_root_hash` 和 `b_root_hash` 都不同。这种区分在处理长度不同的列表或向量时至关重要。
 
 ```python
 >>> from eth2spec.utils.ssz.ssz_typing import uint256, List
@@ -168,20 +165,21 @@ a_mix_len_root_hash =  0xeca15347139a6ad6e7eabfbcfd3eb3bf463af2a8194c94aef742ead
 >>> 
 ```
 
-## Summaries and Expansions in SSZ Merkleization
+## SSZ Merkle 化中的摘要与扩展
 
-In Ethereum PoS, the concepts of summaries and expansions are integral to managing state data efficiently. Summaries provide a compact representation of data structures, encapsulating essential verification information without the full details. Expansions, on the other hand, deliver the complete data set for thorough processing or when detailed information is required. Here are their benefits:
+在以太坊 PoS 中，摘要和扩展的概念对于高效管理状态数据至关重要。摘要提供了数据结构的紧凑表示，封装了核心的验证信息，而不需要完整的细节。扩展则提供了完整的数据集，用于深入处理或当需要详细信息时。以下是它们的优势：
 
-- **Efficiency and Speed**: By employing summaries, validators can quickly verify state changes or validate transactions without processing entire data sets. This method significantly speeds up validations and reduces computational overhead.  
-- **Reduced Data Load**: Summaries minimize the amount of data stored and transmitted, conserving bandwidth and storage resources. This is particularly beneficial for nodes with limited capacity, such as light clients, which rely on summaries for operational efficiency.
-- **Security Enhancements**: The cryptographic hashes included in summaries ensure the integrity of the data, enabling secure and reliable verification processes without accessing the full dataset.
-- **An Example**:
-  - **BeaconBlock and BeaconBlockHeader**: The `BeaconBlockHeader` container acts as a summary, allowing nodes to quickly verify the integrity of a block without needing the complete block data from `BeaconBlock` container. `BeaconBlock` is the expansion.
-  - **Proposer Slashing**: Validators use block summaries to efficiently identify and process conflicting block proposals, facilitating swift and accurate slashing decisions.
+- **效率与速度**：通过使用摘要，验证者可以快速验证状态变化或验证交易，而无需处理完整的数据集。此方法显著加快了验证过程，并减少了计算开销。
+- **减少数据负载**：摘要减少了存储和传输的数据量，从而节省带宽和存储资源。这对存储能力有限的节点（如轻客户端）尤为重要，轻客户端依赖摘要来提高操作效率。
+- **安全性增强**：摘要中包含的加密哈希确保了数据的完整性，使得在不访问完整数据集的情况下能够安全且可靠地进行验证。
+- **示例**：
+  - **BeaconBlock 和 BeaconBlockHeader**：`BeaconBlockHeader` 容器作为摘要，允许节点快速验证区块的完整性，而无需获取来自 `BeaconBlock` 容器的完整区块数据。`BeaconBlock` 是扩展。
+  - **提议者惩罚**：验证者使用区块摘要高效识别并处理冲突的区块提议，从而快速准确地做出惩罚决定。
 
-## Merkleization for Basic Types
 
-Let's understand the Merkleization of basic types using an example. Below is a simple Merkle tree and we will follow the process of merkleization to get the merkle root hash.
+## 基本类型的 Merkle 化
+
+让我们通过一个示例来理解基本类型的 Merkle 化过程。下面是一个简单的 Merkle 树，我们将按照 Merkle 化的过程来计算 Merkle 根哈希。
 
 ```mermaid
 graph TD;
@@ -193,23 +191,22 @@ graph TD;
     HCD --> HROOT
 ```
 
-_Figure: Sample Merkle Tree._
+_图：示例 Merkle 树_
 
-In the above Merkle tree, the leaves of the tree are the four blobs of data, A, B, C, and D.
+在上面的 Merkle 树中，树的叶子节点是四个数据块：A、B、C 和 D。
 
-- **Define the Data:**
-  - In this example, we're dealing with four basic data items: A, B, C, and D. These are conceptualized as numbers (`10`, `20`, `30`, and `40` respectively) and will be represented in the Merkle tree as 32-byte chunks.
-- **Convert Data to 32-byte Chunks:**
-  - Each data item is serialized into a 32-byte format using the `uint256` type from the SSZ typing system. Serialization involves converting the data into a format that is consistent and padded to ensure that each item is 32 bytes long.
-- **Pair and Hash the Leaves:**
-  - Next, pairs of these serialized data chunks are concatenated and hashed.
-- **Hash the Results to Form the Root:**
-  - Finally, the hashes from the previous step (`ab` and `cd`) are concatenated and hashed to form the Merkle root.
-- **Output the Merkle Root:**
-  - The Merkle root is then converted to a hexadecimal string to make it readable.
+- **定义数据：**
+  - 在这个示例中，我们处理四个基本数据项：A、B、C 和 D。它们被设定为数字（分别为 `10`、`20`、`30` 和 `40`），并将在 Merkle 树中作为 32 字节的块表示。
+- **将数据转换为 32 字节块：**
+  - 每个数据项都使用 SSZ 类型系统中的 `uint256` 类型进行序列化。序列化的过程是将数据转换为一致且填充的格式，确保每个数据项为 32 字节长。
+- **配对并哈希叶子节点：**
+  - 接下来，将这些序列化的数据块配对并进行哈希计算。
+- **将结果哈希化形成根：**
+  - 最后，前一步得到的哈希值 (`ab` 和 `cd`) 被连接并进行哈希，形成 Merkle 根。
+- **输出 Merkle 根：**
+  - 然后，Merke 根会被转换为十六进制字符串，以便可读。
 
-This final Merkle root is a unique representation of the data `A`, `B`, `C`, and `D`. Any change in the input data would result in a different Merkle root, illustrating the sensitivity of the hash function to the input data. This characteristic is essential for ensuring data integrity in Ethereum.
-
+这个最终的 Merkle 根是数据 `A`、`B`、`C` 和 `D` 的唯一表示。任何对输入数据的更改都会导致不同的 Merkle 根，展示了哈希函数对输入数据的敏感性。这个特性对于确保以太坊中的数据完整性至关重要。
 
 ```python
 >>> from eth2spec.utils.ssz.ssz_typing import uint256
@@ -225,13 +222,13 @@ This final Merkle root is a unique representation of the data `A`, `B`, `C`, and
 '1e3bd033dcaa8b7e8fa116cdd0469615b29b09642ed1cb5b4a8ea949fc7eee03'
 ```
 
-## Merkleization for Composite Types
+## 复合类型的 Merkle 化
 
-In this section we learn how the `IndexedAttestation` composite type is Merkleized, using a detailed example to illustrate the process. This example provides clear instances of the Merkleization process applied to composite, list, and vector types. It also showcases how summaries and expansions are effectively demonstrated through this process.
+本节我们将学习如何对 `IndexedAttestation` 复合类型进行 Merkle 化，并通过详细的示例展示这一过程。此示例清晰展示了 Merkle 化过程如何应用于复合类型、列表和向量类型，同时还展示了摘要和扩展如何通过这一过程得以有效演示。
 
-**Definition and Structure**
+**定义与结构**
 
-The `IndexedAttestation` is a composite type defined as follows:
+`IndexedAttestation` 是一个复合类型，定义如下：
 
 ```python
 class IndexedAttestation(Container):
@@ -240,21 +237,21 @@ class IndexedAttestation(Container):
     signature: BLSSignature
 ```
 
-`IndexedAttestation` is composed of three primary components:
+`IndexedAttestation` 由以下三个主要组件组成：
 
-  - **attesting_indices:** A list of `ValidatorIndex`, representing the validators who are attesting.
-  - **data:** An `AttestationData` container, holding various pieces of data pertinent to the attestation.
-  - **signature:** A `BLSSignature`, which is a signature over the attestation.
+  - **attesting_indices：** 一个 `ValidatorIndex` 类型的列表，表示参与认证的验证者。
+  - **data：** 一个 `AttestationData` 容器，包含与认证相关的各种数据。
+  - **signature：** 一个 `BLSSignature`，是对认证的签名。
 
-**Merkleization Process**
+**Merkle 化过程**
 
-The Merkleization of `IndexedAttestation` involves computing the hash tree root of each component and combining these roots to form the overall hash tree root of the container. 
+`IndexedAttestation` 的 Merkle 化过程包括计算每个组件的哈希树根，并将这些根合并形成整体容器的哈希树根。
 
-**Merkleizing `attesting_indices`:**
+**Merkle 化 `attesting_indices`：**
 
-- **Serialization and Padding:** First, the list of indices is serialized. Given the potential length of this list (up to the `MAX_VALIDATORS_PER_COMMITTEE`), it often requires padding to align with the 32-byte chunks required for hashing.
-- **Hashing:** The serialized data is hashed using the `merkleize_chunks` function, which handles the padding and constructs a multi-layer Merkle tree.
-- **Mixing in Length:** Since lists in SSZ can vary in length but have the same type structure, the length of the list is also hashed (mixed in) to ensure unique hash representations for different-sized lists.
+- **序列化与填充：** 首先，对索引列表进行序列化。考虑到该列表的可能长度（最多可达 `MAX_VALIDATORS_PER_COMMITTEE`），通常需要填充以对齐至 32 字节块大小，以便进行哈希计算。
+- **哈希计算：** 序列化后的数据通过 `merkleize_chunks` 函数进行哈希，这个函数负责处理填充并构建多层 Merkle 树。
+- **混合长度：** 由于 SSZ 中的列表长度可能不同，但具有相同的类型结构，因此列表的长度也会被哈希（混合进哈希中），确保不同长度列表具有唯一的哈希表示。
 
 ```python
 attesting_indices_root = merkleize_chunks(
@@ -264,9 +261,9 @@ attesting_indices_root = merkleize_chunks(
            ])
 ```
 
-**Merkleizing data (`AttestationData`):**
-- **Handling Nested Structures:** `AttestationData` itself contains multiple fields (like `slot`, `index`, `beacon_block_root`, `source`, and `target`), each of which is individually serialized and Merkleized.
-- **Combining Hashes:** The hashes of these fields are then combined to produce the root hash of the `AttestationData`.
+**Merkle 化数据（`AttestationData`）：**
+- **处理嵌套结构：** `AttestationData` 本身包含多个字段（如 `slot`、`index`、`beacon_block_root`、`source` 和 `target`），每个字段都将单独进行序列化和 Merkle 化。
+- **合并哈希值：** 这些字段的哈希值将被合并，形成 `AttestationData` 的根哈希。
 
 ```python
 data_root = merkleize_chunks(
@@ -279,34 +276,36 @@ data_root = merkleize_chunks(
     ])
 ```
 
-**Merkleizing signature:**
+**Merkle 化签名：**
 
-- **Simple Hashing:** The `BLSSignature` is a fixed-length field and is directly hashed into three 32-byte chunks, which are then Merkleized to get the signature's root.
+- **简单哈希：** `BLSSignature` 是一个固定长度的字段，直接将其哈希为三个 32 字节块，然后通过 Merkle 化得到签名的根。
 
 ```python
 signature_root = merkleize_chunks([a.signature[0:32], a.signature[32:64], a.signature[64:96]])
 ```
 
-**Combining Component Roots:**
+**组合组件根：**
 
-- The roots calculated from each component are then combined to compute the hash tree root of the entire `IndexedAttestation` container.
+- 从每个组件计算得到的根会被组合在一起，计算整个 `IndexedAttestation` 容器的哈希树根。
+
 ```python
 indexed_attestation_root = merkleize_chunks([attesting_indices_root, data_root, signature_root])
 ```
 
-**Verification of Final Root:**
+**验证最终根：**
 
-- The correct implementation of Merkleization of `IndexedAttestation` ensures that changes in any part of the data structure are reflected in the final root hash, providing a robust mechanism for detecting discrepancies and ensuring data consistency across all nodes in the network.
+- 正确实现 `IndexedAttestation` 的 Merkle 化确保了数据结构中的任何变化都会反映在最终的根哈希中，从而提供了一个强有力的机制来检测差异并确保网络中所有节点的数据一致性。
 
 ```python
 assert a.hash_tree_root() == indexed_attestation_root
 ```
 
-Now, you can visualize the full picture of the merkleization of `IndexedAttestation`:
+现在，您可以可视化 `IndexedAttestation` 的完整 Merkle 化过程：
 
-![merkleization of IndexedAttestation](/docs/images/merkelization-IndexedAttestation.png)
+![IndexedAttestation 的 Merkle 化](../../images/merkelization-IndexedAttestation.png)
+**IndexedAttestation 的 Merkle 化**
 
-Here is the full working code:
+### 完整代码示例：
 
 ```python
 from eth2spec.capella import mainnet
@@ -314,7 +313,7 @@ from eth2spec.capella.mainnet import *
 from eth2spec.utils.ssz.ssz_typing import *
 from eth2spec.utils.merkle_minimal import merkleize_chunks
 
-# Initialise an IndexedAttestation type
+# 初始化 IndexedAttestation 类型
 a = IndexedAttestation(
     attesting_indices = [33652, 59750, 92360],
     data = AttestationData(
@@ -335,8 +334,8 @@ a = IndexedAttestation(
                 + 'c2ddfc1a78ed3326fb9b4fe333af4ad3702159dbf9caeb1a4633b752991ac437'
 )
 
-# A container's root is the merkleization of the roots of its fields.
-# This is IndexedAttestation.
+# 容器的根是其字段根的 Merkle 化
+# 这是 IndexedAttestation。
 assert(a.hash_tree_root() == merkleize_chunks(
     [
         a.attesting_indices.hash_tree_root(),
@@ -344,8 +343,8 @@ assert(a.hash_tree_root() == merkleize_chunks(
         a.signature.hash_tree_root()
     ]))
 
-# A list is serialised then (virtually) padded to its full number of chunks before Merkleization.
-# Finally its actual length is mixed in via a further hash/merkleization.
+# 列表被序列化后（虚拟地）填充到其完整块数，再进行 Merkle 化。
+# 最后，通过进一步的哈希/merkle 化将实际长度混合进来。
 assert(a.attesting_indices.hash_tree_root() ==
        merkleize_chunks(
            [
@@ -353,8 +352,8 @@ assert(a.attesting_indices.hash_tree_root() ==
                a.attesting_indices.length().to_bytes(32, 'little')
            ]))
 
-# A container's root is the merkleization of the roots of its fields.
-# This is AttestationData.
+# 容器的根是其字段根的 Merkle 化
+# 这是 AttestationData。
 assert(a.data.hash_tree_root() == merkleize_chunks(
     [
         a.data.slot.hash_tree_root(),
@@ -364,7 +363,7 @@ assert(a.data.hash_tree_root() == merkleize_chunks(
         a.data.target.hash_tree_root()
     ]))
 
-# Expanding the above AttestationData roots by "manually" calculating the roots of its fields.
+# 扩展上述 AttestationData 根，通过 "手动" 计算其字段的根。
 assert(a.data.hash_tree_root() == merkleize_chunks(
     [
         a.data.slot.to_bytes(32, 'little'),
@@ -374,11 +373,11 @@ assert(a.data.hash_tree_root() == merkleize_chunks(
         merkleize_chunks([a.data.target.epoch.to_bytes(32, 'little'), a.data.target.root]),
     ]))
 
-# The Signature type has a simple Merkleization.
+# Signature 类型有一个简单的 Merkle 化。
 assert(a.signature.hash_tree_root() ==
        merkleize_chunks([a.signature[0:32], a.signature[32:64], a.signature[64:96]]))
 
-# Putting everything together, we have a "by-hand" Merkleization of the IndexedAttestation.
+# 将所有内容组合在一起，我们得到了 "手动" Merkle 化的 IndexedAttestation。
 assert(a.hash_tree_root() == merkleize_chunks(
     [
         # a.attesting_indices.hash_tree_root()
@@ -403,10 +402,8 @@ assert(a.hash_tree_root() == merkleize_chunks(
 print("Success!")
 ```
 
-You can follow the instructions at [running the specs](https://eth2book.info/capella/appendices/running/) to execute the above code.
-
-## Resources
-- [Hash Tree Roots and Merkleization](https://eth2book.info/capella/part2/building_blocks/merkleization/)
+### 参考资源
+- [哈希树根与 Merkle 化](https://eth2book.info/capella/part2/building_blocks/merkleization/)
 - [SSZ](https://ethereum.org/en/developers/docs/data-structures-and-encoding/ssz/)
-- [Protolambda on Merkleization](https://github.com/protolambda/eth2-docs?tab=readme-ov-file#ssz-hash-tree-root-and-merkleization)
-- [Running the specs](https://eth2book.info/capella/appendices/running/)
+- [Protolambda 关于 Merkle 化的介绍](https://github.com/protolambda/eth2-docs?tab=readme-ov-file#ssz-hash-tree-root-and-merkleization)
+- [执行规范](https://eth2book.info/capella/appendices/running/)
