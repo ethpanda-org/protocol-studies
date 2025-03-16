@@ -46,10 +46,10 @@ PoW 和 PoS 都是通过[分叉选择规则](https://epf.wiki/#/wiki/CL/cl-archi
 
 <figure class="diagram" style="text-align:center">
 
-![Blockchain](./images/cl/blockchain.svg)
+![Blockchain](../../images/cl/blockchain.svg)
 
 <figcaption>
-
+    
 _时间从左向右推进，除了创世区块，每个区块都指向其构建的父区块_
 
 </figcaption>
