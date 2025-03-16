@@ -1,167 +1,103 @@
-# Protocol-Enforced Proposer Commitments (PEPC)
+# 协议强制的提议者承诺（PEPC）
 
-Protocol-Enforced Proposer Commitments (PEPC), a conceptual extension and generalization of [PBS](/docs/wiki/research/PBS/pbs.md), introduces a more flexible and secure way for proposers (validators) to commit to the construction of blocks. Unlike the existing [MEV-Boost](/docs/wiki/research/PBS/mev-boost.md) mechanism, which relies on out-of-protocol agreements between proposers and builders/relays, PEPC aims to enshrine these commitments within the Ethereum protocol itself, offering a trustless and permissionless infrastructure for these interactions[^1][^2].
+**协议强制的提议者承诺（Protocol-Enforced Proposer Commitments，PEPC）** 是对 **提议者-构建者分离（PBS）** 的概念扩展与泛化。它为提议者（验证者）承诺区块构建提供了一种更灵活且安全的方式。不同于当前依赖链下协议的 [MEV-Boost](https://docs/wiki/research/PBS/mev-boost.md) 机制，PEPC 旨在将这些承诺直接内置到以太坊协议中，从而提供一个无需信任、无许可的基础设施，保障提议者与构建者/中继者之间的交互【1】【2】。
 
-## Benefits and Related Trade-offs of PEPC
-- **Enhanced Security and Trustlessness:**
-  - **Benefit:** Enforces agreements within the protocol, reducing reliance on external parties and minimizing the potential for manipulation.
-  - **Trade-off (Security vs. Overhead):** While security is enhanced, this internalization increases computational demands, potentially impacting network efficiency and scalability.
+## PEPC 的优势与相关权衡
 
-- **Increased Flexibility in Block Construction:**
-  - **Benefit:** Enables programmable contracts between proposers and builders, supporting diverse block construction scenarios.
-  - **Trade-off (Flexibility vs. Complexity):** This flexibility introduces complexity, which could limit participation to technically advanced users and raise barriers to entry.
+### **提升安全性与去信任化**
+- **优势：** 通过协议强制执行承诺，减少对外部参与者的依赖，降低操控风险。
+- **权衡（安全性 vs. 计算开销）：** 虽然安全性增强了，但这种机制的内置会增加计算负担，可能影响网络效率和可扩展性。
 
-- **Decentralization of MEV Opportunities:**
-  - **Benefit:** Promotes a more equitable distribution of MEV among validators.
-  - **Trade-off (Decentralization of MEV vs. Risk of Centralization):** While aiming to decentralize MEV, the complexity required might still favor larger, more sophisticated operators.
+### **提升区块构建的灵活性**
+- **优势：** 允许提议者和构建者之间建立可编程的合约，以支持不同的区块构建场景。
+- **权衡（灵活性 vs. 复杂性）：** 这种灵活性引入了额外的复杂性，可能会限制普通用户的参与，并提高准入门槛。
 
-- **Scalability and Efficiency Improvements:**
-  - **Benefit:** Streamlines block construction and validation processes, enhancing overall network scalability.
-  - **Trade-off (Long-term Scalability vs. Short-term Performance):** Initial impacts on network performance may occur as validators adjust to new complexities.
+### **促进 MEV 机会的去中心化**
+- **优势：** 让 MEV 的分配更加公平，增强验证者的经济激励。
+- **权衡（MEV 的去中心化 vs. 潜在的中心化风险）：** 尽管目标是去中心化 MEV，但由于该机制的复杂性，可能仍然会使更大型、更专业的运营商占据优势。
 
-- **Economic Innovation:**
-  - **Benefit:** Fosters novel economic models by allowing new types of transactions and block constructions.
-  - **Trade-off (Economic Innovation vs. Stability):** Introduces economic models that could disrupt established revenue structures and impact stability.
+### **可扩展性与效率优化**
+- **优势：** 规范化区块构建和验证流程，提高整体网络可扩展性。
+- **权衡（长期可扩展性 vs. 短期性能影响）：** 验证者需要适应新机制，可能在早期影响网络性能。
 
-## How would PEPC work?
+### **经济模式创新**
+- **优势：** 允许新的交易类型和区块构建方式，促进以太坊经济模式创新。
+- **权衡（经济创新 vs. 经济稳定性）：** 可能会改变既有的收益结构，对以太坊生态的经济稳定性产生影响。
 
+## PEPC 运行机制
 
 ```mermaid
 sequenceDiagram
-    participant V as Validator (Proposer)
-    participant B as Builders
-    participant P as Protocol
-    participant N as Network Validators
+    participant V as 验证者（提议者）
+    participant B as 构建者
+    participant P as 以太坊协议
+    participant N as 网络验证者
 
-    V->>V: Define Proposer Commitments (PCs)
+    V->>V: 定义提议者承诺（PCs）
     rect rgb(240, 237, 225)
-
-    V->>P: Generate Commit-Block with PCs & Payload Template
-    loop Builder Submissions
-        B->>V: Submit Blocks/Parts fulfilling PCs
+    V->>P: 生成包含 PC 和执行模板的提交区块
+    loop 构建者提交
+        B->>V: 提交满足 PC 的区块或部分
     end
     end
 
     rect rgb(177,176,159)
-    V->>P: Verify Submissions against PCs
-    alt Submission satisfies PCs
-        V->>V: Incorporate Submission into Block
-        V->>N: Publish Finalized Block
-        N->>N: Validate Block (Consensus & PCs)
-        N->>P: Include Block in Blockchain
-    else Submission does not satisfy PCs
-        V->>V: Reject Submission
+    V->>P: 验证提交内容是否符合 PC
+    alt 提交内容符合 PC
+        V->>V: 将提交内容整合进最终区块
+        V->>N: 发布最终区块
+        N->>N: 进行共识和 PC 验证
+        N->>P: 将区块纳入区块链
+    else 提交内容不符合 PC
+        V->>V: 拒绝该提交内容
     end
     end
 ```
 
-_Figure – PEPC flow._
+_图：PEPC 工作流程_
 
-The operation of PEPC involves several key components and steps, which together ensure its seamless integration into the Ethereum ecosystem. Here’s an overview of how PEPC would work in practice:
+PEPC 的运行流程包括多个关键步骤，以确保其与以太坊生态无缝集成。
 
-**Step 1: Commit Phase**
+### **步骤 1：承诺阶段**
+- **提案创建：** 提议者在创建区块前，定义一系列承诺（Proposer Commitments，PCs），规定区块应如何构建。例如，承诺包含特定交易、不包含某些交易，或采用特定的区块结构。
+- **提交区块生成：** 提议者生成包含 PC 的提交区块，并附带一个执行模板或占位符，定义区块的大致结构。
 
-- **Proposal Creation:** A validator (proposer) prepares to create a block by defining a set of commitments. These commitments represent agreements or contracts that specify how the block will be constructed. This could include, for example, commitments to include certain transactions, not to include others, or to structure the block in a specific way.
+### **步骤 2：揭示阶段**
+- **构建者提交：** 构建者根据提议者发布的 PC 提交区块或区块部分，以满足这些承诺。
+- **承诺验证：** 提议者或协议本身验证这些提交内容是否符合 PC，只有符合要求的提交内容才会被考虑。
+- **区块最终化：** 通过验证的构建者提交内容将被合并到最终区块，并发布到网络。
 
-- **Commit Block Generation:** The proposer generates a commit-block that includes these proposer commitments (PCs) alongside the usual consensus data like attestations. This commit-block does not yet contain the full execution payload but specifies a payload template or placeholders for the expected content based on the commitments.
+### **步骤 3：验证与纳入区块链**
+- **网络验证：** 其他验证者检查最终区块是否符合以太坊协议规则及 PEPC 规定的承诺。
+- **区块纳入：** 通过验证的区块被正式纳入区块链。
 
-**Step 2: Reveal Phase**
+## PEPC 关键应用场景
 
-- **Builder Submissions:** Builders, in response to the commitments published by the proposer, submit their proposed blocks or block parts to fulfill the commitments. This might involve submitting specific transactions, execution payloads, or other block components as defined by the initial commitments.
+- **全区块拍卖：** 提议者向构建者拍卖整个区块的构建权。
+- **部分区块拍卖：** 允许多个构建者共同竞标并构建同一个区块的不同部分。
+- **并行区块拍卖：** 针对区块的不同组件进行独立拍卖。
+- **未来时隙拍卖：** 提议者可以提前竞拍未来时隙的区块构建权。
+- **交易包含列表：** 提议者承诺包含特定交易，提高交易透明度。
+- **动态区块配置：** 依据实时网络情况调整区块结构，提高吞吐量。
+- **抗审查机制：** 通过承诺包含特定交易，提升去审查性。
+- **协议升级与测试：** 允许在主网环境下测试新功能，降低风险。
 
-- **Commitment Verification:** Upon receiving submissions from builders, the proposer or the protocol itself verifies that these submissions satisfy the proposer commitments. This verification process ensures that only those blocks or block parts that meet the predefined criteria are considered for inclusion.
+## PEPC 与 EigenLayer 的关系
 
-- **Block Finalization:** Once a submission from a builder is verified to fulfill the proposer commitments, the proposer finalizes the block by incorporating the builder's submission into the payload template or placeholders defined in the commit phase. The finalized block is then published to the network.
+PEPC 和 EigenLayer 互补，二者分别从不同角度增强以太坊的安全性、可扩展性和去中心化【3】。
 
-**Step 3: Validation and Inclusion**
+| 机制 | PEPC | EigenLayer |
+|---|---|---|
+| **安全层次** | 在主协议内部增强区块提议和交易包含的安全性 | 通过再质押机制扩展以太坊的安全性 |
+| **提议者承诺** | 规定区块构建规则，确保符合承诺 | 验证者再质押 ETH 以支持额外服务 |
+| **MEV 相关性** | 提高 MEV 分配的公平性，透明化交易包含 | 可能用于构建新的 MEV 解决方案 |
 
-- **Network Validation:** Other validators on the network validate the finalized block, ensuring it adheres to the Ethereum protocol rules and the specific proposer commitments. This step may involve standard block validation procedures, along with additional checks for commitment fulfillment.
+当 EigenLayer 质押资产的经济价值超过以太坊主网的质押价值时，可能会导致安全激励错配的风险【2】。
 
-- **Block Inclusion:** Upon successful validation, the block is included in the blockchain. This inclusion is contingent on the block satisfying both the usual Ethereum consensus rules and the specific proposer commitments outlined in the commit phase.
+PEPC 与 EigenLayer 结合使用，可以增强以太坊的效率，使其在区块构建和安全扩展方面更具适应性。
 
-**PEPC's Mechanisms for Flexibility and Security**
-
-- **Programmable Contracts:** PEPC allows proposers to enter into various programmable contracts with builders, ranging from full blocks to partial blocks, and even future slot auctions. This versatility enables a tailored approach to block construction, maximizing efficiency and optimizing block space usage.
-
-- **Atomicity and Trustlessness:** The commit-reveal scheme ensures that either all parts of a commitment are fulfilled, or the block is rejected, maintaining atomicity. This process is enforced by the protocol, reducing reliance on external trust and minimizing the risk of manipulation.
-
-- **Dynamic Block Construction:** By enabling a dynamic approach to block construction, PEPC allows for the real-time adjustment of block contents based on network conditions, user demands, and emerging opportunities, such as MEV extraction.
-
-## PEPC Use Cases
-
-PEPC offers several compelling use cases[^2]:
-
-**Full-Block Auctions**
-
-- Validators auction the right to construct entire blocks to builders. This mirrors the current MEV-Boost mechanism but with enhanced security and trustlessness by embedding the auction within the Ethereum protocol.
-- Ensures a transparent and fair process for block construction, potentially leading to more competitive bidding and better rewards for validators.
-
-**Partial Block Auctions**
-
-- Validators can auction portions of a block's space to different builders, allowing multiple parties to contribute to a single block's construction.
-- Increases block space utilization efficiency and encourages diversity in transaction inclusion, mitigating potential centralization in block construction.
-
-**Parallel Block Auctions**
-
-- Similar to partial block auctions but with the auction focused on separate, parallel components of block space, enabling a more granular approach to block construction.
-- Offers validators more control over block contents and structure, potentially optimizing for various factors like gas usage, transaction priority, and MEV extraction.
-
-**Slot vs. Block Auctions**
-
-- Validators commit in advance to using blocks or block parts from specific builders, differentiating between commitments to "slots" (who will build) versus "blocks" (what will be built).
-- Enhances predictability and planning for both validators and builders, potentially leading to more strategic block construction and MEV extraction opportunities.
-
-**Future Slot Auctions**
-
-- Validators auction the rights to construct blocks for future slots, essentially creating futures contracts for block space.
-- Provides market participants with more tools for speculation and hedging, potentially stabilizing income for validators and offering builders advanced planning capabilities.
-
-**Inclusion Lists**
-
-- Validators commit to including specific transactions in their blocks, either through direct listing or by adhering to lists provided by third parties.
-- Increases transparency and predictability for transaction inclusion, potentially reducing gas price volatility and improving user experience.
-
-**Dynamic Block Configuration**
-
-- Validators use PEPC to adjust block configurations dynamically, responding to real-time network conditions and demands.
-- Enhances network responsiveness and efficiency, potentially improving throughput and reducing congestion during peak periods.
-
-**Censorship Resistance**
-
-- By making commitments to include certain transactions or follow specific inclusion patterns, validators can provide guarantees against censorship.
-- Strengthens Ethereum's censorship-resistant properties, ensuring that the network remains open and accessible to all users.
-
-**Protocol Upgrades and Feature Testing**
-
-- PEPC can be used to test new protocol features or upgrades in a live environment without risking network stability, by making commitments to include transactions that utilize these features.
-- Offers a safer pathway for innovation and evolution within the Ethereum protocol, allowing for more experimental approaches to development.
-
-## Relationship and Differences to EigenLayer
-
-PEPC and Eigenlayer have a complementary relationship, each addressing different aspects of Ethereum's scalability, security, and decentralization, while also sharing a common goal of enhancing the network's efficiency and flexibility[^3].
-
-- **Security Layering:** Eigenlayer introduces a mechanism to extend Ethereum's security to additional layers and services. In contrast, PEPC focuses on embedding more sophisticated and flexible commitment mechanisms within the Ethereum protocol itself. While Eigenlayer seeks to augment Ethereum's security model externally, PEPC aims to enhance the internal workings of the Ethereum main chain, specifically around block proposal and transaction inclusion processes.
-
-- **Validator Commitments:** Both PEPC and Eigenlayer involve validators making certain commitments, but the nature and scope of these commitments differ. In Eigenlayer, validators might commit to securing additional layers or services by restaking their ETH. In PEPC, validators make commitments regarding the construction of blocks, such as including certain transactions or adhering to specific block construction criteria.
-
-- **MEV and Transaction Inclusion:** Both projects indirectly address issues related to MEV and transaction inclusion fairness. Eigenlayer can facilitate solutions that mitigate the negative aspects of MEV or improve transaction inclusion through additional consensus layers. PEPC, by allowing for more dynamic and programmable proposer-builder agreements, could lead to a more equitable distribution of MEV opportunities and more transparent transaction inclusion mechanisms.
-
-**Economic Bound to Security in Eigenlayer**
-
-In principle, if the value at stake in activities or assets secured by Eigenlayer exceeds the value of staked ETH in Ethereum, the economic incentives could potentially become misaligned, leading to concerns about the sufficiency of security provided [^2].
-
-In a broader Ethereum ecosystem context, PEPC and Eigenlayer could be seen as complementary, with Eigenlayer expanding Ethereum's security and utility beyond its core protocol and PEPC enhancing the efficiency and flexibility within the core protocol itself. Implementing both could lead to a scenario where Ethereum not only becomes more efficient and adaptable in handling transactions and block construction but also extends its security guarantees to a broader range of decentralized applications and services.
-
-## Resources 
-- [Unbundling PBS: Towards protocol-enforced proposer commitments (PEPC)](https://ethresear.ch/t/unbundling-pbs-towards-protocol-enforced-proposer-commitments-pepc/13879/1)
+## 参考资源
+- [PEPC 研究论文](https://ethresear.ch/t/unbundling-pbs-towards-protocol-enforced-proposer-commitments-pepc/13879/1)
 - [PEPC FAQ](https://efdn.notion.site/PEPC-FAQ-0787ba2f77e14efba771ff2d903d67e4)
-- [EigenLayer protocol](https://docs.eigenlayer.xyz/eigenlayer/overview/whitepaper)
-- [Notes on Proposer-Builder Separation (PBS)](https://barnabe.substack.com/p/pbs)
-- [Mike Neuder - Towards Enshrined Proposer-Builder Separation](https://www.youtube.com/watch?v=Ub8V7lILb_Q)
-- [An Incomplete Guide to PBS - with Mike Neuder and Chris Hager](https://www.youtube.com/watch?v=mEbK9AX7X7o)
-- [ePBS – the infinite buffet](https://notes.ethereum.org/@mikeneuder/infinite-buffet)
+- [EigenLayer 白皮书](https://docs.eigenlayer.xyz/eigenlayer/overview/whitepaper)
 
-## References
-[^1]: https://ethresear.ch/t/unbundling-pbs-towards-protocol-enforced-proposer-commitments-pepc/13879/1
-[^2]: https://efdn.notion.site/PEPC-FAQ-0787ba2f77e14efba771ff2d903d67e4
-[^3]: https://docs.eigenlayer.xyz/eigenlayer/overview/whitepaper
