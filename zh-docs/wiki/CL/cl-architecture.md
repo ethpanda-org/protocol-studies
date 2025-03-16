@@ -232,7 +232,7 @@ def process_slots(state: BeaconState, slot: Slot) -> None:
         state.slot = Slot(state.slot + 1)
 ```
 
-## Resources
+## 资源
 
 - Vitalik Buterin, ["Parametrizing Casper: the decentralization/finality time/overhead tradeoff"](https://medium.com/@VitalikButerin/parametrizing-casper-the-decentralization-finality-time-overhead-tradeoff-3f2011672735)
 - [Engine API spec](https://hackmd.io/@n0ble/consensus_api_design_space)
