@@ -1,67 +1,66 @@
-# The Two-Block HeadLock (TBHL) proposal for ePBS
+# Two-Block HeadLock (TBHL) 提案用于 ePBS
 
-The Two-Block HeadLock (TBHL) design represents an innovative approach to [proposer-builder separation (PBS)](/docs/wiki/research/PBS/pbs.md) within the Ethereum protocol, aiming to address both the operational and [strategic issues posed by MEV](https://ethresear.ch/t/why-enshrine-proposer-builder-separation-a-viable-path-to-epbs/). This design is a nuanced iteration of previous proposals, integrating elements of Vitalik Buterin's two-slot design and enhancing it with a headlock mechanism to safeguard builders from proposer equivocations. Here, we delve into the key components of TBHL and its operational mechanics, drawing on the detailed explanation provided[^1].
+Two-Block HeadLock (TBHL) 设计代表了以太坊协议中[提议者-构建者分离（PBS）](https://docs/wiki/research/PBS/pbs.md)的一种创新方法，旨在解决由 MEV 引发的操作性和[战略性问题](https://ethresear.ch/t/why-enshrine-proposer-builder-separation-a-viable-path-to-epbs/)。这一设计是对之前提案的细致迭代，融合了 Vitalik Buterin 的两轮设计，并通过引入 headlock 机制增强保护，防止提议者的矛盾行为。本文将深入探讨 TBHL 的关键组件及其操作机制，结合[^1]中的详细解释。
 
-## TBHL Design Overview
+## TBHL 设计概述
 
-TBHL modifies the conventional slot structure in Ethereum, introducing a dual-block system within a single slot timeframe, effectively producing a proposer block and a builder block. This system retains the essence of a single execution payload per slot, though with an additional round of attestations, potentially extending the slot duration. TBHL aligns closely with Ethereum's existing LMD-GHOST mechanism and adheres to six specified design properties, ensuring compatibility and integrity within the Ethereum ecosystem.
+TBHL 修改了以太坊传统的时隙结构，在一个时隙时间框架内引入了双区块系统，有效地生成了提议者区块和构建者区块。该系统保留了每个时隙一个执行负载的核心内容，尽管增加了一个额外的确认回合，可能会延长时隙的持续时间。TBHL 与以太坊现有的 LMD-GHOST 机制高度兼容，并遵循六个指定的设计属性，确保与以太坊生态系统的兼容性和完整性。
 
-## Slot Anatomy and Operational Phases
+## 时隙结构与操作阶段
 
-![Slot Anatomy of TBHL](/docs/wiki/research/img/scaling/Slot-Anatomy-of-TBHL-Mike.png)
+![TBHL 的时隙结构](/docs/wiki/research/img/scaling/Slot-Anatomy-of-TBHL-Mike.png)
 
+_图 — TBHL 的时隙结构。由 Mike Neuder 和 Justin Drake 提供。_
 
-_Figure – The slot anatomy of TBHL. Credit by mike neuder and justin drake._
+TBHL 的操作框架围绕时隙中的四个关键时间戳展开，为提议者、构建者和验证者指定了具体的操作时间：
 
-The operational framework of TBHL is structured around four critical timestamps within a slot, delineated for specific actions by proposers, builders, and attesters:
+1. **t=t0 - 提议获胜出价：** 提议者开始评估出价池中的出价，这是一个点对点（P2P）话题，构建者在此提交他们的出价。提议者选择出价后，发布提议者区块，然后进入下一个阶段。
 
-1. **t=t0 - Proposal of the Winning Bid:** The proposer begins by evaluating bids within the bidpool, a peer-to-peer (P2P) topic where builders submit their bids. Upon selecting a bid, the proposer publishes a proposer block before moving to the next phase.
+2. **t=t1 - 提议者区块的确认截止时间：** 在这一阶段，确认委员会评估提议者区块的及时性。委员会投票支持首次观察到的区块，若没有，则投票支持空时隙。
 
-2. **t=t1 - Attestation Deadline for Proposer Block:** Here, the attesting committee assesses the timeliness of the proposer block. They vote for the first observed block, or in its absence, vote for an empty slot.
+3. **t=t1.5 - 矛盾行为检查：** 在此阶段，验证委员会检查提议者区块是否存在矛盾行为。若发现唯一的提议者区块，则为相关构建者提供奖励，增强过程的公平性和完整性。
 
-3. **t=t1.5 - Equivocation Check:** The attesting committee for the builder block evaluates the proposer blocks for equivocations. A unique proposer block prompts a proposer boost for the associated builder, enhancing the fairness and integrity of the process.
+4. **t=t2 - 构建者验证与区块发布：** 构建者验证自己是否为唯一获胜者。若存在矛盾行为，构建者可生成包含证据的区块以撤销支付，否则，继续发布构建者区块，内容为交易信息。
 
-4. **t=t2 - Builder's Verification and Block Publication:** Builders verify their selection as the unique winner. In the event of an equivocation, they can produce a block containing proof to revert their payment. Otherwise, they proceed to publish their builder block, containing the transaction contents.
+5. **t=t3 - 第二次确认截止时间：** 此阶段为构建者区块进行再次确认，巩固其在区块链中的位置。
 
-5. **t=t3 - Second Attestation Deadline:** This phase involves another round of attestations, this time for the builder block, solidifying its position within the blockchain.
+## 满足 ePBS 设计属性
 
-## Satisfying ePBS Design Properties
+TBHL 有效解决了多个关键的 ePBS 设计属性：
 
-TBHL effectively addresses several critical ePBS design properties:
+- **诚实构建者发布与支付安全：** 保护机制确保构建者可以自信地发布区块，防止提议者的矛盾行为。
 
-- **Honest Builder Publication and Payment Safety:** Protection mechanisms ensure that builders can confidently publish blocks, with safeguards against proposer equivocations.
+- **诚实提议者安全：** 诚实提议者的承诺得到尊重，提议者的区块会获得必要的确认，且支付会无条件进行，除非有矛盾行为证据。
 
-- **Honest Proposer Safety:** Commitments made by honest proposers are respected, with their blocks receiving necessary attestations and unconditional payments proceeding unless equivocation proof is presented.
+- **无许可性与抗审查性：** 该设计促进了构建者的开放竞争环境，并保持了抗审查的措施。
 
-- **Permissionlessness and Censorship Resistance:** The design promotes an open and competitive environment for builders while maintaining measures to combat censorship.
+- **路线图兼容性：** TBHL 设计与以太坊的路线图兼容，包括单时隙最终性（SSF）和 MEV 烧毁机制，展现了其在未来网络需求上的适应性和前瞻性。
 
-- **Roadmap Compatibility:** TBHL is poised to integrate seamlessly with Ethereum's roadmap, including single-slot finality (SSF) and MEV-burn mechanisms, illustrating its adaptability and foresight in addressing future network needs.
+## 实施 TBHL 的工程挑战
 
-## Engineering Challenges of implementing TBHL
+实施 TBHL 提案引入了多个复杂的挑战和工程问题，反映了以太坊共识机制、动态的 MEV 领域以及协议整体设计理念之间的复杂互动。根据 ePBS 讨论中的详细探讨，以下是与 TBHL 相关的主要实施问题和工程难题：
 
-Implementing TBHL proposal introduces several nuanced challenges and engineering issues, reflective of the complex interplay between Ethereum's consensus mechanism, the dynamic MEV landscape, and the protocol's overarching design philosophy. Drawing from the detailed exploration within the ePBS discussion, here are the primary implementation issues and engineering drawbacks associated with TBHL:
+- **协议复杂性增加** TBHL 通过在单一时隙内引入双区块机制，显著改变了传统的时隙结构，增加了共识过程的复杂性。这种复杂性来自于管理两种不同类型的区块（提议者区块和构建者区块），并需要额外的确认回合来验证每个区块。此外，检测和管理提议者区块的矛盾行为也增加了复杂度，需要强大的机制来确保构建者安全和支付安全。
 
-- **Increased Protocol Complexity** TBHL significantly alters the traditional slot structure by introducing a dual-block mechanism within a single slot, complicating the consensus process. This complexity arises from managing two distinct types of blocks (proposer and builder blocks) and necessitates additional rounds of attestations to validate each. The complexity is further amplified by the need to detect and manage proposer block equivocations, requiring robust mechanisms to ensure builder safety and payment security.
+- **时隙时间与网络延迟** 实施 TBHL 需要仔细考虑时隙的时间安排，因为额外的确认回合可能会延长时隙的持续时间。这一调整可能会影响网络延迟，从而影响区块传播和确认聚合的及时性。确保网络能够高效地处理这些过程，而不引入显著的延迟或漏洞，是一项巨大的工程挑战。此外，时隙持续时间的变化是以太坊合并后的一项重大工程项目，因为它涉及对 CL、EL 以及其他智能合约层的更改。
 
-- **Slot Timing and Network Latency** Implementing TBHL requires careful consideration of slot timing, as the additional attestation rounds could potentially extend the slot duration. This adjustment impacts network latency, potentially affecting the timeliness of block propagation and attestation aggregation. Ensuring the network's ability to efficiently handle these processes without introducing significant delays or vulnerabilities is a substantial engineering challenge. Besides increasing slot duration change is a very big engineering project in Ethereum post merge as it requires changes to CL, EL and other smart contracts layers.
+- **矛盾行为与构建者安全机制** TBHL 的关键组件之一是管理提议者矛盾行为以保护构建者。设计和实现强大的机制来检测矛盾行为，允许构建者提供相关证据，并相应地撤销支付，这一过程极具复杂性。这些机制必须万无一失，以防止被利用并确保系统的完整性，因此需要严格的测试和可能的反复迭代。
 
-- **Equivocation and Builder Safety Mechanisms** One of the critical components of TBHL is its approach to managing proposer equivocations to safeguard builders. Designing and implementing robust mechanisms to detect equivocations, allow builders to provide proof of such occurrences, and revert payments accordingly, introduces significant complexity. These mechanisms must be foolproof to prevent exploitation and ensure the system's integrity, demanding rigorous testing and potential iterations in response to discovered vulnerabilities.
+- **无许可性与抗审查性** 虽然 TBHL 旨在维持无许可的环境并抵抗审查，但在新框架内实现这些目标仍然面临挑战。确保任何构建者都可以提交出价，并确保提议者区块公平地代表竞争环境，需要对出价池的透明和安全处理。此外，在 TBHL 结构中集成前向包含列表或其他抗审查机制，需要额外的协议考量，以防止操控或排他性做法。
 
-- **Permissionlessness and Censorship Resistance** While TBHL aims to maintain a permissionless environment and combat censorship, achieving these goals within the new framework poses challenges. Ensuring that any builder can submit bids and that proposer blocks fairly represent the competitive landscape requires transparent and secure handling of the bidpool. Moreover, integrating forward inclusion lists or other censorship resistance mechanisms within the TBHL structure necessitates additional protocol considerations to prevent manipulation or exclusionary practices.
+- **与现有和未来以太坊功能的兼容性** TBHL 必须与以太坊当前的协议功能无缝集成，并能够适应未来的创新，如单时隙最终性（SSF）和 MEV 烧毁机制。确保与这些发展中的以太坊生态系统方面的兼容性，要求设计和实施时具有前瞻性，能够容纳调整和增强，同时不破坏 TBHL 框架的完整性或效能。
 
-- **Compatibility with Existing and Future Ethereum Features** TBHL must seamlessly integrate with Ethereum's current protocol features and be adaptable to future innovations, such as single-slot finality (SSF) and MEV-burn mechanisms. Ensuring compatibility with these evolving aspects of the Ethereum ecosystem demands a forward-looking approach to design and implementation, capable of accommodating adjustments and enhancements without undermining the TBHL framework's integrity or efficacy.
+- **资源与计算开销** TBHL 的引入带来了新的计算和资源开销，特别是涉及到处理双区块机制和额外确认回合的增加数据量。优化协议以高效管理这些需求，同时不显著增加验证者的计算负担或影响网络性能，是一项重要的工程问题。
 
-- **Resource and Computational Overheads** The introduction of TBHL introduces new computational and resource overheads, particularly related to handling the increased data volume from the dual-block mechanism and the additional attestation rounds. Optimizing the protocol to manage these demands efficiently, without significantly increasing the computational burden on validators or compromising the network's performance, is an essential engineering concern.
+TBHL 提案是对以太坊 PBS 机制不断完善的见证，力求在操作效率、安全性和去中心化的整体理念之间找到平衡。通过解决提议者和构建者之间的复杂动态，并引入强有力的保护措施，TBHL 标志着以太坊协议设计的一大进步，提供了一个有前景的途径，减轻了 MEV 带来的挑战，同时增强了网络的弹性和完整性。
 
-The TBHL proposal stands as a testament to the ongoing efforts to refine Ethereum's PBS mechanisms, striving for a balance between operational efficiency, security, and the overarching ethos of decentralization. By addressing the nuances of proposer-builder dynamics and introducing robust safeguards, TBHL marks a significant step forward in the evolution of Ethereum's protocol design, offering a promising avenue for mitigating the challenges posed by MEV while enhancing the network's resilience and integrity.
+你可以了解更多不同的 ePBS 解决方案，参阅 [PTC](/docs/wiki/research/PBS/PTC.md) 和 [PEPC](/docs/wiki/research/PBS/PEPC.md)。
 
-You can learn more about different ePBs solutions at [PTC](/docs/wiki/research/PBS/PTC.md) and [PEPC](/docs/wiki/research/PBS/PEPC.md).
-
-## Resources 
-- [Why enshrine Proposer-Builder Separation? A viable path to ePBS](https://ethresear.ch/t/why-enshrine-proposer-builder-separation-a-viable-path-to-epbs/15710/1)
+## 资源
+- [为什么要确立提议者-构建者分离？通向 ePBS 的可行路径](https://ethresear.ch/t/why-enshrine-proposer-builder-separation-a-viable-path-to-epbs/15710/1)
 - [PBS](/docs/wiki/research/PBS/pbs.md)
 - [ePBS](/docs/wiki/research/PBS/epbs.md)
-- [Mike Neuder - Towards Enshrined Proposer-Builder Separation](https://www.youtube.com/watch?v=Ub8V7lILb_Q)
+- [Mike Neuder - 迈向确立的提议者-构建者分离](https://www.youtube.com/watch?v=Ub8V7lILb_Q)
 
-## References
+## 参考文献
 [^1]: https://ethresear.ch/t/why-enshrine-proposer-builder-separation-a-viable-path-to-epbs/15710/1
