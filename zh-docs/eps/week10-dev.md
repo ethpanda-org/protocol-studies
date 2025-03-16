@@ -1,34 +1,43 @@
-# 学习小组 第10周 | 预编译
+# 学习小组 第 10 天 | 预编译合约（Precompiles）
 
-第10周的开发讲座深入探讨了EVM预编译及其在执行客户端中的集成。
+本次开发讲座深入探讨 **EVM 预编译合约** 及其在执行客户端（Execution Clients）中的集成方式。
 
-观看由[Danno Ferrin](https://twitter.com/shemnon)主讲的演讲，视频可在[StreamEth](https://streameth.org/65cf97e702e803dbd57d823f/epf_study_group)和[Youtube](https://www.youtube.com/watch?v=daiMhkt0XTw)上观看。
+📺 **观看演讲**
+由 [Danno Ferrin](https://twitter.com/shemnon) 主讲，演讲可在以下平台观看：
+- [StreamEth](https://streameth.org/65cf97e702e803dbd57d823f/epf_study_group)
+- [YouTube](https://www.youtube.com/watch?v=daiMhkt0XTw)
 
-- [演讲幻灯片](https://hackmd.io/@shemnon/precompiles)
-- [Discord上的讨论线程：第10周D：预编译](https://discord.com/channels/1205546645496795137/1231990093506678785)
+📑 **相关资料**
+- [讲座演示文稿](https://hackmd.io/@shemnon/precompiles)
+- [Discord 讨论线程：Week 10D - Precompiles](https://discord.com/channels/1205546645496795137/1231990093506678785)
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/daiMhkt0XTw?si=6c4EJRi-g1G5udJH" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## 预阅读
 
-在开始第10周的开发内容之前，请熟悉前几周的资源，特别是第2周和第8周的内容。你应该了解执行客户端架构和EVM。
+在开始本次开发内容前，请熟悉前几周的资源，尤其是：
+- **第 2 天**：执行层（EL）架构
+- **第 7 天**：执行客户端（EL Clients）
 
-讲座将使用Besu的示例，Besu是执行客户端的Java实现。建议至少对Java语法有基本了解。
+你需要具备对 **执行客户端（Execution Clients）架构** 和 **EVM** 的基本理解。
 
-另外，您可以通过研究以下资源做好准备：
-- [深入探索以太坊上的预编译合约](https://lucasmartincalderon.medium.com/exploring-precompiled-contracts-on-ethereum-a-deep-dive-4e9f9682e0aa)
-- [evm.codes的预编译文档](https://www.evm.codes/precompiled)
+本次讲座将以 **Besu**（一个基于 Java 的执行客户端）为例，推荐具备 Java 语法的基础知识。
 
-## 大纲
+📚 **推荐阅读**
+- [深入探索以太坊的预编译合约](https://lucasmartincalderon.medium.com/exploring-precompiled-contracts-on-ethereum-a-deep-dive-4e9f9682e0aa)
+- [EVM 预编译合约文档（evm.codes）](https://www.evm.codes/precompiled)
 
-- EVM预编译
-- 它们如何集成
-- 存在哪些预编译
-- L2和L1如何使用它们
-- 创建预编译的挑战
+## 讲座大纲
 
-## 额外阅读和练习
+- **EVM 预编译合约**
+- **预编译合约的集成方式**
+- **现存的预编译合约**
+- **L1 和 L2 如何使用预编译合约**
+- **创建预编译合约的挑战**
 
-- [EVM预编译和系统合约目录](https://github.com/shemnon/precompiles/)
-- [关于预编译的RollCall突破](https://www.youtube.com/watch?v=tg01COfxi_M)
-- [Hyperledger Besu的自定义RPC和预编译](https://www.youtube.com/watch?v=djL5nczlYFw)
+## 额外阅读与练习
+
+📖 **推荐阅读**
+- [EVM 预编译合约与系统合约目录](https://github.com/shemnon/precompiles/)
+- [RollCall 会议：预编译合约](https://www.youtube.com/watch?v=tg01COfxi_M)
+- [Hyperledger Besu 的自定义 RPC 和预编译合约](https://www.youtube.com/watch?v=djL5nczlYFw)
