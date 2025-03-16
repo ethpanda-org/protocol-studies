@@ -1,60 +1,71 @@
-# Mev-boost: A popular PBS Implementation
+## Mev-boost：一种流行的 PBS 实现
 
-[Mev-boost](https://github.com/flashbots/mev-boost) is a widely recognized, out-of-the-protocol, open-source implementation of Proposer-Builder Separation (PBS) for Ethereum. It allows validators to outsource block building to specialized builders, potentially leading to increased validator rewards and improved network efficiency.
+[Mev-boost](https://github.com/flashbots/mev-boost) 是一个被广泛认可的、协议外的开源提议者-构建者分离（PBS）实现。它允许验证者将区块构建工作外包给专业构建者，从而提高验证者的收益，并提升网络效率。
 
-Here's how mev-boost works:
+### Mev-boost 工作机制
 
 <figure style="text-align: center;">
-  <img src="images/pbs/block-building.png" alt="Block-building">
-  <figcaption style="text-align: center;">Current Block building. Source: <a href="https://barnabe.substack.com/p/pbs">Barnabé's article</a></figcaption>
+  <img src="images/pbs/block-building.png" alt="区块构建示意图">
+  <figcaption style="text-align: center;">当前区块构建过程。来源：<a href="https://barnabe.substack.com/p/pbs">Barnabé 的文章</a></figcaption>
 </figure>
 
-On one side, mev-boost implements the [builder API](https://github.com/ethereum/builder-specs) used by an Ethereum node to outsource it block production. On the other, it connects to a network of relays and handles the communication between builders and proposers.
+Mev-boost 主要实现了两个核心功能：
 
-1. **Block Building:**
-   Specialized builders compete to create the most profitable block for the proposer. They do this by optimizing transaction ordering and inclusion, taking into account factors like gas fees, transaction priority, and potential [MEV (Maximal Extractable Value)](/wiki/research/PBS/mev.md).
-   Builders submit their constructed blocks to relays.
-2. **Relay Network:**
-   Mev-boost operates a network of relays that act as intermediaries between builders and proposers.
-   Relays receive blocks from builders and perform various functions like block validation, filtering, and propagation.
-   Relays ensure that only valid and high-quality blocks are sent to proposers.
-3. **Proposer Selection:**
-   Validators run mev-boost software connected to their beacon node. When a validator is chosen to propose a block, they receive blocks from relays and choose the best one based on predefined criteria, typically the block that offers the highest reward.
-   The validator then proposes the selected block to the network for validation and inclusion in the blockchain.
+- 提供 [构建者 API](https://github.com/ethereum/builder-specs)，允许以太坊节点将区块生产外包。
+- 连接到中继网络，处理构建者与提议者之间的通信。
 
-## PBS Block Creation
+#### 工作流程
 
-The process of block creation through PBS works as follows:
+1. **区块构建**：
+   - 专业构建者竞争构建最具盈利能力的区块。他们通过优化交易排序和包含策略来最大化收益，考虑因素包括 Gas 费用、交易优先级以及潜在的 [最大可提取价值（MEV）](/wiki/research/PBS/mev.md)。
+   - 构建者将构建的区块提交给中继。
 
-### Block Construction
+2. **中继网络**：
+   - Mev-boost 依赖一组中继充当构建者与提议者之间的中介。
+   - 中继接收区块并执行验证、筛选和传播等功能，确保提议者只收到有效且高质量的区块。
 
-- Builders continuously monitor the transaction pool (mempool) for new transactions. They assess these transactions based on potential MEV opportunities. They select the transactions that best align with their MEV optimization criteria. Also, block builders can take transaction bundles from private orderflows, or from MEV searchers, just as miners did in PoW Ethereum with the original Flashbots auctions. In the latter case, builders accept sealed-price bids from searchers and include their bundles in the block.
-- Once the transactions are selected, builders assemble them into a block ensuring that the block adheres to the Ethereum protocol's rules, e. g., txs are valid, the gas limit is not surpassed.
+3. **提议者选择**：
+   - 验证者运行 mev-boost 软件，并连接到信标节点。
+   - 当某个验证者被选为区块提议者时，它会从中继处接收多个区块，并选择最优区块（通常是奖励最高的区块）。
+   - 选定的区块随后被提交到网络进行验证，并最终加入区块链。
 
-### Block Auction
+## PBS 区块创建过程
 
-Instead of builders directly offering their assembled blocks to validators with a specified price, the standard practice is to use relays. Relays validate the transaction bundles before passing them onto the proposer (validator). Also, implementations can introduce escrows responsible for providing data availability by storing blocks sent by builders and commitments sent by validators. 
+### 1. 区块构建
 
-### Benefits of mev-boost:
+- 构建者持续监控交易池（mempool），评估交易的 MEV 机会，并挑选最符合 MEV 优化标准的交易。
+- 除了普通交易外，构建者还可以从私有订单流或 MEV 搜索者那里获取交易包。
+- 一旦选择了交易，构建者会将其组装成符合以太坊协议规则的区块（如交易有效、Gas 限制未超标等）。
 
-- **Increased validator rewards:** By outsourcing block building to specialized builders, validators can potentially earn higher rewards through optimized transaction ordering and MEV extraction.
-- **Reduced centralization:** Mev-boost enables a more competitive block-building landscape, reducing the economy of scale of large mining pools and enabling home stakers achieve same kind of rewards.
+### 2. 区块拍卖
 
-### Challenges and Considerations:
+- 构建者不会直接向验证者提供区块，而是通过中继进行验证。
+- 中继在传递区块头部（Header）给提议者之前，会对交易包进行验证。
+- 提议者收到区块头部后，使用私钥对其签名，并返回签名后的 Header 给中继。
+- 中继随后释放完整区块给提议者。
+- 一些实现方案还可以引入托管机制（Escrow），以保证数据可用性，并存储构建者发送的区块和验证者的承诺。
 
-While mev-boost offers certain benefits, it also raises some concerns:
+## Mev-boost 的优势
 
-- **Security:** Introducing new actors and dependencies can create new attack vectors and vulnerabilities. There have been multiple [incidents](https://collective.flashbots.net/t/post-mortem-april-3rd-2023-mev-boost-relay-incident-and-related-timing-issue/1540) of missed blocks on mainnet due to mev-boost issues. 
-- **Censorship resistance:** If only a few powerful builders or relays dominate the ecosystem, it could lead to centralization and censorship concerns.
-- **Coordination:** Effective communication and coordination between builders, relays, and proposers are crucial for the smooth functioning of mev-boost.
+- **提高验证者收益**：通过将区块构建外包给专业构建者，验证者可以通过优化的交易排序和 MEV 提取获得更高收益。
+- **减少中心化**：Mev-boost 促进了更加竞争性的区块构建环境，降低了大型矿池的规模经济效应，使家庭验证者（home stakers）也能获得与大规模参与者类似的收益。
 
-It's important to note that mev-boost is just one implementation of PBS. Other implementations with different designs and features are also being developed and explored, for example [mev-rs](https://github.com/ralexstokes/mev-rs) is under development.
+## Mev-boost 的挑战与考量
 
-Overall, mev-boost represents a significant step towards realizing the potential benefits of PBS in Ethereum. However, continuous research and development are crucial to address the challenges and ensure a secure, decentralized, and efficient implementation. One path towards more stable PBS model is [enshrining it in the protocol](/wiki/research/PBS/ePBS.md), adding mev-boost like features directly to the Ethereum clients.  
+尽管 Mev-boost 具有诸多优势，但它也带来了一些问题：
 
-## Resources
+- **安全性**：引入新角色和依赖关系可能会带来新的攻击向量和漏洞。例如，Mev-boost 曾因故障导致主网出现多个[区块丢失事件](https://collective.flashbots.net/t/post-mortem-april-3rd-2023-mev-boost-relay-incident-and-related-timing-issue/1540)。
+- **抗审查性**：如果少数强势的构建者或中继在生态系统中占据主导地位，可能会引发中心化和审查问题。
+- **协调性**：构建者、中继和提议者之间的高效通信和协调对于 Mev-boost 的顺利运行至关重要。
 
-- [Flashbots docs on mev-boost](https://boost.flashbots.net/)
-- [Overview of censoring entities](https://censorship.pics/) 
-- https://www.mevwatch.info/
-- [MEV-Boost: Merge ready Flashbots Architecture, 2021](https://ethresear.ch/t/mev-boost-merge-ready-flashbots-architecture/11177)
+需要注意的是，Mev-boost 只是 PBS 的一种实现。目前还有其他不同设计的 PBS 方案正在开发和探索，例如 [mev-rs](https://github.com/ralexstokes/mev-rs) 也是一个正在进行的 PBS 研究项目。
+
+总体而言，Mev-boost 在 PBS 发展道路上迈出了重要一步。然而，持续的研究和开发对于解决现存挑战并确保 PBS 方案的安全性、去中心化和高效性至关重要。一个可能的长期方案是[将 PBS 直接内置到协议中](/wiki/research/PBS/ePBS.md)，在以太坊客户端中原生支持类似 Mev-boost 的特性。
+
+## 相关资源
+
+- [Flashbots 关于 mev-boost 的文档](https://boost.flashbots.net/)
+- [审查实体概览](https://censorship.pics/)
+- [MEV 观察站](https://www.mevwatch.info/)
+- [MEV-Boost：Merge 时代的 Flashbots 架构（2021）](https://ethresear.ch/t/mev-boost-merge-ready-flashbots-architecture/11177)
+
