@@ -25,7 +25,7 @@ Merkle 根（Merkle Root）被存储在区块头中。要了解更多关于以�
 - 叶子节点包含实际数据（为简化，例子中使用的是数字）。
 - 每个非叶子节点是其子节点哈希的结果。
 - 第一层的非叶子节点包含其子叶子节点的哈希值 Hash(1,2)。
-- 同样的过程会一直持续，直到到达树顶，最终形成一个包含所有先前哈希值的哈希值 Hash[Hash(1,2), Hash(3,4), Hash(5,6), Hash(7,8)]。
+- 同样的过程会一直持续，直到到达树顶，最终形成一个包含所有先前哈希值的哈希值 `Hash[Hash[Hash(1,2),Hash(3,4)],Hash[Hash(5,6),Hash(7,8)]]`。
 
 以太坊 Merkle 树更多内容可以参考[这里](https://blog.ethereum.org/2015/11/15/merkling-in-ethereum)。
 ![Merkle Tree](../../images/merkle-tree.jpg)
