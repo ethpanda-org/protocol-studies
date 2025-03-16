@@ -1,6 +1,6 @@
-# Study Group Week 10 | Precompiles 
+# Study Group Day 10 | Precompiles 
 
-Week 10 dev talk is diving into EVM precompiles and their integration in execution clients.
+Day 10 dev talk is diving into EVM precompiles and their integration in execution clients.
 
 Watch the presentation by [Danno Ferrin](https://twitter.com/shemnon), on [StreamEth](https://streameth.org/65cf97e702e803dbd57d823f/epf_study_group) and [Youtube](https://www.youtube.com/watch?v=daiMhkt0XTw)
 
@@ -11,7 +11,7 @@ Watch the presentation by [Danno Ferrin](https://twitter.com/shemnon), on [Strea
 
 ## Pre-reading
 
-Before starting with the week 10 development content, make yourself familiar with resources in previous weeks, especially week 2 and week 8. You should have understanding of the execution client architecture and EVM. 
+Before starting with the week 10 development content, make yourself familiar with resources in previous weeks, especially Day 2 on EL and Day 7 on EL client. You should have understanding of the execution client architecture and EVM. 
 
 The talk will use examples from Besu, a Java implementation of execution client. At least basic understanding of Java syntax is recommended.
 
@@ -25,7 +25,7 @@ Additionally, you can get ready by studying the following resources:
 - How they are integrated
 - Which precompiles exist 
 - How L2s and L1s use them
-- Challanges of creating precompiles
+- Challenges of creating precompiles
 
 ## Additional reading and exercises
 

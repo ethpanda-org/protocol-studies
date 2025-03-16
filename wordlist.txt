@@ -13,6 +13,7 @@ ACL
 addons
 Aditional
 aggregative
+Akula
 Aleth
 allowfullscreen
 amidst
@@ -95,6 +96,7 @@ broadcasted
 BSON
 Buterin
 Buterin's
+Bylica
 bypassability
 bytecode
 bytecodes
@@ -264,6 +266,7 @@ epubs
 ERC
 ERCs
 Erigon
+Erigon's
 estimateGas
 eth
 ethash
@@ -271,12 +274,14 @@ Ethash
 ETHCC
 Ethereum
 Ethereum's
+Ethernodes
 ethers
 Ethervm
 ethone
 ethone's
 ethresear
 ethresearch
+ethrex
 ethroadmap
 ethstaker
 ETHW
@@ -334,6 +339,7 @@ gasUsed
 Georgios
 geq
 geth
+Geth's
 getPayloadBodiesByHashV
 getPayloadV
 getters
@@ -400,10 +406,12 @@ instantiation
 intermediated
 intermediation
 interop
+interprocess
 invariants
 IOP
 IPC
 ipfs
+Ipsilon
 IRTF
 ISA
 Jitsi
@@ -433,11 +441,15 @@ Lamport
 Lamport's
 lceil
 ldots
+learnings
+Ledgerwatch
 Lefteris
 leftarrow
 leq
 leveldb
 lfloor
+LGPL
+libmdbx
 libp
 lifecycle
 Lightclient
@@ -495,6 +507,7 @@ MODEXP
 modularity
 moduli
 Monnot
+monorepo
 mortem
 MPC
 MPT
@@ -554,6 +567,7 @@ params
 Pari
 Parithosh
 Pawel
+Paweł 
 Pectra
 PeerDAS
 Peeters
@@ -584,6 +598,7 @@ PQCA
 PR
 PR'ed
 pre
+prebuilt
 preAccesedStorageKeys
 precompile
 precompiled
@@ -722,7 +737,7 @@ ssd
 SSF
 SSLE
 SSTORE
-sstorge
+sstore
 SSZ
 staker
 stakers
@@ -752,6 +767,7 @@ systemd
 Szabo
 Takenobu
 Tani
+TBD
 tbhl
 TCP
 Teku
@@ -765,6 +781,7 @@ TLA
 tldr
 TLS
 TODO
+toolset
 touchedAccounts
 TPS
 tracoor
@@ -836,6 +853,7 @@ Whitepaper
 WIP
 withdrawable
 withdrawalHash
+WSL
 WSS
 Xatu
 xff
@@ -909,3 +927,5 @@ Vasa
 Zaryab
 Afser
 Preethi
+underpriced
+EXTCODESIZE
