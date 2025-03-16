@@ -1,129 +1,104 @@
-# Ethereum Protocol Studies
+# 以太坊协议学习小组（EPS）
 
-[Ethereum Protocol Studies group (EPS)](https://blog.ethereum.org/2025/02/05/ethereum-protocol-studies) is a community formed to gather knowledge, learn, and educate the public about the Ethereum protocol. 
+[以太坊协议学习小组（EPS）](https://blog.ethereum.org/2025/02/05/ethereum-protocol-studies) 是一个致力于收集知识、学习并教育公众有关以太坊协议的社区。
 
-The protocol evolves and grows quickly, it's an always-changing infinite garden. To sustain its credible neutrality, this pace should be reflected in growing and educating the core community. Everyone using, building or living on Ethereum should be able to learn and become involved in the core protocol. The complexity of the architecture, codebases and dynamic development paired with scattered resources can discourage many talented people from participating.
+以太坊协议发展迅速，它是一个不断变化的无限花园。为了维持其可信中立性，这一进程应该通过不断扩展和教育核心社区来体现。所有使用、构建或在以太坊上生活的人都应有机会学习并参与到核心协议中。架构、代码库的复杂性以及动态开发，再加上零散的资源，可能会使许多有才华的人感到沮丧，难以参与其中。
 
-Originally started in 2024, the study group is a participatory educational program that aims to improve core protocol education by introducing a curriculum focused on all parts of the Ethereum stack, building a wiki knowledge base and creating a community focused on learning about the protocol.
+该学习小组于 2024 年开始，旨在通过引入专注于以太坊堆栈各部分的课程，建立一个维基知识库，并创建一个专注于学习协议的社区，从而提升核心协议教育。
 
-> The study group in 2025 is 8 week long program starting in February 17. If you'd like to participate, join our [Discord server](https://discord.gg/8RPnPGEQtJ), attend the [town hall](https://bordel.wtf/epstownhall25.ics) on Feb 12 at 1500 UTC and fill out [the participant survey](https://forms.gle/G5V95qyGV8uMjKGcA).
+> 2025 年学习小组为期 8 周的项目，始于 2 月 17 日。如果你想参与，请加入我们的 [Discord 服务器](https://discord.gg/8RPnPGEQtJ)，参加 2 月 12 日 UTC 时间 15:00 的 [市政厅会议](https://bordel.wtf/epstownhall25.ics)，并填写 [参与者调查问卷](https://forms.gle/G5V95qyGV8uMjKGcA)。
 
 ![Ethereum Protocol Studies](https://raw.githubusercontent.com/eth-protocol-fellows/protocol-studies/376d1fca6907d2796da0a7876703b525ef528727/docs/images/EPS2-1080.jpg)
 
-## Program Structure
+## 课程结构
 
-The study group content is structured in 2 stages - an intense introduction and deep dive. The first 2 weeks consist of studying existing curriculum from [previous study group](https://blog.ethereum.org/2024/02/07/epf-study-group). The following 6 weeks will provide new live lectures from core developers and researchers with materials covering parts of the execution and consensus layers of Ethereum. 
+学习小组的内容分为 2 个阶段：紧凑的入门部分和深入学习部分。前 2 周的内容基于 [上一届学习小组](https://blog.ethereum.org/2024/02/07/epf-study-group)的课程资料。接下来的 6 周将由核心开发者和研究人员提供新的直播讲座，内容涵盖以太坊的执行层（EL）和共识层（CL）。
 
-### Schedule
+### 课程安排
 
-Each session is created by a core developer or researcher, comes with reading materials to get you familiar with the topic context and some also include exercises to strengthen and practice your understanding. More resources on each topic can be found in the wiki section and if they are any missing, contribute to add them. 
+每场讲座由核心开发者或研究人员创建，并提供相关的阅读材料以帮助你了解该主题的背景，一些课程还包括练习，以加强和实践你的理解。每个主题的更多资源可以在维基部分找到，如果有缺失的内容，可以贡献它们。
 
-> Study Group events like Office Hours are published in the Discord server or you can subscribe to [this calendar](https://calendar.google.com/calendar/u/0?cid=Y18xY2RhMjMxNzc5NmI4NDgzZTliMjBhMGVjZTFkMDFhZWFkN2U1ZTY3N2IxNjVhOGUzZTJlMjQ3ZTQ0M2UwODhkQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20) to follow all sessions
+> 学习小组的活动（如办公室时间）将在 Discord 服务器发布，或者你可以订阅 [此日历](https://calendar.google.com/calendar/u/0?cid=Y18xY2RhMjMxNzc5NmI4NDgzZTliMjBhMGVjZTFkMDFhZWFkN2U1ZTY3N2IxNjVhOGUzZTJlMjQ3ZTQ0M2UwODhkQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20) 以便跟踪所有课程。
 
-During the first 2 weeks, participants watch previous videos and study existing materials for the given day in their own time. Every day at _3PM UTC we will hold a daily office hours running for 2 hours_ where everyone can discuss their learnings, ask questions, exchange knowledge, etc. Join at the [Office Hours call link](https://meet.ethereum.org/eps-office-hours).
+在前两周，参与者可以在自己的时间观看先前的视频并学习当天的现有材料。每天 UTC 时间 _3PM_ 我们将举办持续 2 小时的每日办公室时间，大家可以在这里讨论学习内容、提出问题、交换知识等。[点击此处进入会议](https://meet.ethereum.org/eps-office-hours)。
 
-> We recommend watching videos from the study group using faster playback speed, 1.25 or 1.5x to save some time
+> 我们建议使用加速播放速度（1.25 或 1.5 倍速）观看学习小组的视频，以节省时间。
 
-#### Week 1
+#### 第 1 周
 
-The first week will cover the first five weeks of previous Study Group content. The first day provides an introduction to the Study Group and the protocol itself. Then, we will dive into each part of the protocol. On Wednesday, the node workshop will also be held live during office hours.
+第 1 周将涵盖上一届学习小组内容的前五周。第一天提供对学习小组和协议本身的介绍。随后，我们将深入了解协议的每个部分。周三，节点工作坊也将在办公室时间进行直播。
 
-| Day           | Topic                                               | Speaker                                         |
-| ------------- | --------------------------------------------------- | ----------------------------------------------- |
-| Day 1, Feb 17 | [Intro to EPS and Ethereum protocol](/eps/week1.md) | [Mario Havel](https://github.com/taxmeifyoucan) |
-| Day 2, Feb 18 | [Consensus layer](/eps/week3.md)                    | [Alex Stokes](https://github.com/ralexstokes)   |
-| Day 3, Feb 19 | [Execution Layer](/eps/week2.md)                    | [Lightclient](https://github.com/lightclient)   |
-| Day 3, Feb 19 | [Using clients, nodes](/eps/nodes_workshop.md)      | [Mario](https://github.com/taxmeifyoucan)       |
-| Day 4, Feb 20 | [Testing and security](/eps/week4.md)               | [Mario Vega](https://github.com/marioevz)       |
-| Day 5, Feb 21 | [Roadmap and research](/eps/week5.md)               | [Domothy](https://github.com/domothyb)          |
+| 日期       | 主题                                              | 演讲者                                        |
+| ---------- | ------------------------------------------------- | --------------------------------------------- |
+| 2 月 17 日 | [介绍 EPS 和以太坊协议](/eps/week1.md)             | [Mario Havel](https://github.com/taxmeifyoucan) |
+| 2 月 18 日 | [共识层](/eps/week3.md)                           | [Alex Stokes](https://github.com/ralexstokes)  |
+| 2 月 19 日 | [执行层](/eps/week2.md)                           | [Lightclient](https://github.com/lightclient)  |
+| 2 月 19 日 | [使用客户端与节点](/eps/nodes_workshop.md)         | [Mario](https://github.com/taxmeifyoucan)      |
+| 2 月 20 日 | [测试与安全](/eps/week4.md)                       | [Mario Vega](https://github.com/marioevz)      |
+| 2 月 21 日 | [路线图与研究](/eps/week5.md)                     | [Domothy](https://github.com/domothyb)         |
 
-#### Week 2
+#### 第 2 周
 
-The second week of the study group provides an overview of developer experience in Ethereum protocol. It covers the development track of the previous study group and provides an insight into various parts of the development process - from specification, CL/EL client architecture to hands on devops and testing. 
+学习小组的第二周将提供以太坊协议开发者经验的概述，涵盖上一届学习小组的开发轨道，深入了解开发过程的各个部分——从规范、共识层/执行层客户端架构到实际的开发运维和测试。
 
-| Day, Date      | Topic                                              | Speaker                                                                                |
-| -------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Day 6, Feb 24  | [Consensus and Execution specs](/eps/week6-dev.md) | [Hsiao-Wei Wang](https://github.com/hwwhww), [Sam Wilson](https://github.com/SamWilsn) |
-| Day 7, Feb 25  | [Execution client architecture](/eps/week7-dev.md) | [Dragan Pilipovic](https://github.com/dragan2234)                                      |
-| Day 8, Feb 26  | [Consensus client architecture](/eps/week8-dev.md) | [Paul Harris](https://github.com/rolfyone)                                             |
-| Day 9, Feb 27  | [Devops and testing](/eps/week9-dev.md)            | [Parithosh](https://github.com/parithosh)                                              |
-| Day 10, Feb 28 | [EL precompiles](/eps/week10-dev.md)               | [Danno Ferrin](https://github.com/shemnon)                                             |
+| 日期         | 主题                                                | 演讲者                                                                 |
+| ------------ | --------------------------------------------------- | ---------------------------------------------------------------------- |
+| 2 月 24 日   | [共识与执行规格](/eps/week6-dev.md)                  | [Hsiao-Wei Wang](https://github.com/hwwhww)，[Sam Wilson](https://github.com/SamWilsn) |
+| 2 月 25 日   | [执行客户端架构](/eps/week7-dev.md)                  | [Dragan Pilipovic](https://github.com/dragan2234)                     |
+| 2 月 26 日   | [共识客户端架构](/eps/week8-dev.md)                  | [Paul Harris](https://github.com/rolfyone)                             |
+| 2 月 27 日   | [开发运维与测试](/eps/week9-dev.md)                  | [Parithosh](https://github.com/parithosh)                               |
+| 2 月 28 日   | [执行层预编译](/eps/week10-dev.md)                   | [Danno Ferrin](https://github.com/shemnon)                              |
 
-Third week covers the research track and it's the last week using the original study group materials. Each lecture provides a technical explanation of an active area of research, covering major important items from most [Ethereum roadmap](https://epf.wiki/#/wiki/research/roadmap) tracks. 
+第三周涵盖了研究轨道，这是使用原始学习小组材料的最后一周。每场讲座都提供了对一个活跃研究领域的技术解释，涵盖了以太坊路线图中许多重要的项目。
 
-### Week 3
+### 第 3 周
 
-| Day, Date     | Topic                                              | Speaker                                            |
-| ------------- | -------------------------------------------------- | -------------------------------------------------- |
-| Day 11, Mar 3 | [Sharding and DAS](/eps/week6-research.md)         | [Dankrad Feist](https://github.com/dankrad)        |
-| Day 12, Mar 4 | [Verkle trees](/eps/week7-research.md)             | [Josh Rudolf](https://github.com/jrudolf)          |
-| Day 13, Mar 5 | [MEV and censorship](/eps/week8-research.md)       | [Barnabe Monnot](https://github.com/barnabemonnot) |
-| Day 14, Mar 6 | [Purge and Portal Network](/eps/week9-research.md) | [Piper Merriam](https://github.com/pipermerriam)   |
-| Day 15, Mar 7 | [SSF and PoS Upgrades](/eps/week10-research.md)    | [Francesco D'Amato](https://github.com/fradamt)    |     
+| 日期       | 主题                                                | 演讲者                                                   |
+| ---------- | --------------------------------------------------- | -------------------------------------------------------- |
+| 3 月 3 日  | [分片与 DAS](/eps/week6-research.md)                | [Dankrad Feist](https://github.com/dankrad)               |
+| 3 月 4 日  | [Verkle 树](/eps/week7-research.md)                  | [Josh Rudolf](https://github.com/jrudolf)                 |
+| 3 月 5 日  | [MEV 与审查](/eps/week8-research.md)                | [Barnabe Monnot](https://github.com/barnabemonnot)        |
+| 3 月 6 日  | [Purge 与 Portal 网络](/eps/week9-research.md)      | [Piper Merriam](https://github.com/pipermerriam)          |
+| 3 月 7 日  | [SSF 与 PoS 升级](/eps/week10-research.md)           | [Francesco D'Amato](https://github.com/fradamt)           |
 
-### Week 4
+### 第 4 周
 
-Starting week 4, we are entering the main part of the study group that dives deeper into each part of the protocol. This week starts with talks diving into the core function of each layer.
+从第 4 周开始，我们进入学习小组的主要部分，深入探讨协议的每个层次。此周开始时将有关于每个层次核心功能的讲座。
 
-| Day, Date     | Topic                            | Speaker                                            |
-| ------------- | -------------------------------- | -------------------------------------------------- |
-| Day 16, Mar 10 | [Gasper](/eps/day16.md)         | [Ben Edgington](https://github.com/benjaminion)    |
-| Day 17, Mar 12 | [EVM](/eps/day17.md)            | [Pawel Bylica](https://github.com/chfast)          |
+| 日期       | 主题                                                | 演讲者                                                   |
+| ---------- | --------------------------------------------------- | -------------------------------------------------------- |
+| 3 月 10 日 | [Gasper](/eps/day16.md)                              | [Ben Edgington](https://github.com/benjaminion)           |
+| 3 月 12 日 | [EVM](/eps/day17.md)                                 | [Pawel Bylica](https://github.com/chfast)                 |
 
-### Week 5
+### 第 5 周
 
-Week 5 continues deeper dive to each part of the protocol with lectures on networking.
+第 5 周继续深入协议的每个部分，讲座内容涉及网络方面。
 
-| Day, Date     | Topic                            | Speaker                                            |
-| ------------- | -------------------------------- | -------------------------------------------------- |
-| Day 16, Mar 17 | [devp2p](/eps/day18.md)         | [Felix Lange](https://github.com/fjl)              |
-| Day 17, Mar 19 | [libp2p](/eps/day19.md)         | [DappLion](https://github.com/dappplion)           |
+| 日期       | 主题                                                | 演讲者                                                   |
+| ---------- | --------------------------------------------------- | -------------------------------------------------------- |
+| 3 月 17 日 | [devp2p](/eps/day18.md)                              | [Felix Lange](https://github.com/fjl)                     |
+| 3 月 19 日 | [libp2p](/eps/day19.md)                              | [DappLion](https://github.com/dappplion)                  |
 
-### Streams and recordings
+### 直播与录制
 
-Talks and calls are announced week in advance based on the schedule above. Recordings of all talks can be found on [Youtube](https://www.youtube.com/@ethprotocolfellows) or [StreamEth](https://streameth.org/archive?organization=ethereum_protocol_fellowship) archive. 
+所有讲座和会议将在一周前发布。所有讲座的录制可以在 [Youtube](https://www.youtube.com/@ethprotocolfellows) 或 [StreamEth](https://streameth.org/archive?organization=ethereum_protocol_fellowship) 存档中找到。
 
-Apart from weekly lectures, there are less regular, ad-hoc hangout calls for informal chats and calls for wiki contributors working the content. Join the Discord group to get notified about all of these events.
+除了每周的讲座外，还有一些不定期的、临时的聚会通话，用于非正式聊天和维基贡献者的内容工作。加入 Discord 服务器以便获得所有这些活动的通知。
 
-## Participate
+## 参与方式
 
-The study group is an open and permissionless, and it is up to each participant as to how they want to approach it. Whether you want to learn as much as possible, focus only on certain topics or share your knowledge with others, you are welcomed. 
+学习小组是一个开放的无权限项目，参与方式由每个参与者自主决定。无论你是想尽可能多地学习、专注于某些特定主题，还是与他人分享你的知识，你都欢迎参与。
 
-> Join our community in [Discord server](https://discord.gg/8RPnPGEQtJ). We use it for the easiest community engagement but we are aware that Discord is proprietary and doesn't respect user privacy. Consider using alternative FOSS clients like [Dissent](https://github.com/diamondburned/dissent) or [Discordo](https://github.com/ayn2op/discordo). For enhancing the regular client, check [BetterDiscord](https://github.com/BetterDiscord/BetterDiscord/) project.
+> 加入我们的社区：[Discord 服务器](https://discord.gg/8RPnPGEQtJ)。我们使用 Discord 作为最便捷的社区互动平台，但我们知道 Discord 是专有的且不尊重用户隐私。如果你关心隐私问题，可以考虑使用 [Dissent](https://github.com/diamondburned/dissent) 或 [Discordo](https://github.com/ayn2op/discordo) 这样的 FOSS 客户端。为了增强常规客户端，查阅 [BetterDiscord](https://github.com/BetterDiscord/BetterDiscord/) 项目。
 
-Study group participants collaboratively develop the [Protocol wiki](/wiki/wiki-intro.md), serving as an evolving knowledge base for current and future core developers. This can provide students with practical experience in contributing to open source resources, while gaining invaluable experience in documentation and community-driven development.
+学习小组的参与者共同开发 [协议维基](/wiki/wiki-intro.md)，这将作为当前和未来核心开发者的动态知识库。这为学生提供了贡献开源资源的实际经验，同时也让他们获得在文档编写和社区驱动开发中的宝贵经验。
 
-While this program is designed to act as a precursor to the Ethereum Protocol Fellowship, the study group is for anyone that is interested in learning more about the inner workings of the Ethereum Protocol. Those that have some general knowledge or use of Ethereum and/or blockchains as well as those that have some computer science, technical, or developer experience will get the most from this program.
+虽然该项目旨在作为以太坊协议学者计划（Ethereum Protocol Fellowship）的扩展，但学习小组也欢迎来自非开发背景的成员参与，学习协议，贡献文章，回答问题等。
 
-## Important links
+## 问题与反馈
 
-- [Office Hours call link](https://meet.ethereum.org/eps-office-hours)
-- [Discord server](https://discord.gg/8RPnPGEQtJ)
-- [Weekly talks on StreamEth](https://streameth.org/65cf97e702e803dbd57d823f/epf_study_group)
-- [Youtube](https://www.youtube.com/@ethprotocolfellows)
-- [Sessions calendar](https://calendar.google.com/calendar/u/0?cid=Y18xY2RhMjMxNzc5NmI4NDgzZTliMjBhMGVjZTFkMDFhZWFkN2U1ZTY3N2IxNjVhOGUzZTJlMjQ3ZTQ0M2UwODhkQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20) 
-- [EPF mailing list](https://groups.google.com/a/ethereum.org/g/protocol-fellowship-group)
-- [EF Blog](https://blog.ethereum.org)
+如果你对本课程有任何疑问或想要提供反馈，请通过邮件 [study@ethereum.org](mailto:study@ethereum.org) 联系我们。
 
-## Calls troubleshooting
+---
 
-For our weekly meetings, we are using a self-hosted FOSS platform Jitsi. Even though we are doing our best, some people might experience problems during these calls, here are a few tips on troubleshooting:
-
-- Restart your browser and rejoin
-- Try a different browser (especially if you are using a Chromium based, try Firefox and vice versa)
-- Use the [mobile Jitsi app](https://jitsi.org/downloads/) instead of desktop (you just need to point it to our domain meet.ethereum.org)
-- Check your network and firewall settings, make sure your browser allows WebRTC
-- Visit Jitsi [community forum](https://community.jitsi.org/) to search for specific issue or report your problem
-
-## FAQ
-
-- **Will I learn to develop applications on the Ethereum blockchain?**
-    - No. This program is not focused on Solidity or development of decentralized applications. 
-- **When does it start and is the duration?**
-    - The program runs from February 17 and continues for 8 weeks, concluding in April.
-- **Am I automatically accepted to EPF after attending EPFsg**
-    - No. The study group is a great way to prepare for EPF, but it doesn't guarantee anything. However, EPF is a permissionless program, so you can always participate. 
-- **Where is the study group located?**
-    - As all core Ethereum teams, EPFsg is distributed around the globe. We will do our best to accommodate call times for the program participants.
-- **Do I need to apply and be accepted?**
-    - The program is fully open, anyone can participate. We only ask you to submit a [form](https://forms.gle/G5V95qyGV8uMjKGcA) survey to let us know about your preferences, but it doesn't have any effect on your participation. 
+> 译者注：本文基于 [Ethereum Protocol Fellowship](https://ethereum.org/en/community/protocol-fellowship/) 官方资料翻译。
