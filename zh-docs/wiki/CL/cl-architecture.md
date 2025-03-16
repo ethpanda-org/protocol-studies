@@ -100,7 +100,7 @@ _此时，节点认为区块 $G$ 是最佳头区块，因此它的链必须改�
 
 ## 机器中的幽灵
 
-以太坊的权益证明共识协议结合了两个独立的协议：[LMD GHOST](/wiki/cl/gasper?id=lmd-ghost.md) 和 [Casper FFG](/wiki/cl/gasper?id=casper-ffg.md)。这两者共同被称为 "Gasper" 共识协议。关于这两个协议的详细信息以及它们如何协同工作将在下一节 [Gasper] 中详细介绍。
+以太坊的权益证明（Proof-of-Stake）共识协议结合了两个独立的协议：[LMD GHOST](/wiki/CL/gasper?id=lmd-ghost.md) 和 [Casper FFG](/wiki/CL/gasper?id=casper-ffg.md)。这两个协议共同构成了被称为 “Gasper” 的共识协议。关于这两个协议的详细信息，以及它们如何协同工作，请参考下一章节：[Gasper](/wiki/CL/gasper)。
 
 Gasper 旨在结合 LMD GHOST 和 Casper FFG 的优势。LMD GHOST 提供活性，通过定期产生新区块确保链持续运行。然而，它容易产生分叉且在形式上并不安全。另一方面，Casper FFG 通过定期对链进行最终确定来提供安全性，防止长程回滚。
 
@@ -243,3 +243,4 @@ def process_slots(state: BeaconState, slot: Slot) -> None:
 - Austin Griffith, [Byzantine Generals - ETH.BUILD.](https://www.youtube.com/watch?v=c7yvOlwBPoQ)
 - Michael Sproul, ["Inside Ethereum"](https://www.youtube.com/watch?v=LviEOQD9e8c) 
 - [Eth2 Handbook by Ben Edgington](https://eth2book.info/capella/part2/consensus/)
+- [Lighthouse Consensus Client architecture](https://www.youtube.com/watch?v=pLHhTh_vGZ0)
