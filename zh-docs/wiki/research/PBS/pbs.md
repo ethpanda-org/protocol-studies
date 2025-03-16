@@ -1,149 +1,95 @@
-# Proposer Builder Separation (PBS)
+# 提议者-构建者分离（PBS）
 
-In Ethereum's current system, validators both create and broadcast blocks. They bundle together transactions that they have discovered through the gossip network and package them into a block which is then sent out to peers on the Ethereum network. **Proposer-builder separation (PBS)** splits these tasks across multiple validators. Block builders become responsible for creating blocks and offering them to the block proposer in each slot. The block proposer cannot see the contents of the block, they simply choose the most profitable one, paying a fee to the block builder before sending the block to its peers.
+在当前的以太坊系统中，验证者（Validators）既负责创建区块，也负责广播区块。他们通过 P2P 网络发现交易，并将其打包进区块，然后广播给网络中的其他节点。
 
-This section will be covering details about PBS, roles of block proposers and block builders, current state - mev boost, relays, challenges and security issues, proposed solutions and further collection of resources related to the topic.
+**提议者-构建者分离（Proposer-Builder Separation, PBS）** 将这些任务拆分给不同的验证者。区块构建者（Block Builders）负责创建区块，并将其提供给每个时隙（Slot）的区块提议者（Block Proposer）。区块提议者无法查看区块的具体内容，他们只会选择最有利可图的区块，并向区块构建者支付费用，然后再将区块广播给网络中的其他节点。
 
-## Why is PBS important?
+本文将详细介绍 PBS，包括区块提议者和区块构建者的角色、当前状态（MEV-Boost、Relays）、挑战与安全问题，以及相关的研究和解决方案。
 
-PBS is important to the decentralization of Ethereum because it minimizes the compute overhead that is required to become a validator. By doing this, the network lowers the barrier to entry for becoming a validator and incentives a more diverse group of participants. PBS also reflects an overall goal of The Merge to move Ethereum’s network towards a more modular future. Specifically, the transition to PoS is an aggressive move towards decentralization through modularity.
+## PBS 重要性
 
-When you break apart the different pieces of block construction, you can decentralize them individually. This allows different actors with different specialties to focus on their particular strengths. The net result is a more capable network with fewer external dependencies and a lower threshold for participation.
+PBS 对以太坊的去中心化至关重要，因为它减少了成为验证者所需的计算资源，从而降低了准入门槛，使更多多样化的参与者能够加入网络。此外，PBS 体现了以太坊合并（The Merge）后向模块化架构发展的目标，进一步促进去中心化。
 
-## Understanding PBS and the Consensus layer
+将区块构建的不同部分拆分后，可以分别去中心化不同的角色。这允许具备不同专业技能的参与者专注于自己的强项，从而提高网络的整体能力，减少外部依赖，并降低参与门槛。
 
-As explained in this [article](https://ethos.dev/beacon-chain), slots are the time frames allowed in the consensus layer for a block to be added to the chain, they last 12 seconds and there are 32 of them per epoch. Epochs are significant for the consensus mechanism, serving as checkpoints where the network can finalize blocks, update validator committees, etc. For each slot, a validator is chosen through [RANDAO](https://inevitableeth.com/home/ethereum/network/consensus/randao) to propose a block. Once proposed and added to the canonical chain, the validators chosen for that slot's committees attest to the validity of the block, which shall eventually reach finality. The consensus layer supports Ethereum's network security and integrity. PBS interacts with this layer by dividing/isolating the duties of proposing and building blocks, thereby streamlining the transaction validation process.
+## PBS 与共识层
 
-### The Role of the builder
+根据这篇[文章](https://ethos.dev/beacon-chain)，时隙（Slot）是共识层中用于添加区块的时间框架，每个时隙持续 12 秒，每 32 个时隙构成一个 Epoch（纪元）。Epoch 在共识机制中至关重要，它用于区块最终确定（Finality）、更新验证者委员会等。对于每个时隙，会通过 [RANDAO](https://inevitableeth.com/home/ethereum/network/consensus/randao) 随机选择一个验证者来提议区块。一旦区块被提议并添加到主链，验证者委员会将对其进行验证并最终确定。
 
-**Block builders** gather, validate, and assemble transactions into a block body. They review the mempool, validate the transactions by ensuring that they meet requirements like gas limits and nonce, and create a data structure containing the transaction data. Block builders are also responsible for ordering the transactions to optimize block space and gas usage. They then make the block body available to block proposers.
+PBS 通过将区块提议和区块构建的职责分离，使交易验证流程更加高效。
 
-### The Role of the proposer
+### 区块构建者的角色
 
-**Block proposers** take the block bodies provided by the block builders and create a complete block by adding necessary metadata, such as the block header. The header includes details such as the parent block's hash, timestamp, and other data. They also ensure the validity of the blocks by checking the correctness of the block body provided by the builders.
+**区块构建者（Block Builders）** 负责收集、验证交易并将其组装成区块体（Block Body）。他们需要：
 
-## Current State
+- 检索交易池中的交易；
+- 验证交易是否符合 Gas 费、Nonce 等规则；
+- 设计区块数据结构；
+- 以最优顺序排列交易，以优化区块空间和 Gas 费用；
+- 将构建好的区块体提供给区块提议者。
 
-Currently, PBS (Proposer Builder Separation) exists outside of the protocol by builders helping in block building through entities like relays. Please refer [mev-boost](/wiki/research/PBS/mev-boost.md) for more details on one of the widely used Out-of-protocol solution. This design relies on small set of trusted relays and even builders which introduces centralization risks and makes Ethereum more vulnerable to censorship.
-PBS is not yet implemented in the Ethereum mainnet which means validators act as both proposers and builders. So each validator is responsible for:
+### 区块提议者的角色
 
-1. **Selecting transactions:** Validators choose which transactions to include in a block based on factors like gas fees and transaction priority.
-2. **Building the block:** Validators assemble the chosen transactions into a block and perform necessary computations like verifying signatures and updating the state.
-3. **Proposing the block:** Validators propose the constructed block to the network for validation and inclusion in the blockchain.
+**区块提议者（Block Proposers）** 负责选择并最终提交区块，他们需要：
 
-However, some clients are actively developing and testing PBS implementations. These implementations aim to separate the builder and proposer roles, allowing validators to outsource block construction to specialized builders. This can lead to several potential benefits:
+- 从区块构建者那里接收区块体；
+- 生成包含必要元数据的完整区块，如区块头（Header），其中包括父区块哈希、时间戳等信息；
+- 确保区块的正确性并向网络广播。
 
-- **Increased validator rewards:** Builders can compete to create the most profitable block for the proposer, potentially leading to higher rewards for validators.
-- **Improved network efficiency:** Specialized builders can optimize block construction, leading to more efficient block propagation and processing.
-- **Reduced centralization:** By decoupling the roles, PBS can potentially reduce the influence of large mining pools or staking providers that currently dominate both block building and proposing.
+## 当前 PBS 状态
 
-### PBS and the Relationship Between Relays, Builders, and Validators
+目前，PBS 并未在以太坊主网原生支持，而是依赖于外部协议，如 MEV-Boost。这种设计依赖于少数受信任的 Relays 和 Builders，带来了中心化风险，并可能导致审查问题。
 
-Proposer-Builder Separation (PBS) also introduces a more intricate relationship between different actors in the Ethereum network:
+目前的验证者仍需自行完成以下任务：
 
-1. **Builders:**
-   - Builders are specialized entities that focus on constructing blocks with optimal transaction ordering and inclusion. They compete with each other to create the most profitable block for the proposer, taking into account factors like gas fees, transaction priority, and potential MEV (Maximal Extractable Value).
-   - Builders do not directly interact with the blockchain. Instead, they submit their constructed blocks to relays.
-   - This submission includes the block's data (transactions, execution payload, etc.) and a bid that they are willing to pay to have their block proposed.
-2. **Relays:**
-   - Relays receive blocks from multiple builders, confirm their validity and submit the valid block with the highest bid to the escrow for the validator to sign.
-   - Relays act as intermediaries between builders and proposers. They receive blocks from builders and forward them to proposers.
-   - Relays can perform additional functions like block validation and filtering to ensure that only valid and high-quality blocks are sent to proposers.
-   - Some relays may specialize in specific types of blocks, such as those with high MEV potential.
-3. **Validators (Proposers):**
-   - Under PBS, validators take on the role of proposers. They receive blocks from relays and choose the best one based on predefined criteria, typically the block that offers the highest reward.
-   - Once the proposer selects a block, they propose it to the network for validation and inclusion in the blockchain.
-   - Validators are still responsible for securing the network and ensuring consensus on the blockchain's state.
+1. **选择交易**：基于 Gas 费和交易优先级选择交易；
+2. **构建区块**：将交易打包进区块，并执行签名验证、状态更新等操作；
+3. **提议区块**：向网络广播区块，等待共识确认。
 
-This whole process is illustrated in the figure below. See [Flashbots' docs](https://docs.flashbots.net/) for further explanations.
+然而，一些客户端正在积极开发和测试 PBS 实现，目标是分离构建者与提议者的角色，使验证者能够将区块构建外包给专业构建者。这种方式带来的潜在好处包括：
 
-<figure style="text-align: center;">
-  <img src="../../images/mev-boost-architecture.png" alt="MEV-Boost architecture">
-  <figcaption style="text-align: center;">Outline of the communication between the MEV-Boost PBS participants. Source: <a href="https://ethresear.ch/t/mev-boost-merge-ready-flashbots-architecture/11177">ethresear.ch</a></figcaption>
-</figure>
+- **提高验证者奖励**：构建者之间竞争生成最优区块，可能提升验证者收益；
+- **提升网络效率**：专业构建者优化区块构建，提高区块传播和处理效率；
+- **减少中心化风险**：角色拆分后，可降低大型矿池或质押服务商对区块提议的影响。
 
-This separation of roles creates a more dynamic and specialized block-building process. Builders can focus on optimizing block construction and extracting MEV, while proposers can focus on selecting the best block and maintaining network security.
+### PBS 相关角色与关系
 
-However, this new relationship also introduces new challenges.
+1. **搜索者（Searchers）**：
+   - 搜索者从交易池中寻找 MEV（最大可提取价值）机会，例如抢跑（Frontrunning）、三明治攻击（Sandwich）、套利（Arbitrage）；
+   - 他们构建包含 MEV 策略的交易包，并向区块构建者提交交易；
+2. **区块构建者（Builders）**：
+   - 负责创建最优区块，并向提议者提交报价；
+3. **中继器（Relays）**：
+   - 负责在构建者与提议者之间中介，验证区块有效性，并选择最高报价的区块提交给验证者；
+4. **验证者（Proposers）**：
+   - 作为区块提议者，选择最高收益的区块进行提议。
 
-### Relay Concerns
+## PBS 研究与提案
 
-A case can be made that relays oppose the following Ethereum's core tenets:
+### **原生 PBS（ePBS）**
 
-- Decentralization: The fact that [six relays](https://www.relayscan.io/overview?t=7d) handle 99% of MEV-Boost blocks (that being nigh on 90% of Ethereum's blocks) gives rise to justified centralization concerns.
-- Censorship resistance: Relays _can_ censor blocks and, being centralized, can be coerced by regulators to do so. This happened, for instance, when they were pressured to censor transactions interacting with addresses on the [OFAC sanction list](https://home.treasury.gov/news/press-releases/jy0916).
-- Trustlessness: Validators trust relays to provide a valid block header and to publish the full block once signed; builders trust relays not to steal MEV. Although betrayal of either would be detectable, dishonesty can be profitable even through a one-time attack.
+[原生 PBS 研究](https://ethresear.ch/t/why-enshrine-proposer-builder-separation-a-viable-path-to-epbs/15710)提出，将 PBS 机制嵌入以太坊共识层，以减少中心化风险和提高安全性。
 
-### Third party dependency
+- **减少中心化风险**：减少对外部 Relays 依赖；
+- **提高安全性**：降低协调成本，增强协议稳定性。
 
-The fact that PBS entails outsourcing the building of the blocks to entities that do not directly participate in Ethereum consensus could potentially lead to unexpected or unwanted consequences stemming from relying on third parties, such as trust issues, operational dependency and the introduction of single points of failure. Particularly the fact that the use of MEV-Boost is so widespread could be viewed as a dangerous third party dependency, since such a huge portion of Ethereum's new blocks are created using Flashbot's software.
+### **协议强制提议者承诺（PEPC）**
 
-On a very recent note, On March 27-28, Ethereum experienced a spike in missed slots due to slow blob propagation from bloXroute-relayed blocks. The issue stemmed from the Lighthouse client expecting blobs and blocks from the same source, a mismatch with bloXroute's BDN(Blockchain Distributed Network), which only transmits blocks. This discrepancy led nodes to ignore blocks without accompanying blobs, especially after a BDN update accelerated block propagation without blobs. Attempts to integrate blobs with these blocks were unsuccessful, often resulting in a 202 response where data was acknowledged but not used due to prior block reception.
+[PEPC 方案](https://mirror.xyz/ohotties.eth/lBEXiiU7yK91OuSn8QyJPM9Db8GuyDFzCEUAj60BWyI)旨在提供更通用的基础设施，让提议者做出可信承诺。
 
-The core of the problem was identified in Lighthouse's HTTP API handling for blob distribution, separate from the P2P network. This incident underscores the potential pitfalls of relying on external services like bloXroute for critical blockchain operations, highlighting the importance of meticulous component management within blockchain networks to maintain operational integrity and avoid vulnerabilities. More details can be found [here](https://gist.github.com/benhenryhunter/687299bcfe064674537dc9348d771e83).
+- **增强信任**：提议者可注册任意承诺，区块构建者需满足该承诺才能提交区块；
+- **降低外部依赖**：集成在协议内，确保区块提议符合既定承诺。
 
-### Security Concerns
+### **EIP-7547：包含列表（Inclusion Lists）**
 
-As seen in this entry, PBS involves many different entities taking part in the process of adding new blocks to the chain, which inevitably increases the number of potential attack vectors that could be exploited.
+[EIP-7547](https://ethereum-magicians.org/t/eip-7547-inclusion-lists/17474) 旨在提高以太坊的抗审查能力。
 
-PBS-related vulnerabilities, like faulty relays or escrows, risk causing missed blocks without endangering Ethereum's integrity. These missed blocks can affect users and validators. Despite this, Ethereum clients can revert to conventional block building if external builders fail, ensuring network stability.
+- **强制包含交易**：提议者可指定必须包含的交易；
+- **平衡 MEV 收益与抗审查**：降低中心化构建者的影响力。
 
-### Undermined Censorship Resistance
+## 进一步阅读
 
-Another issue builder centralization might bring is putting at risk Ethereum's censorship resistance and integrity, as these dominant builders could, in theory, collude or be coerced into manipulating transaction flows or excluding specific transactions from being included in blocks, undermining the open and permissionless nature of the Ethereum network. Although in current situation, even majority of parties choose to censor, still cannot prevent from submitting these transactions, but only delay their inclusion.
+- [Proposer-Builder Separation (PBS) 研究](https://barnabe.substack.com/p/pbs)
+- [MEV 提取的时间游戏及影响](https://chorus.one/articles/timing-games-and-implications-on-mev-extraction)
+- [Vitalik Buterin 论文：PBS 及审查抵抗](https://notes.ethereum.org/@vbuterin/pbs_censorship_resistance)
 
-To increase censorship resistance, mechanisms like anonymous block proposals, which would protect participants from being singled out for the transactions they handle, are being considered. Additionally, making commitments to include specific transactions mandatory in block proposals is also being explored to ensure essential transactions cannot be censored. A brief overview can found [here](https://censorship.pics).
-
-For a detailed discussion on these anti-censorship measures within PBS, see [Vitalik Buterin's comprehensive analysis](https://notes.ethereum.org/@vbuterin/pbs_censorship_resistance).
-
-## Research and Proposed Solutions
-
-PBS is one of the active research areas in the Ethereum ecosystem. It presents several challenges, including potential security vulnerabilities and the risk of centralization. Ongoing research focuses on addressing these concerns through innovations such as enshrined PBS (ePBS), inclusion lists, the Protocol-Enforced Proposer Commitments (PEPC).
-
-Enshrined Proposer-Builder Separation (ePBS) is supposed to address some of the limitations and centralization concerns associated with MEV-Boost, which currently facilitates PBS for about 90% of Ethereum blocks.
-
-<figure style="text-align: center;">
-  <img src="../../images/MEV-Boost blocks.png" alt="Evolution of MEV-Boost slot share since The Merge">
-  <figcaption style="text-align: center;">Evolution of the portion of blocks built through MEV-Boost since The Merge. Source: <a href="https://mevboost.pics/">mevboost.pics</a></figcaption>
-</figure>
-
-### Enshrined Proposer-Builder Separation (ePBS)
-
-Enshrined PBS involves embedding PBS mechanisms directly into Ethereum's consensus layer, which would have two main potential advantages:
-
-- Reduction in centralization risks: Moving PBS into the protocol layer could potentially reduce reliance on third parties with a tendency for centralization, aligning with Ethereum’s core values of decentralization and censorship resistance.
-- Security and stability: External dependencies and out-of-protocol software, such as relays, have shown vulnerabilities (e.g., "Low-Carb Crusader" attack). Integrating PBS into the Ethereum protocol can mitigate these risks and reduce the coordination costs associated with maintaining compatibility between various components.
-
-Referring to this [eth research discussion](https://ethresear.ch/t/why-enshrine-proposer-builder-separation-a-viable-path-to-epbs/15710), ePBS, particularly through Two-Block HeadLock (TBHL) and optimistic relaying, presents a pathway towards addressing current challenges and enhancing the efficiency, security, and decentralization of block production and MEV extraction processes.
-
-For more detailed on ePBS check out this [ePBS wiki entry](/wiki/research/PBS/ePBS.md).
-
-### Protocol-Enforced Proposer Commitments (PEPC)
-
-PEPC is another proposed solution for the shortcomings of PBS and MEV-Boost which advocates for a more open-ended and flexible design than traditional PBS. As explained on this [Mirror post](https://mirror.xyz/ohotties.eth/lBEXiiU7yK91OuSn8QyJPM9Db8GuyDFzCEUAj60BWyI), PEPC aims to provide a generalized infrastructure for proposers to make credible commitments to any outsourced block-building task, which could potentially better accommodate the evolving needs of the Ethereum network, especially with the anticipated expansion of data sharding and rollup adoption.
-
-The goal is to allow proposers to register arbitrary commitments, expressed via EVM execution, that external parties can rely on. This way, anyone can provide services to proposers as long as they satisfy the registered commitments, fostering permissionless innovation. Also, unlike externals solutions such as MEV-Boost, PEPC would integrate commitment satisfaction into the core protocol, blocks being considered valid only if they fulfill the proposer's registered commitments, enhancing security and trustworthiness.
-
-Regarding the need for a flexible approach to proposer duties PEPC aims to provide, it is worth noting that a wide range of outsourcing smart contracts is supported, from full block construction to specific valid transaction inclusions and validity proofs for rollup blocks.
-
-All of this would also be complementary to existing out-of-protocol mechanisms like Eigenlayer, enhancing the credibility of proposer commitments by moving from an optimistic model to a pessimistic enforcement model where violating commitments inherently invalidates blocks.
-
-For more detailed explanation check out [PEPC](/wiki/research/PBS/ePBS?id=protocol-enforced-proposer-commitments-pepc).
-
-### EIP-7547: Inclusion Lists
-
-As explained in this [ethereum-magicians.org post](https://ethereum-magicians.org/t/eip-7547-inclusion-lists/17474), inclusion lists aim to provide a mechanism to improve the censorship resistance of Ethereum by allowing proposers to specify a set of transactions that must be promptly included for subsequent blocks to be considered valid.
-
-This way proposers retain some authority over block building without sacrificing MEV rewards, through a mechanism by which transactions can be forcibly included. The simplest approach would be for the proposer to specify a list of transactions they found themselves in the mempool that must be included by the block builder if they want their block to be proposed for the next slot. Although some issues stem from this, such as incentive incompatibilities and exposure of free-data availability, solutions like forward and multiple inclusion lists have been proposed and are being developed to address these challenges, demonstrating the Ethereum community's commitment to refining and advancing the protocol to uphold its core values of decentralization, fairness, and censorship resistance.
-
-### Further Reading and Resources
-
-Below are some further readings regarding PBS and related topics:
-
-- [Notes on Proposer-Builder Separation (PBS)](https://barnabe.substack.com/p/pbs)
-- [Timing Games and Implications on MEV extraction](https://chorus.one/articles/timing-games-and-implications-on-mev-extraction)
-- [Why ePBS?](https://ethresear.ch/t/why-enshrine-proposer-builder-separation-a-viable-path-to-epbs/15710)
-- [Vitalik on pbs censorship](https://notes.ethereum.org/@vbuterin/pbs_censorship_resistance)
-- [Payload timeliness committee(PTC) design for ePBS](https://ethresear.ch/t/payload-timeliness-committee-ptc-an-epbs-design/16054)
-- [2-slot PBS](https://ethresear.ch/t/two-slot-proposer-builder-separation/10980)
-- [Forward Inclusion Lists](https://notes.ethereum.org/@fradamt/forward-inclusion-lists)
