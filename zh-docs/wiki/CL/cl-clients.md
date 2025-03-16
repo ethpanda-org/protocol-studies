@@ -1,173 +1,117 @@
-# 共识层的实现
+# 共识客户端（Consensus Client）
 
-本页面涵盖了所有共识客户端实现的资源，无论是生产环境还是开发环境。它提供了每个客户端的独特特性、体系结构、基本指南和资源的概述。
+> **共识客户端**（Consensus Clients），曾称为 *Eth2 客户端*，负责运行以太坊的权益证明（Proof-of-Stake）共识算法，使网络能够就信标链（Beacon Chain）的最新区块达成一致。  
+> 共识客户端不会参与交易验证、广播或执行状态转换，这些工作由执行客户端（Execution Clients）完成。  
+> 共识客户端也不会进行区块提议或验证，这些由验证者客户端（Validator Client）负责，后者是共识客户端的可选附加组件。
 
-> 共识客户端最初被称为**eth2.0客户端**，现在已经废弃了，但你仍然可以在他们的仓库中找到这个引用。
+---
 
-有多个共识层客户端被开发来参与以太坊权益证明（PoS）机制。最受欢迎的自由/开源软件和产品版本是[Lighthouse](https://lighthouse-book.sigmaprime.io/), [Lodestar](https://lodestar.chainsafe.io/), [Nimbus](https://nimbus.team/index.html), [Prysm](https://prysmaticlabs.com/) 和 [Teku](https://consensys.io/teku)。 这些客户端使用不同的编程语言开发，提供独特的功能并提供不同的性能配置。所有客户端都开箱即用地支持以太坊主网以及主动测试网。实现的多样性使网络受益于客户机的多样性。如果您正在选择使用的客户端，当前客户端的多样性应该是主要因素之一。
+## 总览表
 
-## 生产环境中的客户端
+不同的共识客户端采用不同的编程语言开发，具备各自的特点，并提供不同的性能表现。所有客户端均默认支持以太坊主网及活跃测试网。多样化的客户端实现使以太坊网络受益于**客户端多样性**。  
+如果你正在选择使用哪款客户端，**当前的客户端多样性应是一个重要考量因素**。
 
-## LightHouse
+| 客户端                                                                  | 语言       | 开发团队             | 状态        |
+| ----------------------------------------------------------------------- | ---------- | ------------------- | ----------- |
+| [Lighthouse](https://github.com/sigp/lighthouse)                        | Rust       | Sigma Prime         | 生产可用    |
+| [Lodestar](https://github.com/ChainSafe/lodestar)                       | TypeScript | ChainSafe           | 生产可用    |
+| [Nimbus](https://github.com/status-im/nimbus-eth2)                      | Nim        | Status              | 生产可用    |
+| [Prysm](https://github.com/prysmaticlabs/prysm)                         | Go         | Prysmatic Labs      | 生产可用    |
+| [Teku](https://github.com/ConsenSys/teku)                               | Java       | ConsenSys           | 生产可用    |
+| [Grandine](https://github.com/grandinetech/grandine)                    | Rust       | Grandine Developers | 生产可用    |
+| [Caplin](https://github.com/ledgerwatch/erigon)                         | Go         | Erigon              | 开发中      |
+| [LambdaClass](https://github.com/lambdaclass/lambda_ethereum_consensus) | Elixir     | LambdaClass         | 开发中      |
 
-[Lighthouse](https://lighthouse-book.sigmaprime.io/) 是用Rust编程语言开发的客户端。它是一个功能齐全的以太坊共识客户端，可以用作信标节点或验证客户端。它是由[Sigma Prime](https://sigmaprime.io/)开发的。
+---
 
-### 特性
+## 客户端分布情况
 
-它还可以提供一个web界面[Siren](https://lighthouse-book.sigmaprime.io/lighthouse-ui.html)，从而能够轻松地监视信标节点和验证器性能。
+目前，大多数以太坊节点运营商主要使用 **Prysm** 或 **Lighthouse** 作为共识客户端。  
+为了支持信标链（曾称为 ETH2）的健康发展，**建议尽可能使用不同的客户端**。  
+[为什么？](https://clientdiversity.org/#why)
 
-### 安装客户端
+---
 
-Lighthouse客户端可以通过多种方式安装——源代码构建、运行预构建的二进制文件或者使用docker。他们还提供不同架构的构建，如[ARM](https://lighthouse-book.sigmaprime.io/pi.html)和[交叉编译](https://lighthouse-book.sigmaprime.io/cross-compiling.html)指南。[Validator](https://lighthouse-book.sigmaprime.io/mainnet-validator.html)客户端与主二进制文件捆绑在一起。
-#### 使用 Docker
+## 主要共识客户端简介
 
-Lighthouse提供了一个使用docker安装客户端的指南。他们有[Docker Hub](https://lighthouse-book.sigmaprime.io/docker.html#docker-hub)和[from source](https://lighthouse-book.sigmaprime.io/docker.html#building-the-docker-image)构建Docker Hub的选项。
-#### 源代码构建
+### Lighthouse
 
-和Prysm一样，它也支持多种硬件和操作系统，可以从源代码构建客户端。[文档](https://lighthouse-book.sigmaprime.io/installation-source.html)。在构建客户端之前，请确保安装了正确的依赖项。
+Lighthouse 由 Sigma Prime 团队使用 Rust 开发，强调**安全性和性能**。目前其用户占比较高，但需要注意的是，**如果形成超级多数，可能会导致链分叉风险**。  
+Lighthouse 采用 **Apache 2.0 许可证**，在生产环境中具有极高的稳定性。
 
-#### 预构建二进制文件
+**特点：**
+- [跨平台编译](https://lighthouse-book.sigmaprime.io/cross-compiling.html)
+- [惩罚保护](https://lighthouse-book.sigmaprime.io/slashing-protection.html)
+- [双生验证者保护](https://lighthouse-book.sigmaprime.io/validator-doppelganger.html#doppelganger-protection)
+- [运行 Slasher](https://lighthouse-book.sigmaprime.io/slasher.html)
+- [仅作为区块提议者运行](https://lighthouse-book.sigmaprime.io/advanced-proposer-only.html)
+- [Prometheus 和 Grafana 监控](https://lighthouse-book.sigmaprime.io/advanced_metrics.html)
 
-许多不同操作系统和体系结构的预构建二进制文件都是可用的。它们还提供了可移植版本，这些版本为了更好的平台兼容性而牺牲了编译器性能选项。发布的二进制文件由来自 security@sigmaprime.io 的 gpg 密钥‘ 15E66D941F697E28F49381F426416DC3F30674B0 ’签名。阅读[文档][https://lighthouse-book.sigmaprime.io/installation-binaries.html]关于使用预构建的二进制文件安装客户端的步骤。
+---
 
-### 附加功能和安全注意事项
+### Lodestar
 
-Lighthouse客户端相当高级，还具备以下特性。
+Lodestar 由 ChainSafe 团队基于 **TypeScript** 开发，专为**快速原型设计**和**浏览器兼容性**优化。  
+它提供完整的信标节点（Beacon Node）和验证者客户端（Validator Client）功能，同时包含 BLS 和 SSZ 等关键库，可用于以太坊协议开发。  
+Lodestar 采用 **Apache 2.0 + LGPL 双许可证**，允许用户在**宽松许可**与**强制开源（Copyleft）**之间选择。
 
-- [削减保护](https://lighthouse-book.sigmaprime.io/faq.html#what-is-slashing-protection)
-- [ Doppelganger 保护](https://lighthouse-book.sigmaprime.io/validator-doppelganger.html#doppelganger-protection)
-- [ 运行 Slasher](https://lighthouse-book.sigmaprime.io/slasher.html)
-- [MEV 的 Builder API](https://lighthouse-book.sigmaprime.io/builders.html#maximal-extractable-value-mev)
+**特点：**
+- [验证者客户端](https://chainsafe.github.io/lodestar/run/validator-management/vc-configuration)
+- [MEV 与构建者集成](https://chainsafe.github.io/lodestar/run/beacon-management/mev-and-builder-integration)
+- [轻客户端](https://chainsafe.github.io/lodestar/libraries/lightclient-prover/lightclient)
+- [Prover 证明生成](https://chainsafe.github.io/lodestar/libraries/lightclient-prover/prover)
+- [Prometheus 和 Grafana 监控](https://chainsafe.github.io/lodestar/run/logging-and-metrics/prometheus-grafana)
+- [远程监控](https://chainsafe.github.io/lodestar/run/logging-and-metrics/client-monitoring)
 
-### 最常见问题
+---
 
-有关客户的更多常见问题，请参阅 [FAQ](https://lighthouse-book.sigmaprime.io/faq.html)。
+### Prysm
 
-## Lodestar
+Prysm 由 **Prysmatic Labs** 使用 **Go 语言** 开发，专注于**易用性和可靠性**。  
+Prysm 提供完整的信标节点和验证者客户端实现，采用 **gRPC 进行进程间通信**，使用 **BoltDB 作为存储**，并基于 **libp2p 进行网络通信**。  
+该客户端为参与以太坊权益证明（PoS）提供了一个**安全且可靠的解决方案**。
 
-通过TypeScript中的ChainSafe
+**特点：**
+- [验证者客户端](https://docs.prylabs.network/docs/wallet/nondeterministic)
+- [MEV 构建者配置](https://docs.prylabs.network/docs/advanced/builder)
+- [运行 Slasher](https://docs.prylabs.network/docs/prysm-usage/slasher)
+- [Prometheus 和 Grafana 监控](https://docs.prylabs.network/docs/prysm-usage/monitoring/grafana-dashboard)
+- [安全最佳实践](https://docs.prylabs.network/docs/security-best-practices)
 
-## Nimbus
+---
 
-通过 Nim 中的 Status
-## Prysm
+### Nimbus
 
-[Prysm](https://docs.prylabs.network/docs/getting-started)  是用Go编程语言开发的客户端。它是最受欢迎的客户之一，并且有一个很大的社区。使用此客户端，验证者可以参与以太坊PoS机制。Prysm可以用作信标节点或验证客户端。它可以辅助执行层客户处理交易和数据块。当执行客户端与Prysm集成时，它首先与区块头同步，因为作为信标节点，它对链有完整的视图。它向EL客户端传递最新的区块头信息。然后，EL客户端可以从其p2p网络请求块主体。这在所有的共识层客户端中很常见。
+Nimbus 由 **Status** 团队使用 **Nim 语言** 开发，专为**资源效率优化**。  
+它可运行在 **智能手机、树莓派等轻量级设备**，同时在高性能服务器上运行时也能节省资源。  
+Nimbus 集成了验证者客户端、远程签名、性能分析工具，并提供强大的验证者监控能力。
 
-除了以太坊主网，Prysm 还可以运行在 Goerli， Holesky， Pyrmont等测试网络上。Prysm 可以与不同的 EL 客户端集成，例如 [Geth](https://geth.ethereum.org/)，[Nethermind](https://www.nethermind.io/nethermind-client)，和 [Besu](https://besu.hyperledger.org/) 等等。它有一个 web 界面来监控信标链和验证器的性能。它还有 RESTful API 与信标链和验证器客户端交互。
+**特点：**
+- [运行执行客户端](https://nimbus.guide/eth1.html)
+- [验证者客户端](https://nimbus.guide/validator-client.html)
+- [MEV 与构建者集成](https://nimbus.guide/external-block-builder.html)
+- [Prometheus 和 Grafana 监控](https://nimbus.guide/metrics-pretty-pictures.html)
 
-### 安装客户端
+---
 
-安装过程可以使用 docker 自动化过程完成，也可以使用源代码手动构建过程。这两种方法都可以灵活地在不同的操作系统、硬件和角色（信标节点和/或验证器客户端）上运行客户机。
+### Teku
 
-####使用Docker
+Teku 由 **ConsenSys** 团队基于 **Java** 开发，适用于**企业级以太坊部署**。  
+它包含完整的信标节点实现和验证者客户端，支持 **REST API 进行管理**，并提供 **Prometheus 指标监控**和**外部密钥管理**。
 
-安装客户端最简单快捷的方法是[使用docker]（https://docs.prylabs.network/docs/install/install-with-docker）。以这种方式进行的大多数与客户机相关的活动都使用[配置文件]（https://docs.prylabs.network/docs/install/install-with-docker#configure-ports-optional）。
-
-####从源头构建
-
-通过[源代码]（https://docs.prylabs.network/docs/install/install-with-bazel）构建客户端，可以进一步了解客户端。人们还需要注意硬件规格和[要求](https://docs.prylabs.network/docs/install/install-with-bazel#review-system-requirements)，以便客户端顺利运行。
-
-###示例运行
-
-下面是在以太坊主网上运行Prysm客户端的示例，Geth 节点作为执行客户端：
-
-```bash
-条款与条件：https://github.com/prysmaticlabs/prysm/blob/develop/TERMS_OF_SERVICE.md
-
-
-键入 “接受” 以接受本条款与条件[接受/拒绝]:（默认：拒绝）：
-接受
-[2024-03-10 23:42:11]  INFO Finished reading JWT secret from /home/userDemo/code/jwt.hex
-[2024-03-10 23:42:11]  WARN flags: Running on Ethereum Mainnet
-[2024-03-10 23:42:11]  WARN node: In order to receive transaction fees from proposing blocks, you must provide flag --suggested-fee-recipient with a valid ethereum address when starting your beacon node. Please see our documentation for more information on this requirement (https://docs.prylabs.network/docs/execution-node/fee-recipient).
-[2024-03-10 23:42:11]  INFO node: Checking DB database-path=/home/userDemo/.eth2/beaconchaindata
-[2024-03-10 23:42:11]  INFO db: Opening Bolt DB at /home/userDemo/.eth2/beaconchaindata/beaconchain.db
-[2024-03-10 23:42:12]  WARN genesis: database contains genesis with htr=0x7e76880eb67bbdc86250aa578958e9d0675e64e714337855204fb5abaaf82c2b, ignoring remote genesis state parameter
-[2024-03-10 23:42:21]  INFO detected supported config in remote finalized state, name=mainnet, fork=capella
-[2024-03-10 23:42:22]  INFO Downloaded checkpoint sync state and block. block_root=0xe6c065b28ef4826da69ba234394f1e293473a5fb56fa3e053bd73d650dd6061a block_slot=8607136 state_root=0x42ef0d1f525b019097e0b30904215703cb784474ad7a186087fd7bdf3ba9c25d state_slot=8607136
-[2024-03-10 23:42:22]  INFO db: detected supported config for state & block version, config name=mainnet, fork name=capella
-[2024-03-10 23:42:23]  INFO db: saving checkpoint block to db, w/ root=0xe6c065b28ef4826da69ba234394f1e293473a5fb56fa3e053bd73d650dd6061a
-[2024-03-10 23:42:23]  INFO db: calling SaveState w/ blockRoot=e6c065b28ef4826da69ba234394f1e293473a5fb56fa3e053bd73d650dd6061a
-[2024-03-10 23:42:23]  INFO node: Deposit contract: 0x00000000219ab540356cbb839cbe05303d7705fa
-[2024-03-10 23:42:23]  INFO p2p: Running node with peer id of 16Uiu2HAmPa9EyCpvNwFizaRY7PXdedPgnUPYAuXwdiVcQ83h1uoQ
-[2024-03-10 23:42:24]  INFO rpc: gRPC server listening on port address=127.0.0.1:4000
-[2024-03-10 23:42:24]  WARN rpc: You are using an insecure gRPC server. If you are running your beacon node and validator on the same machines, you can ignore this message. If you want to know how to enable secure connections, see: https://docs.prylabs.network/docs/prysm-usage/secure-grpc
-[2024-03-10 23:42:24]  INFO node: Starting beacon node version=Prysm/v5.0.1/a1a81d1720a0a3b850992d4825d0a023baa8e65a. Built at: 2024-03-08 20:31:40+00:00
-[2024-03-10 23:42:24]  INFO initial-sync: Waiting for state to be initialized
-[2024-03-10 23:42:24]  INFO blockchain: Blockchain data already exists in DB, initializing...
-[2024-03-10 23:42:24]  INFO Backfill service not enabled.
-[2024-03-10 23:42:24]  INFO gateway: Starting gRPC gateway address=127.0.0.1:3500
-[2024-03-10 23:42:24]  INFO initial-sync: Received state initialized event
-[2024-03-10 23:42:24]  INFO initial-sync: Starting initial chain sync...
-[2024-03-10 23:42:24]  INFO initial-sync: Waiting for enough suitable peers before syncing required=3 suitable=0
-[2024-03-10 23:42:24]  INFO p2p: Started discovery v5 ENR=enr:-MK4QLql3XgYbbOfu3gcaUijzcz2RwBE9utUVhR1YhcvqgErfjfjs88JqJIr7FzwpyoclMP8pBXWcUKCWtKKpKnoio-GAY4qiBRfh2F0dG5ldHOIAAAAAAAAAACEZXRoMpC7pNqWBAAAAAAdBAAAAAAAgmlkgnY0gmlwhMCoAZqJc2VjcDI1NmsxoQOiMrSMfZgcZfphI6hjf84nwmq7wMne1wML_H_EQdtn04hzeW5jbmV0cwCDdGNwgjLIg3VkcIIu4A
-[2024-03-10 23:42:24]  INFO p2p: Node started p2p server multiAddr=/ip4/192.168.1.154/tcp/13000/p2p/16Uiu2HAmPa9EyCpvNwFizaRY7PXdedPgnUPYAuXwdiVcQ83h1uoQ
-[2024-03-10 23:42:34]  INFO blockchain: Called new payload with optimistic block payloadBlockHash=0x492df9344dbd slot=8607137
-[2024-03-10 23:42:38]  WARN blockchain: Could not update head error=head at slot 8607136 with weight 97641 is not eligible, finalizedEpoch, justified Epoch 268971, 268972 != 268973, 268973
-[2024-03-10 23:42:38]  WARN blockchain: could not determine node weight root=0x0000000000000000000000000000000000000000000000000000000000000000
-[2024-03-10 23:42:38]  INFO blockchain: Synced new block block=0xc74dfd56... epoch=268973 finalizedEpoch=268973 finalizedRoot=0xe6c065b2... slot=8607137
-[2024-03-10 23:42:38]  INFO blockchain: Finished applying state transition attestations=111 payloadHash=0x492df9344dbd slot=8607137 syncBitsCount=400 txCount=153
-```
-
-#### 没有轻量级客户端支持
-
-目前Prysm还没有轻量级客户端支持。
-
-### 安全性考虑因素和最佳实践
-共识客户端安全性在某种程度上比执行层客户端安全性更重要，因为共识客户端不仅负责网络的安全性，还负责验证器的安全性。负责有效的区块执行，选择正确的链管理相关财务。Prysm 列出了一些[最佳实践](https://docs.prylabs.network/docs/security-best-practicespractices)来确保客户端和网络的安全性。其中，以下是最重要的：
-
-#### 避免削减
-验证者要对他们在链上的行为负责，以保证协议的安全性和活性。[文档](https://docs.prylabs.network/docs/security-best-practices#slash-avoidance)中列出了避免大幅删减的指导方针。
-
-#### 钱包和密钥管理
-
-虽然用于下注和取款的凭据是分开的，但保证密钥的安全是很重要的。[文档](https://docs.prylabs.network/docs/security-best-practices#slash-avoidance)概述了保持密钥安全的最佳实践。
-
-### 最常见的问题
-
-有关客户端的更多常见问题，请参阅 [FAQ](https://docs.prylabs.network/docs/faq) 。
-
-## Teku
-
-[Teku](https://consensys.io/teku) 是一个用Java编程语言开发的客户端。它是由 [ConsenSys]（https://consensys.net/）开发的。它是一个功能齐全的以太坊 2.0 客户端，可以用作信标节点或验证器客户端。它可以与 Besu 等执行客户端一起工作。它可以在以太坊主网和测试网（如 Goerli ， Sepolia 和 Holesky ）上工作。它有一个 web 界面来监控信标链和验证器的性能。Teku 提供 beacon 客户端和 validator 客户端，也可以作为 docker 容器运行。
-
-### 安装客户端
-
-Teku 客户端可以使用三种主要方式安装——使用 docker 、从源代码构建和使用预构建的二进制文件。
-
-#### 使用 Docker
-
-Teku 提供了一个更具有说明性的指南来使用 docker 安装客户端。他们有 [Docker Hub](https://docs.teku.consensys.io/get-started/install/run-docker-image#run-teku-docker-image)和使用 [Docker compose](https://docs.teku.consensys.io/get-started/install/run-docker-image#run-teku-using-docker-compose) 的选项。
-
-#### 从源代码构建
-
-从源代码构建客户端也是 Teku 的一个选项。客户端是用 Java 编写的。[文档](https://docs.teku.consensys.io/get-started/install/build-from-source)提供了针对不同操作系统（如 Linux 、 MacOS 和 Windows）从源代码构建客户端的步骤。
-
-#### 预构建的二进制文件
-
-也许在生产环境中运行客户端最简单的方法是使用预构建的二进制文件。基于Java的二进制文件非常稳定，可以在不同的操作系统上运行。[文档](https://docs.teku.consensys.io/get-started/install/install-binaries)提供了使用预构建的二进制文件安装和运行客户端的步骤。
-
-### 附加功能和安全注意事项
-
-从最近的状态运行 Teku 客户端非常容易，并且同步速度更快。使用最近确定的检查点状态，Teku 可以在弱主观性时期内同步。以太坊 Beacon chain 检查点列表可以在[这里](https://eth-clients.github.io/checkpoint-sync-endpoints/)找到。有关如何使用最近确定的检查点状态运行 Teku 客户端，请参阅[文档](https://docs.teku.consensys.io/get-started/checkpoint-start)。
-
-Teku 还提供了精简保护机制，特别是在从另一个客户端迁移到 Teku 的情况下。[文档](https://docs.teku.consensys.io/reference/cli/subcommands/slashing-protection#import)提供了从其他客户端迁移到 Teku 的步骤。
-
-## 开发中的客户端
-
-### Caplin
-
-一个嵌入在 Erigon 的共识客户端。
-
-### Grandine
-
-最初是 Rust 中的一个专有客户端，最近变成了开源
-
-### lambda 类客户端
-
-由LC在Elixir
-
-### 附加阅读
-
-[Analysis of CL clients performance, outdated](https://mirror.xyz/0x934e6B4D7eee305F8C9C42b46D6EEA09CcFd5EDc/b69LBy8p5UhcGJqUAmT22dpvdkU-Pulg2inrhoS9Mbc)
+**特点：**
+- [验证者客户端](https://docs.teku.consensys.io/concepts/proof-of-stake)
+- [惩罚保护](https://docs.teku.consensys.io/how-to/prevent-slashing/use-a-slashing-protection-file)
+- [MEV 与构建者集成](https://docs.teku.consensys.io/concepts/builder-network)
+- [双生检测](https://docs.teku.consensys.io/how-to/prevent-slashing/detect-doppelgangers)
+- [Prometheus 和 Grafana 监控](https://docs.teku.consensys.io/how-to/monitor/use-metrics)
+
+---
+
+## 其他资源
+
+- [ETH Docker](https://eth-docker.net/)
+- [Ethernodes](https://ethernodes.org/)
+- [客户端多样性](https://clientdiversity.org/)
+- [使用主流客户端的风险](https://dankradfeist.de/ethereum/2022/03/24/run-the-majority-client-at-your-own-peril.html)
+- [以太坊硬件资源分析](https://www.migalabs.io/blog/post/ethereum-hardware-resource-analysis-update)
