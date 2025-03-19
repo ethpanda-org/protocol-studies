@@ -14,6 +14,8 @@
 
 维基源文件托管在 GitHub 仓库 [github.com/eth-protocol-fellows/protocol-studies](https://github.com/eth-protocol-fellows/protocol-studies) 上。GitHub 仓库是主要的协作和托管平台，但维基源文件也在 [radicle](https://app.radicle.xyz/nodes/seed.radicle.garden/rad:zkV49UANVb2w2g5eE4Le197Wuasz) 和 [独立的集中式主机](https://git.ethquokkaops.io/eth-protocol-fellows/protocol-studies) 上镜像托管。
 
+译者注：此中文版 EPF.wiki 源文件托管在 [ETHPanda](https://x.com/ETHPanda_Org?t=GLnNSHqG_hVV2cC6Vz24Fw&s=09) 的 Github 仓库 [github.com/ethpanda-org/protocol-studies](https://github.com/ethpanda-org/protocol-studies)，如发现与原英文版 [EPF.wiki](https://epf.wiki/#/) 不一致，请联系 [ETHPanda](https://t.me/ETHPandaOrg)。
+
 > 维基来自 `wiki-pages` 分支，定期从 `main` 分支更新。当贡献时，请对相关分支或小修复使用 `main` 提交 PR。来自其他分支的 PR 在合并到 `main` 之前会被审核，并将收集的更新推送以更新 `wiki-pages`。
 
 探索现有问题或开设新问题，建议改进现有内容或维基前端功能。如果您发现缺失或未完成的内容，可以随时打开 PR。首先检查现有的 PR 或分支，确保您的工作不会重复。
