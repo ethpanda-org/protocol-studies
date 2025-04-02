@@ -63,9 +63,9 @@ Unix遗产展示了一小群人可以通过软件对世界产生的深远影响�
 > “对于一个没有军事通信经验的人来说，制造、登记、分发和取消密钥的问题可能显得微不足道，但在战时，交通流量甚至会让信号工作人员感到吃惊。” \
 > — [David Kahn在 **the codebreakers** 中写道](https://en.wikipedia.org/wiki/The_Codebreakers)
 
-如果密钥落入敌人手中，消息就会变得脆弱。在第二次世界大战中，数学家艾伦·图灵（https://en.wikipedia.org/wiki/Alan_Turing）和他的团队破解了一个复杂的德国密码——[Enigma machine](https://en.wikipedia.org/wiki/Enigma_machine)，这一点显而易见。他们的成功极大地改变了战争的结果。
+如果密钥落入敌人手中，消息就会变得脆弱。在第二次世界大战中，数学家 [艾伦·图灵](https://en.wikipedia.org/wiki/Alan_Turing) 和他的团队破解了一个复杂的德国密码——[Enigma machine](https://en.wikipedia.org/wiki/Enigma_machine)，这一点显而易见。他们的成功极大地改变了战争的结果。
 
-！[ 艾伦·图灵的雕像和谜机]（img/overview/ Alan - Turing .jpg）
+![艾伦·图灵的雕像和谜机](img/overview/alan-turing.jpg)
 **艾伦·图灵和英格玛机的雕像。**
 
 你如何在素未谋面的人之间安全地远距离交换密钥？批评者认为密码学注定要依赖信任：
@@ -75,9 +75,9 @@ Unix遗产展示了一小群人可以通过软件对世界产生的深远影响�
 
 从1974年到1978年，Poe 的一系列发明证明他错了。
 
-1974年，[Ralph Merkle]（https://en.wikipedia.org/wiki/Ralph_Merkle）设计了[Merkle’s Puzzles]（https://en.wikipedia.org/wiki/Merkle%27s_Puzzles）——一种初始方法，允许双方通过交换消息就共享秘密达成一致，即使他们事先没有共同的秘密。
+1974年，[Ralph Merkle](https://en.wikipedia.org/wiki/Ralph_Merkle) 设计了[Merkle’s Puzzles](https://en.wikipedia.org/wiki/Merkle%27s_Puzzles)——一种初始方法，允许双方通过交换消息就共享秘密达成一致，即使他们事先没有共同的秘密。
 
-两年后，1976年，默克尔的工作启发了[Whitfield Diffie]（https://en.wikipedia.org/wiki/Whitfield_Diffie）和[Martin Hellman]（https://en.wikipedia.org/wiki/Martin_Hellman）发表了他们具有历史意义的论文[ “密码学的新方向” ](https://ee.stanford.edu/~hellman/publications/24.pdf)，介绍了[Diffie - Hellman 密钥交换算法]（https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange）。这种方法在数学上明显比默克尔的谜题更鲁棒——催生了不可靠的加密。
+两年后，1976年，默克尔的工作启发了 [Whitfield Diffie](https://en.wikipedia.org/wiki/Whitfield_Diffie) 和 [Martin Hellman](https://en.wikipedia.org/wiki/Martin_Hellman) 发表了他们具有历史意义的论文[ “密码学的新方向” ](https://ee.stanford.edu/~hellman/publications/24.pdf)，介绍了[Diffie - Hellman 密钥交换算法](https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange)。这种方法在数学上明显比默克尔的谜题更鲁棒——催生了不可靠的加密。
 
 ![Whitfield和Martin发表了《密码学新方向》](img/overview/new-direction-in-cryptography.jpg)
 **Whitfield和Martin发表了《密码学的新方向》。**
@@ -181,7 +181,7 @@ GNU/Linux 作为一种证明，展示了软件应该赋予用户力量，而不�
 
 在 1980 年代，加密学作为保障通信安全的手段继续发展。
 
-1985 年，加密学家[David Chaum](https://en.wikipedia.org/wiki/David_Chaum) 发表了突破性论文《“无身份认证的安全：使老大哥过时的交易系统”》([pdf](https://dl.acm.org/doi/pdf/10.1145/4372.4373))，他在其中描述了提供安全性和隐私的交易方案，并提出了一个激进的想法——“数字化化名”供个人使用加密技术。
+1985 年，加密学家[David Chaum](https://en.wikipedia.org/wiki/David_Chaum) 发表了突破性论文[《无身份认证的安全：使老大哥过时的交易系统》](https://dl.acm.org/doi/pdf/10.1145/4372.4373)，他在其中描述了提供安全性和隐私的交易方案，并提出了一个激进的想法——“数字化化名”供个人使用加密技术。
 
 ![David Chaum](img/overview/david-chaum.jpg)  
 **David Chaum 和他的论文。**
@@ -233,16 +233,7 @@ Cypherpunk 发展成为一个具有深远影响的运动，吸引了超过[700�
 > 🎦 观看：[Tim 反思 30 年的加密无政府主义。](https://www.youtube.com/watch?v=TdmpAy1hI8g)
 
 
-## Search for the missing piece
-
-Throughout the '90s cryptopunks made several attempts at creating a digital currency.
-
-In 1990, David Chaum introduced [DigiCash](https://en.wikipedia.org/wiki/DigiCash) providing the first glimpse of an anonymous digital economy. However, it relied on existing financial infrastructure and was largely centralized. Ultimately, DigiCash filed for bankruptcy in 1998.
-
-![DigiCash Homepage](img/overview/digicash.jpg)
-**DigiCash Homepage.**
-
-E-gold emerged later in 1996 backed by physical gold held in reser## 寻找缺失的部分
+## 寻找缺失的部分
 
 在 90 年代，加密朋克多次尝试创建数字货币。
 
@@ -278,16 +269,6 @@ E-gold emerged later in 1996 backed by physical gold held in reser## 寻找缺�
 以太坊作为一种解决方案，旨在解决这些挑战。
 
 
-## The Ethereum world computer
-
-In 2012, [Vitalik Buterin](https://en.wikipedia.org/wiki/Vitalik_Buterin) and Mihai Alisie founded [Bitcoin Magazine](https://en.wikipedia.org/wiki/Bitcoin_Magazine) - the first serious publication dedicated to digital currencies. Vitalik soon discovered the limitations of Bitcoin and [proposed a platform](https://web.archive.org/web/20150627031414/http://vbuterin.com/ultimatescripting.html) that would support generalized financial applications.
-
-In 2014, with the help of [Gavin Wood](https://en.wikipedia.org/wiki/Gavin_Wood), the [design of Ethereum was formalized](https://ethereum.github.io/yellowpaper/paper.pdf).
-
-![Vitalik, Jeff, and Gavin working on Ethereum.](img/overview/ethereum-launch.jpg)
-**Vitalik, Jeff, and Gavin working on Ethereum.**
-
-On July 30, 2015, Ethereum [went live](https://etherscan.io/block/1) as a platform aimed at building tools for a self-sovereign economy using digital currency.
 ## 以太坊世界计算机
 
 2012 年，[Vitalik Buterin](https://en.wikipedia.org/wiki/Vitalik_Buterin) 和 Mihai Alisie 创办了[比特币杂志](https://en.wikipedia.org/wiki/Bitcoin_Magazine)——第一本专注于数字货币的严肃出版物。Vitalik 很快发现比特币的局限性，并[提出了一个平台](https://web.archive.org/web/20150627031414/http://vbuterin.com/ultimatescripting.html)，该平台支持通用的金融应用。
