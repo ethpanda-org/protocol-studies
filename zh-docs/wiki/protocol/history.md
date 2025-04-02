@@ -31,11 +31,11 @@
 - [Homestead blog release post](https://blog.ethereum.org/2016/02/29/homestead-release)
 - [The Homestead release - github](https://github.com/ethereum/homestead-guide/blob/master/source/introduction/the-homestead-release.rst)
 
-## The Merge
+## 合并 (The Merge)
 
-在 2022 年 9 月 15 日，以太坊激活了 [EIP-3675](https://eips.ethereum.org/EIPS/eip-3675) ，并通过一项被称为 The Merge 的事件升级了共识机制，转向了权益证明（proof-of-stake）。The Merge 使得之前采用的工作量证明（proof-of-work）共识机制被废弃，工作量证明机制以前是与执行层在同一逻辑层中实现的。取而代之的是一种更复杂、更精密的权益证明共识机制，它不再需要高能耗的挖矿操作。新的权益证明共识机制被实现于其独立的层，拥有单独的点对点网络和逻辑系统，也被称为 Beacon Chain。Beacon Chain 自 2020 年 12 月 1 日起就已经运行并达成共识，在长时间稳定运行且没有任何故障后，它被认为已经准备好成为以太坊的共识提供者。The Merge 这个名称来源于两种网络的合并。
-Learn more about The Merge in following resources and reading on Consensus layer. 
-通过以下资源和阅读共识层相关内容，了解更多关于 The Merge 的信息。
- - [EIP-3675: Upgrade consensus to Proof-of-Stake](https://eips.ethereum.org/EIPS/eip-3675), [archived](https://web.archive.org/web/20240213102133/https://eips.ethereum.org/EIPS/eip-3675)
-- [Gasper](https://ethereum.org/developers/docs/consensus-mechanisms/pos/gasper), [archived](https://web.archive.org/web/20240214225630/https://ethereum.org/developers/docs/consensus-mechanisms/pos/gasper)
-- [Mega Merge Resources List](https://notes.ethereum.org/@MarioHavel/merge-resources), [archived](https://web.archive.org/web/20240302082121/https://notes.ethereum.org/@MarioHavel/merge-resources)
+在 2022 年 9 月 15 日，以太坊激活了 [EIP-3675](https://eips.ethereum.org/EIPS/eip-3675) ，并通过一项被称为合并的事件升级了共识机制，转向了权益证明（proof-of-stake）。合并使得之前采用的工作量证明（proof-of-work）共识机制被废弃，工作量证明机制以前是与执行层在同一逻辑层中实现的。取而代之的是一种更复杂、更精密的权益证明共识机制，它不再需要高能耗的挖矿操作。新的权益证明共识机制被实现于其独立的层，拥有单独的点对点网络和逻辑系统，也被称为信标链 (Beacon Chain)。信标链自 2020 年 12 月 1 日起就已经运行并达成共识，在长时间稳定运行且没有任何故障后，它被认为已经准备好成为以太坊的共识提供者。合并这个名称来源于两种网络的合并。
+
+通过以下资源和阅读共识层相关内容，了解更多关于合并的信息。
+ - [EIP-3675: 将共识层升级到权益证明](https://eips.ethereum.org/EIPS/eip-3675), [存档版本](https://web.archive.org/web/20240213102133/https://eips.ethereum.org/EIPS/eip-3675)
+- [Gasper](https://ethereum.org/developers/docs/consensus-mechanisms/pos/gasper), [存档版本](https://web.archive.org/web/20240214225630/https://ethereum.org/developers/docs/consensus-mechanisms/pos/gasper)
+- [Mega 合并资源列表](https://notes.ethereum.org/@MarioHavel/merge-resources), [存档版本](https://web.archive.org/web/20240302082121/https://notes.ethereum.org/@MarioHavel/merge-resources)
