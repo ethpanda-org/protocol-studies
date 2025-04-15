@@ -7,7 +7,7 @@ EPF Wiki 是关于以太坊协议的技术资源的集合。它是 EPF 学习小
 ## 协议研究小组
 
 以太坊协议奖学金研究小组（EPFsg）是一个开放的研究项目，面向任何有兴趣了解协议内部原理的人。EPF Wiki 的第一部分遵循了研究小组期间呈现的所有内容。演讲者提供的材料和他们所有的演讲都按周列出。
-**加入 2025 学习小组 [开始学习](/eps/intro.md)**，请在 [公告博客](https://blog.ethereum.org/2025/02/05/ethereum-protocol-studies) 中了解有关学习小组的更多信息。
+**加入 2025 学习小组** [开始学习](/eps/intro.md)，请在 [公告博客](https://blog.ethereum.org/2025/02/05/ethereum-protocol-studies) 中了解有关学习小组的更多信息。
 
 >该学习小组并非仅仅是一份资源清单，而是一个由维护这些资源的人以及了解核心协议的人员组成的社群。**加入我们 [Discord 服务器](https://discord.com/invite/addwpQbhpq) 中的社区吧**。
 
