@@ -1,6 +1,6 @@
 # 第 24 讲 | 学习小组即将升级
 
-学习小组的最后一讲是对未来的展望，涵盖了即将到来的协议硬分叉。 [<name>Marius Van Der Wijden</name>](https://github.com/MariusVanDerWijden) 的讲座将深入探讨即将升级的 EIP、Pectra 和 Fusaka。
+学习小组的最后一讲是对未来的展望，涵盖了即将到来的协议 hard fork。 [<name>Marius Van Der Wijden</name>](https://github.com/MariusVanDerWijden) 的讲座将深入探讨即将升级的 EIP、Pectra 和 Fusaka。
 
 
 在 [Youtube](https://youtu.be/QvZKdWZqL04do) 上观看讲座。 [幻灯片可在此处获取](https://docs.google.com/presentation/d/10wwANwKcdTLWwBu9NbTG6GtIEAoXQLqox6LIS03oHMo/edit?usp=sharing)。

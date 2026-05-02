@@ -44,19 +44,19 @@
 - [掌握编程](https://tidyfirst.substack.com/p/mastering-programming)
 - 📄 [很棒的 C++(或 C)](https://github.com/fffaraz/awesome-cpp)
 - 📄 [棒极了](https://github.com/avelino/awesome-go)
-- 📄 [很棒的Rust](https://github.com/rust-unofficial/awesome-rust)
+- 📄 [很棒的 Rust](https://github.com/rust-unofficial/awesome-rust)
 - 📄 [很棒的 javascript](https://github.com/sorrycc/awesome-javascript)
 - 📄 [很棒的蟒蛇](https://github.com/vinta/awesome-python)
-- 🎥 [乔治·霍兹 |编程|重写线性化器(tinygrad)|软件工程师生命中的一天](https://www.youtube.com/watch?v=R-Xr1JRF6bY)
+- 🎥 [乔治·霍兹 |编程|重写线性化器 (tinygrad)|软件工程师生命中的一天](https://www.youtube.com/watch?v=R-Xr1JRF6bY)
 
 
 ## 网络
 
-本节简要概述 OSI(开放系统互连)和 TCP/IP(传输控制协议/互联网协议)模型之间的差异和相似之处，
-以及DevP2P中使用的传输层涉及的协议：TCP和UDP。
+本节简要概述 OSI (开放系统互连) 和 TCP/IP (传输控制协议/互联网协议) 模型之间的差异和相似之处，
+以及 DevP2P 中使用的传输层涉及的协议：TCP 和 UDP。
 
 在网络方面，两种模型都指的是相同的层间通信过程。
-正如 Kurose 和 Ross 所解释的(2020)，计算机网络分为不同的层，每一层都有特定的职责。 OSI 模型有七层，而 TCP/IP 模型有四层。 OSI 模型更理论化，TCP/IP 模型更实用。
+正如 Kurose 和 Ross 所解释的 (2020)，计算机网络分为不同的层，每一层都有特定的职责。 OSI 模型有七层，而 TCP/IP 模型有四层。 OSI 模型更理论化，TCP/IP 模型更实用。
 OSI 模型是国际标准化组织 (ISO) 创建的参考模型，旨在提供理解网络的框架。 TCP/IP 模型由国防部 (DoD) 创建，以确保消息可以在计算机之间传输，无论所涉及的计算机类型如何。
 TCP/IP 模型是 OSI 模型的简洁版本：
 
@@ -64,31 +64,31 @@ TCP/IP 模型是 OSI 模型的简洁版本：
 
 总之，OSI 模型层是：
 1. 物理层：负责设备之间原始数据的传输和接收。
-2. 数据链路层：负责节点-to-节点消息的传递。
+2. 数据链路层：负责节点-to- 节点消息的传递。
 3. 网络层：负责将数据包从源传送到目的地。
 4. 传输层：负责源和目的地之间数据的传递。
 5. 会话层：负责应用程序之间连接的建立、管理和终止。
 6. 表示层：负责数据的翻译、压缩、加密。
 7. 应用层：负责直接向最终用户提供网络服务。
 
-假设克劳德·香农(Claude Shannon，1948)提出的通信模式，每次通信都意味着发送者和接收者、它们之间要交换的消息、传输介质以及要遵循的协议。
+假设克劳德·香农 (Claude Shannon，1948) 提出的通信模式，每次通信都意味着发送者和接收者、它们之间要交换的消息、传输介质以及要遵循的协议。
 值得一提的是，无论计算机体系结构如何，如果它遵循上述模型的通信和协议规范，它都可以成为网络的一部分。
 
 - 🎥 [计算机网络入门](https://www.youtube.com/playlist?list=PLEAYkSg4uSQ2dr0XO_Nwa5OcdEcaaELSG)
 - 🎥 [计算机和互联网 |可汗学院](https://www.khanacademy.org/computing/code-org/computers-and-the-internet)
 - 🎥 [计算机网络：自上而下的方法](https://gaia.cs.umass.edu/kurose_ross/online_lectures.htm)
-- 条款 E.香农 (1948)。 “通信的数学理论”。 *贝尔系统技术杂志*。卷。 27.
+- 条款 E. 香农 (1948)。 “通信的数学理论”。 *贝尔系统技术杂志*。卷。 27.
 - 吉姆·黑罗斯和基思·罗斯 (2020)。 *计算机网络：自上而下的方法*。第 8 版。皮尔逊.
 
 ## 分布式系统和区块链
 
 - 🎥 [分布式系统 | MIT](https://pdos.csail.mit.edu/6.824/schedule.html)
 - 📄 [分布式系统中的时间、时钟和事件排序 - Lamport 的论文，典型的分布式系统入门](http://research.microsoft.com/en-us/um/people/lamport/pubs/time-clocks.pdf)
-- 📄[拜占庭将军问题](https://lamport.azurewebsites.net/pubs/byz.pdf)
-- 📄[实用拜占庭容错](http://pmg.csail.mit.edu/papers/osdi99.pdf)
-- 📄[比特币白皮书](https://bitcoin.org/bitcoin.pdf)
-- 📄 [以太坊白皮书](https://ethereum.org/en/whitepaper/)
-- 📄 [掌握以太坊，作者：Andreas M. Antonopoulos、Gavin Wood](https://github.com/ethereumbook/ethereumbook)
+- 📄[Byzantine Generals' Problem](https://lamport.azurewebsites.net/pubs/byz.pdf)
+- 📄[实用 Byzantine Fault Tolerance](http://pmg.csail.mit.edu/papers/osdi99.pdf)
+- 📄[Bitcoin 白皮书](https://bitcoin.org/bitcoin.pdf)
+- 📄 [Ethereum 白皮书](https://ethereum.org/en/whitepaper/)
+- 📄 [掌握 Ethereum，作者：Andreas M. Antonopoulos、Gavin Wood](https://github.com/ethereumbook/ethereumbook)
 - 📄 [在 Go 中构建区块链](https://github.com/Jeiwan/blockchain_go)
 
 ## 安全性
@@ -112,7 +112,7 @@ TCP/IP 模型是 OSI 模型的简洁版本：
 - 📄[每个程序员都应该了解的内存知识](https://akkadia.org/drepper/cpumemory.pdf)
 - 📄 [每个计算机科学家应该了解的浮点运算](https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html)
 - 🗣️ [大端和小端的内/外](https://www.youtube.com/watch?v=oBSuXP-1Tc0)
-- 🎥 [完美依赖-SQLite案例分析](https://www.youtube.com/watch?v=ZP7ef4eVnac)
+- 🎥 [完美依赖-SQLite 案例分析](https://www.youtube.com/watch?v=ZP7ef4eVnac)
 
 ## 资源
 

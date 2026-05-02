@@ -1,8 +1,8 @@
 # 第六讲 | 学习小组共识和执行规范
 
-EPS 第 6 讲深入了解共识和执行层规范。 
+EPS 第 6 讲深入了解共识和 Execution Layer 规范。 
 
-在 StreamEth 或 Youtube 上观看 [Hsiao-Wei](https://twitter.com/icebearhww) 和 [Sam](https://twitter.com/_SamWilsn_) 的演示。 [共识规范](https://github.com/eth-protocol-fellows/protocol-studies/blob/main/docs/eps/presentations/week6_cl_specs.pdf) 和[执行规范](https://github.com/eth-protocol-fellows/protocol-studies/blob/main/docs/eps/presentations/week6_el_specs.pdf) 会谈均提供幻灯片。
+在 StreamEth 或 Youtube 上观看 [Hsiao-Wei](https://twitter.com/icebearhww) 和 [Sam](https://twitter.com/_SamWilsn_) 的演示。 [共识规范](https://github.com/eth-protocol-fellows/protocol-studies/blob/main/docs/eps/presentations/week6_cl_specs.pdf) 和 [执行规范](https://github.com/eth-protocol-fellows/protocol-studies/blob/main/docs/eps/presentations/week6_el_specs.pdf) 会谈均提供幻灯片。
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/_mb0LFJY8t0?si=M74zgvUuewCrUtJF" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
@@ -30,4 +30,4 @@ EPS 第 6 讲深入了解共识和执行层规范。
 - 作为 EL 规范的练习，请按照 Sam 的演示添加操作码并添加您自己的
 - https://ethereum.org/en/developers/tutorials/yellow-paper-evm/
 - Vitalik Buterin 的注释规范：https://github.com/ethereum/annotated-spec
-- Ben Edgington 的升级以太坊书：https://eth2book.info
+- Ben Edgington 的升级 Ethereum 书：https://eth2book.info

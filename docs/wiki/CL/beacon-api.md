@@ -1,12 +1,12 @@
-# 信标链规范和 API
+# Beacon Chain 规范和 API
 
-以太坊权益证明的核心是一个名为“信标链”的系统链。 信标链存储并管理验证者的注册表。在权益证明的初始部署阶段，成为验证者的唯一机制是在以太坊工作量证明链上创建一个单向(Capella 后可提取)ETH 交易到存款合约。当信标链处理存款收据、达到激活余额并完成排队过程时，就会激活验证者。退出可以是自愿的，也可以是作为对不当行为的惩罚而强制退出的。 信标链上的主要负载源是“证明”。 证明同时是分片区块(在后续升级中)的可用性投票和信标区块(第 0 阶段)的权益证明投票。
+Ethereum Proof-of-Stake 的核心是一个名为“Beacon Chain”的系统链。 Beacon Chain 存储并管理验证者的注册表。在 Proof-of-Stake 的初始部署阶段，成为验证者的唯一机制是在 Ethereum Proof-of-Work 链上创建一个单向 (Capella 后可提取)ETH 交易到存款合约。当 Beacon Chain 处理存款收据、达到激活余额并完成排队过程时，就会激活验证者。退出可以是自愿的，也可以是作为对不当行为的惩罚而强制退出的。 Beacon Chain 上的主要负载源是“证明”。 证明同时是分片区块 (在后续升级中) 的可用性投票和 Beacon block (第 0 阶段) 的 Proof-of-Stake 投票。
 
-本节将介绍信标链规范和 API 的一些重要部分。另请检查完整的 [信标链规范](https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md) 和 [Beacon API 参考](https://ethereum.github.io/beacon-APIs/#/)。 
+本节将介绍 Beacon Chain 规范和 API 的一些重要部分。另请检查完整的 [Beacon Chain 规范](https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md) 和 [Beacon API 参考](https://ethereum.github.io/beacon-APIs/#/)。 
 
-Beacon API 是共识层客户端 (beacon 节点) 提供的 REST 端点。 验证者客户端使用的读取共识信息的接口。 
+Beacon API 是 Consensus Layer 客户端 (Beacon node) 提供的 REST 端点。 验证者客户端使用的读取共识信息的接口。 
 
-## 集装箱
+## Container
 
 `BeaconState`
 

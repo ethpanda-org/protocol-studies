@@ -1,6 +1,6 @@
 # 载荷-EPBS 的时效委员会 (PTC)
 
-载荷-及时性委员会 (PTC) 提案是将 PBS (ePBS) 纳入以太坊协议的设计。它代表了确定区块有效性的机制的演变，并包括验证者的子集，他们对区块的 载荷[^1][^2][^3] 的及时性进行投票。
+Payload Timeliness Committee (PTC) 提案是将 PBS (ePBS) 纳入 Ethereum 协议的设计。它代表了确定区块有效性的机制的演变，并包括验证者的子集，他们对区块的 载荷[^1][^2][^3] 的及时性进行投票。
 
 ## PTC 概述
 
@@ -41,17 +41,17 @@ sequenceDiagram
     end
 ```
 
-_图 – 载荷-及时性委员会流程._
+_图 – Payload Timeliness Committee 流程._
 
 
 该提案引入了新的时隙结构，并为载荷-及时性 (PT) 投票传播增加了一个阶段。其目的是细化提议者和构建者在区块创建过程中的角色，确保提议者保持轻量级和不复杂的实体以实现去中心化的目标，并且专门的构建者可以高效地创建高价值的区块。
 
-1. **区块传播**：选举出来的权益证明 (PoS) 验证者，称为提议者，在其时隙的开头广播 CL 区块 (`t=t0`)。此区块包含构建者的出价，但不包含实际的载荷 (即交易)。
-2. **证明聚合**：在证明截止日期 (`t=t1`)，验证者(称为证明者)使用本地分叉选择规则对感知到的链头进行投票。
+1. **区块传播**：选举出来的 Proof-of-Stake (PoS) 验证者，称为提议者，在其时隙的开头广播 CL 区块 (`t=t0`)。此区块包含构建者的出价，但不包含实际的载荷 (即交易)。
+2. **证明聚合**：在证明截止日期 (`t=t1`)，验证者 (称为证明者) 使用本地分叉选择规则对感知到的链头进行投票。
 
 3. **聚合和载荷传播**：构建者看到 CL 区块并发布执行载荷。 验证者委员会开始广播聚合的证明。
 
-4. **载荷-及时性投票传播**：在(`t=t3`)，载荷-及时性委员会对载荷是否及时发布进行投票。
+4. **载荷-及时性投票传播**：在 (`t=t3`)，Payload Timeliness Committee 对载荷是否及时发布进行投票。
 
 5. **下一个区块传播**：在 (`t=t4`)，下一个提议者发布他们的区块，根据他们观察到的 PT 投票决定在完整或空的区块上构建。
 
@@ -63,15 +63,15 @@ _图 – 载荷-及时性委员会流程._
 
 **属性**：
 
-- **Honest-构建者付款安全**：如果构建者的出价得到处理，则其载荷就会成为规范。
+- **Honest- 构建者付款安全**：如果构建者的出价得到处理，则其载荷就会成为规范。
 
 - **诚实-提议者安全**：如果提议者按时提交单个区块，他们将收到付款。
 
-- **Honest-构建者 Same-时隙载荷安全**：诚实的构建者可以确保时隙的 载荷不能被同一载荷覆盖时隙。
+- **Honest- 构建者 Same- 时隙载荷安全**：诚实的构建者可以确保时隙的 载荷不能被同一载荷覆盖时隙。
 
 **非财产**：
 
-- **诚实-构建者载荷安全**：构建者无法确定他们的载荷会成为规范；该设计无法防止 next-时隙分裂。
+- **诚实-构建者载荷安全**：构建者无法确定他们的载荷会成为规范；该设计无法防止 next- 时隙分裂。
 
 **潜在的新攻击向量**：
 
@@ -92,11 +92,11 @@ _图 – 载荷-及时性委员会流程._
 [ePBS 设计规范](/docs/wiki/research/PBS/ePBS-Specs.md) 提供了有关实现规范和流程的更多详细信息。
 
 ## 资源 
-- [载荷-及时性委员会 (PTC) – ePBS 设计](https://ethresear.ch/t/payload-timeliness-committee-ptc-an-epbs-design/16054)
+- [Payload Timeliness Committee (PTC) – ePBS 设计](https://ethresear.ch/t/payload-timeliness-committee-ptc-an-epbs-design/16054)
 - [考虑 ePBS](https://notes.ethereum.org/@mikeneuder/consider-the-epbs)
-- [ePBS分组讨论室](https://www.youtube.com/watch?v=63juNVzd1P4)
-- [提议者-构建者分离 (PBS) 的注释](https://barnabe.substack.com/p/pbs)
-- [迈克·诺伊德 - 走向神圣的提议者-构建者分离](https://www.youtube.com/watch?v=Ub8V7lILb_Q)
+- [ePBS 分组讨论室](https://www.youtube.com/watch?v=63juNVzd1P4)
+- [Proposer-Builder Separation (PBS) 的注释](https://barnabe.substack.com/p/pbs)
+- [Mike Neuder - 走向神圣的 Proposer-Builder Separation](https://www.youtube.com/watch?v=Ub8V7lILb_Q)
 - [ePBS 设计规范](/docs/wiki/research/PBS/ePBS-Specs.md)
 
 ## 参考文献

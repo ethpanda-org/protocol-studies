@@ -1,9 +1,9 @@
 # 共识规范测试
 
-> ：警告：本文是一个[存根](https://en.wikipedia.org/wiki/Wikipedia:Stub)，通过[贡献](/contributing.md) 和扩展它来帮助维基。
+> :warning: 本文是一个 [存根](https://en.wikipedia.org/wiki/Wikipedia:Stub)，通过 [贡献](/contributing.md) 和扩展它来帮助维基。
 
-[consensus-spec-tests](https://github.com/ethereum/consensus-spec-tests) 仓库包含从以太坊共识规范生成的测试向量集合。  
-这些测试用于根据 [以太坊共识规范](https://github.com/ethereum/consensus-specs) 验证共识客户端实现的正确性。
+[consensus-spec-tests](https://github.com/ethereum/consensus-spec-tests) 仓库包含从 Ethereum 共识规范生成的测试向量集合。  
+这些测试用于根据 [Ethereum 共识规范](https://github.com/ethereum/consensus-specs) 验证共识客户端实现的正确性。
 
 客户端开发人员使用这些测试来确认对协议的更改在所有共识客户端中一致地实施。  
 
@@ -30,6 +30,6 @@
 
 资源：  
 - [共识规范测试仓库](https://github.com/ethereum/consensus-spec-tests)  
-- [以太坊共识规范](https://github.com/ethereum/consensus-specs)(测试生成的真相来源)  
+- [Ethereum 共识规范](https://github.com/ethereum/consensus-specs)(测试生成的真相来源)  
 - [SimpleSerialize (SSZ) 规范](https://ethereum.github.io/consensus-specs/ssz/simple-serialize/)  
 

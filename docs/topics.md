@@ -15,7 +15,7 @@
 [BLS]
 
 ### C
-[共识层]
+[Consensus Layer]
 [承诺]
 
 ### D
@@ -27,7 +27,7 @@
 [编码]
 [EOF]
 [EVM]
-[执行层]
+[Execution Layer]
 
 ### F
 [分叉选择]
@@ -36,7 +36,7 @@
 [Gas 计量]
 
 ### H
-[历史过期]()  
+[History Expiry]()  
 
 ### J
 [JSON-RPC](/wiki/EL/JSON-RPC.md)
@@ -69,14 +69,14 @@
 [交易]
 
 ### U
-[Unix哲学]
+[Unix 哲学]
 
 ### V
-[Verkle 树]
+[Verkle Tree]
 [VDF]
 
 ### W
-弱主观性
+Weak Subjectivity
 
 ### Z
 ZK 证明

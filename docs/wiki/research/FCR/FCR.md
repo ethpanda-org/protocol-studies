@@ -1,14 +1,14 @@
-# 快速确认规则(FCR)
+# 快速确认规则 (FCR)
 
 # 概述
 
-**快速确认规则(FCR)**是一种算法，允许以太坊节点确定区块是否**永远不会离开规范链**，假设网络条件良好。
+**快速确认规则 (FCR)**是一种算法，允许 Ethereum 节点确定区块是否**永远不会离开规范链**，假设网络条件良好。
 
 FCR 输出一个简单的决定：
 - 区块已**确认**
 - 区块 **未确认**
 
-FCR 旨在提供**快速、安全的区块确认**，早于以太坊最终确定，并帮助弥合差距，直到 [单个时隙最终确定性 (SSF)](https://ethereum.org/roadmap/single-slot-finality/)已实施。
+FCR 旨在提供**快速、安全的区块确认**，早于 Ethereum 最终确定，并帮助弥合差距，直到 [Single Slot Finality (SSF)](https://ethereum.org/roadmap/single-slot-finality/) 已实施。
 
 > 规范链是诚实的验证者所遵循的链。
 ---
@@ -17,7 +17,7 @@ FCR 旨在提供**快速、安全的区块确认**，早于以太坊最终确定
 
 ## 目前的确认机制
 
-以太坊协议 [Gasper](https://ethereum.org/developers/docs/consensus-mechanisms/pos/gasper/) 目前唯一可用的 **确认规则** 是 **FFG 最终确定规则**。虽然此确认规则非常安全并且在**异步**网络条件下工作，但对于许多用例而言，最终确定速度**太慢**。 
+Ethereum 协议 [Gasper](https://ethereum.org/developers/docs/consensus-mechanisms/pos/gasper/) 目前唯一可用的 **确认规则** 是 **FFG 最终确定规则**。虽然此确认规则非常安全并且在**异步**网络条件下工作，但对于许多用例而言，最终确定速度**太慢**。 
 
 - 最好的情况：~13 分钟  
 - 平均：约 16 分钟  
@@ -28,7 +28,7 @@ FCR 旨在提供**快速、安全的区块确认**，早于以太坊最终确定
 
 ### UX 限制
 
-- 支付日常用品(例如咖啡)需要等待约 16 分钟
+- 支付日常用品 (例如咖啡) 需要等待约 16 分钟
 - 在最终确定之前，存入 CEX 的资金无法使用
 - 钱包通常一输入区块就将交易标记为“已确认”，这是**不安全**
 - ...
@@ -36,22 +36,22 @@ FCR 旨在提供**快速、安全的区块确认**，早于以太坊最终确定
 ---
 
 ><details>
-><summary><strong>如果我们无论如何都会有SSF，为什么FCR存在</strong></summary>
+><summary><strong>如果我们无论如何都会有 SSF，为什么 FCR 存在</strong></summary>
 >
-> 单个时隙最终确定性：
+> Single Slot Finality：
 > - 还很远
 > - 仅在*之后*才会被考虑：
->   - 无状态以太坊
+>   - 无状态 Ethereum
 >   - 韦尔克尔树
 >
-> 在此之前，以太坊缺乏**安全快速的确认规则**。
+> 在此之前，Ethereum 缺乏**安全快速的确认规则**。
 >
-> 这就是为什么**中心化交易所(CEX)**和基础设施提供商对 FCR 感兴趣。
+> 这就是为什么**中心化交易所 (CEX)**和基础设施提供商对 FCR 感兴趣。
 </details>
 
 ---
 
-### 用户**应该 NOT 使用的危险替代方案(启发式)**
+### 用户**应该 NOT 使用的危险替代方案 (启发式)**
 
 <details>
 <summary><strong>依赖于区块深度的启发式 </strong></summary>
@@ -67,13 +67,13 @@ FCR 旨在提供**快速、安全的区块确认**，早于以太坊最终确定
 
 </details>
 
-这两种方法都不满足[安全属性](/wiki/research/FCR/FCR.md#properties-of-the-confirmation-rule)。
+这两种方法都不满足 [安全属性](/wiki/research/FCR/FCR.md#properties-of-the-confirmation-rule)。
 
 ---
 
 ## FCR 保证什么
 
-快速确认规则依赖于**同步**条件，但仅提供**12秒**的**最佳情况确认时间**，大大改善了 FFG 最终确定规则的延迟。
+快速确认规则依赖于**同步**条件，但仅提供**12 秒**的**最佳情况确认时间**，大大改善了 FFG 最终确定规则的延迟。
 
 **FCR 永远不会确认不规范的区块。**
 
@@ -94,7 +94,7 @@ FCR 旨在提供**快速、安全的区块确认**，早于以太坊最终确定
 </details>
 
 <details>
-<summary><strong>减少CEX风险交易逆转</strong></summary>
+<summary><strong>减少 CEX 风险交易逆转</strong></summary>
 
 - 对于允许存款后立即乐观交易的交易所
 
@@ -114,10 +114,10 @@ FCR 旨在提供**快速、安全的区块确认**，早于以太坊最终确定
 
 # 加斯帕概述
 
-以太坊 PoS共识由[Gasper](https://ethereum.org/developers/docs/consensus-mechanisms/pos/gasper/)定义，其中：
-- 时间单位为**时隙**：12秒(当前)
+Ethereum PoS 共识由 [Gasper](https://ethereum.org/developers/docs/consensus-mechanisms/pos/gasper/) 定义，其中：
+- 时间单位为**时隙**：12 秒 (当前)
 - **epoch**：32 时隙  
-- 每个epoch将一组验证者分为32个委员会
+- 每个 epoch 将一组验证者分为 32 个委员会
 
 Gasper 由两个子协议组成：
 
@@ -141,7 +141,7 @@ Gasper 由两个子协议组成：
 4. 分叉选择规则：
    - 确定链的规范头
 
-> 在正常情况下，分叉选择规则是不必要的 - 每个时隙都有一个区块提议者，并且诚实的验证者证明了这一点。只有在大型网络异步的情况下或者当不诚实的区块提议者模棱两可时才需要分叉选择算法。然而，当这些情况确实出现时，分叉选择算法是确保正确ChainSafe的关键防御措施。
+> 在正常情况下，分叉选择规则是不必要的 - 每个时隙都有一个区块提议者，并且诚实的验证者证明了这一点。只有在大型网络异步的情况下或者当不诚实的区块提议者模棱两可时才需要分叉选择算法。然而，当这些情况确实出现时，分叉选择算法是确保正确 ChainSafe 的关键防御措施。
 
 
 ---
@@ -166,7 +166,7 @@ Gasper 由两个子协议组成：
 
 ---
 
-确认规则的**输入**是之前确认的区块(存储在`store.confirmed_block`中)，算法尝试沿着当前规范链推进确认。
+确认规则的**输入**是之前确认的区块 (存储在`store.confirmed_block`中)，算法尝试沿着当前规范链推进确认。
 
 `get_latest_confirmed`函数是确认规则的入口点，由两个阶段组成：
 
@@ -196,23 +196,23 @@ Gasper 由两个子协议组成：
 
 ---
 
-🧩 **确认规则的复杂性源于需要正确处理所有边缘情况。**
+🧩 **确认规则的复杂性源于需要正确处理所有 The Verge 情况。**
 
 ---
 
 # 总结
 
 FCR 提供：
-- 快速确认，具有强大的安全保证(1-2 时隙最佳情况延迟)
-- 更好的UX，无需等待最终确定
+- 快速确认，具有强大的安全保证 (1-2 时隙最佳情况延迟)
+- 更好的 UX，无需等待最终确定
 - 钱包和交易所的可靠性更高
 
-在单个时隙最终确定性可用之前，**FCR 填补了以太坊确认模型**中的关键空白。
+在 Single Slot Finality 可用之前，**FCR 填补了 Ethereum 确认模型**中的关键空白。
 
 # 文档
 
-- [html论文：以太坊共识协议的快速确认规则(又名快速同步最终确定性)](https://arxiv.org/html/2405.00549v3)
-- [快速确认规则(FCR)分组讨论室播放列表](https://www.youtube.com/watch?v=y5_75Y_09No&list=PLJqWcTqh_zKH4c_vgCCPZ33Ilb9SdEIcq)
+- [html 论文：Ethereum 共识协议的快速确认规则 (又名快速同步最终确定性)](https://arxiv.org/html/2405.00549v3)
+- [快速确认规则 (FCR) 分组讨论室播放列表](https://www.youtube.com/watch?v=y5_75Y_09No&list=PLJqWcTqh_zKH4c_vgCCPZ33Ilb9SdEIcq)
 - [快速确认规则规范](https://github.com/ethereum/consensus-specs/pull/4747)
 - 草稿短 FCR 解释 - 完成后将添加链接 
 - [快速确认规则 - <name>Roberto Saltini</name>(2025 视频)](https://www.youtube.com/watch?v=dZU-Ch22MKY&list=PLCGgAwcxXAWyHcMm0X57jVuHtJ6e8gwIP&index=25)

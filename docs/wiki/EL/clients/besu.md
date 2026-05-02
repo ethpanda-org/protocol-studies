@@ -1,4 +1,4 @@
-# Besu执行客户端
+# Besu 执行客户端
 
 这是您在开始为 Besu 做出贡献时需要了解的重要信息的简要总结，Besu 是执行客户端的 Java 实现。 
 
@@ -9,7 +9,7 @@
 
 ### 模块
 +  它是一个多模块 [gradle](https://gradle.org/) 项目。您可以查看 settings.gradle 以查看所有模块：
-    + 每个模块都有自己的build.gradle：
+    + 每个模块都有自己的 build.gradle：
 		+ 您可以指定其模块名称：`archiveBaseName`
 		+ 您可以指定其依赖项，但不指定版本。
 	+ 每个模块都有自己的源代码：/src/main/java
@@ -19,7 +19,7 @@
 		+ 您可以找到创世信息。
 	+ `besu:`
 		+ 所有 CL 参数均已定义。
-		+ 是main方法所在的地方。
+		+ 是 main 方法所在的地方。
 + **有补充模块**：
 	+ `crypto`：
 		+ 与加密密钥相关的一切。
@@ -30,7 +30,7 @@
 	+ `ethereum`：
 		+ 不是模块但包含模块：
 			+ 应用程序编程接口：
-				+ 您想要与以太坊进行的所有交互，世界状态。
+				+ 您想要与 Ethereum 进行的所有交互，世界状态。
 			+ 核心： 
 				+ 存储日期、法定人数设置。
 	+ `evm`：
@@ -40,26 +40,26 @@
 	+ enclave、插件 API、隐私合约
 
 ### 摇篮
-+ gradlew(文件)：
-	+ 这是一个 bash 脚本，将检查 gradle 是否已安装(将为您安装包装器并下载整个发行版)
++ gradlew (文件)：
+	+ 这是一个 bash 脚本，将检查 gradle 是否已安装 (将为您安装包装器并下载整个发行版)
 	+ Gradle 本身作为通过调用此脚本使用的包装器的一部分进行管理。
-+ 梯度(文件夹)：
++ 梯度 (文件夹)：
 	+ gradle-wrapper.properties：
-		+ distributionURL：指向调用 ./gradlew 时要使用的发行版
-	+ 版本.gradle(文件)：
+		+ distributionURL：指向调用./gradlew 时要使用的发行版
+	+ 版本.gradle (文件)：
 		+ 这是定义所有模块版本的地方。它由 gradlew 使用。
-+ 构建.gradle(文件)：
++ 构建.gradle (文件)：
 	+ 插件：
 		+ `spotless`：代码格式化、检查许可等，
 			+ 命令：`./gradlew spotlessApply`
 		+ `errorprone`：符合 Java 最佳实践。
 			+ 命令：`./gradlew errorProne`
 	+ 分布：
-		+ 它通过将所有项目放入应用程序来定义建筑输出的保留位置：
-			+ .tar .zip 发行版。您可以在构建者/distributions 下看到 .tar 或 .zip。
-+ 构建(文件夹)：
+		+ 它通过将所有项目放入应用程序来定义构建输出的保留位置：
+			+ .tar.zip 发行版。您可以在构建者/distributions 下看到.tar 或.zip。
++ 构建 (文件夹)：
 	+ 它不是一个模块。
-	+ 发行版(文件夹)：
+	+ 发行版 (文件夹)：
 		+ Besu 分布的位置。
 		+ 如果您深入 build/distribution/besu-{version}-SNAPSHOT/lib 您可以看到每个组件和库的每个版本。
 
@@ -73,14 +73,14 @@
 	+ 参与更昂贵的跑步。
 + 验收测试：
 	+ 位于验收测试模块下。
-	+ 运行多个Beau的节点以在它们之间创建共识算法并执行任务调整和传播区块。
+	+ 运行多个 Beau 的节点以在它们之间创建共识算法并执行任务调整和传播区块。
 + 参考测试：
-	+ 经过以太坊测试后拍摄，由以太坊基金会借用。
+	+ 经过 Ethereum 测试后拍摄，由 Ethereum Foundation 借用。
 	+ 所有客户端都相同：https://github.com/ethereum/tests
-	+ 存储在JSON中：
+	+ 存储在 JSON 中：
 		+ 地点：`ethereum/referencetests/`
 + 其他信息：
-	+ J单元4
+	+ J 单元 4
 
 ###  开发任务：
 + 一些有用的命令：

@@ -5,7 +5,7 @@
 ### 区块验证
 
 去
-func stf(父类型.区块，区块类型.区块，状态state.StateDB)(状态.StateDB，错误){
+func stf(父类型.区块，区块类型.区块，状态 state.StateDB)(状态.StateDB，错误){
     if err := core.VerifyHeaders(parent, 区块);错误！=零{
             // 检测到标头错误
             返回零，错误
@@ -33,10 +33,10 @@ https://github.com/ethereum/go-ethereum/blob/63aaac81007ad46b208570c17cae78b7f60
 ### 区块构建
 
 去
-func build(env 环境，池 txpool.Pool，状态 state.StateDB) (types.区块，state.StateDB，错误) {
+func build(env 环境，池 txpool.Pool，状态 state.StateDB) (types. 区块，state.StateDB，错误) {
     变量(
-        已用gas = 0
-        txs []types.交易
+        已用 gas = 0
+        txs []types. 交易
     )
     为； GasUsed < env.GasLimit || !pool.Empty(); {
         tx := pool.Pop()
@@ -45,7 +45,7 @@ func build(env 环境，池 txpool.Pool，状态 state.StateDB) (types.区块，
             // 交易无效
             继续
         }
-        已用gas += gas
+        已用 gas += gas
         txs = 追加(txs, tx)
         状态=资源
     }
@@ -70,7 +70,7 @@ func build(env 环境，池 txpool.Pool，状态 state.StateDB) (types.区块，
 
 ### 点对点
 
-* 执行层在 devp2p 上运行
+* Execution Layer 在 devp2p 上运行
 * devp2p => 子功能 eth/68、eth/69、snap、whisper、les、wit
 * eth/1 -> eth/2 -> eth/6.1 -> eth/6.2 
 
@@ -95,7 +95,7 @@ a b c d
 
     R200-> 
    / \
-  1   2
+  1 2
  / \ / \ 
 雷达
 
@@ -120,6 +120,6 @@ a b c d
 
 #### 开始快照
 
-* 启动弱主观性-检查点 -> 区块哈希
+* 启动 Weak Subjectivity- 检查点 -> 区块哈希
 * 获取与哈希关联的区块
 * 针对区块的状态启动快照

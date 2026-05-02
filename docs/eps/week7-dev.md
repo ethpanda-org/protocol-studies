@@ -1,8 +1,8 @@
 # 第 7 讲 | 学习小组执行客户端架构
 
-第 7 天的开发轨道深入了解以太坊执行层客户端代码库，解释其架构并强调新颖的方法。 
+第 7 天的开发轨道深入了解 Ethereum Execution Layer 客户端代码库，解释其架构并强调新颖的方法。 
 
-在 StreamEth 或 Youtube 上观看 [Dragan](https://twitter.com/rakitadragan) 的演示录音。幻灯片[可在此处获取](https://github.com/eth-protocol-fellows/protocol-studies/blob/main/docs/eps/presentations/week7-dev.pdf)。 
+在 StreamEth 或 Youtube 上观看 [Dragan](https://twitter.com/rakitadragan) 的演示录音。幻灯片 [可在此处获取](https://github.com/eth-protocol-fellows/protocol-studies/blob/main/docs/eps/presentations/week7-dev.pdf)。 
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/ibcsc5cv-vc?si=mTR7ReFUZo3vFtJD" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
@@ -18,8 +18,8 @@
 
 ## 概要
 
-- Reth客户端 
-- 设计与建筑
+- Reth 客户端 
+- 设计与架构
 - 代码库概述、示例 
 - 特点和亮点 
 

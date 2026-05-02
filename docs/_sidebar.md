@@ -3,13 +3,13 @@
 - **学习小组**
 - [参与学习](/eps/intro.md)
 - [学习小组存档](/eps/archive.md)
-- **协议 Wiki**
+- **Protocol Wiki**
 - 协议
   - [史前](/wiki/protocol/prehistory.md)
   - [架构](/wiki/protocol/architecture.md)
   - [设计原理](/wiki/protocol/design-rationale.md)
   - [进化](/wiki/protocol/history.md)
-- 执行层
+- Execution Layer
   - [EL 规范](/wiki/EL/el-specs.md)
   - [客户端架构](/wiki/EL/el-architecture.md)
   - [Engine API](/wiki/EL/engine-api.md)
@@ -17,16 +17,16 @@
     - [Besu](/wiki/EL/clients/besu.md)
     - [Reth](/wiki/EL/clients/reth.md)
   - [EVM](/wiki/EL/evm.md)
-    - [预编译合约](/wiki/EL/precompiled-contracts.md)
+    - [Precompiled Contracts](/wiki/EL/precompiled-contracts.md)
   - [区块构建](/wiki/EL/block-production.md)
   - [数据结构](/wiki/EL/data-structures.md)
     - [摘要](/wiki/EL/el-data-structures-summary.md)
-  - [交易解剖](/wiki/EL/transaction.md)
+  - [Transaction anatomy](/wiki/EL/transaction.md)
   - [JSON-RPC](/wiki/EL/JSON-RPC.md)
   - [DevP2P](/wiki/EL/devp2p.md)
   - [RLP 序列化](/wiki/EL/RLP.md)
   - [EOF](/wiki/EL/eof.md)
-- 共识层
+- Consensus Layer
   - [概述](/wiki/CL/overview.md)
   - [客户端架构](/wiki/CL/cl-architecture.md)
   - [CL 网络](/wiki/CL/cl-networking.md)
@@ -34,8 +34,8 @@
   - [Beacon API](/wiki/CL/beacon-api.md)
   - [CL 客户端](/wiki/CL/cl-clients.md)
   - [SSZ 序列化](/wiki/CL/SSZ.md)
-    - [Merkle 化](/wiki/CL/merkleization.md)
-  - [弱主观性](/wiki/CL/syncing.md)
+    - [Merkleization](/wiki/CL/merkleization.md)
+  - [Weak Subjectivity](/wiki/CL/syncing.md)
 - 开发
   - [核心开发](/wiki/dev/core-development.md)
   - [协调](/wiki/dev/pm.md)
@@ -63,12 +63,12 @@
   - [eODS](/wiki/research/eODS.md)
   - [PeerDAS](/wiki/research/peerdas.md)
   - [FCR](/wiki/research/FCR/FCR.md)
-  - [历史记录过期](/wiki/research/history-expiry/history-expiry.md)
-  - 预确认
-    - [预确认](/wiki/research/Preconfirmations/Preconfirmations.md)
-    - [基于排序和 预确认](/wiki/research/Preconfirmations/BasedSequencingPreconfs.md)
+  - [History Expiry](/wiki/research/history-expiry/history-expiry.md)
+  - Preconfirmations
+    - [Preconfirmations](/wiki/research/Preconfirmations/Preconfirmations.md)
+    - [基于排序和 Preconfirmations](/wiki/research/Preconfirmations/BasedSequencingPreconfs.md)
   - [轻客户端](/wiki/research/light-clients.md)
-  - 账户抽象
+  - Account Abstraction
     - [EIP-7702](/wiki/research/account-abstraction/eip-7702.md)
 - [密码学](/wiki/Cryptography/intro.md)
   - [ECDSA](/wiki/Cryptography/ecdsa.md)
@@ -76,8 +76,8 @@
   - [Keccak256](/wiki/Cryptography/keccak256.md)
   - 承诺
     - [KZG](/wiki/Cryptography/KZG.md)
-  - [后量子密码学](/wiki/Cryptography/post-quantum-cryptography.md)
-- [协议研究员计划](/wiki/epf.md)
+  - [Post-Quantum Cryptography](/wiki/Cryptography/post-quantum-cryptography.md)
+- [Protocol Fellowship](/wiki/epf.md)
 - [Pectra FAQ](/wiki/pectra-faq.md)
 
 - **维基信息**

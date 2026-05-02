@@ -1,22 +1,22 @@
 # 核心开发协调 
 
-> ：警告：本文是一个[存根](https://en.wikipedia.org/wiki/Wikipedia:Stub)，通过[贡献](/contributing.md) 和扩展它来帮助维基。
+> :warning: 本文是一个 [存根](https://en.wikipedia.org/wiki/Wikipedia:Stub)，通过 [贡献](/contributing.md) 和扩展它来帮助维基。
 
-由于客户端的多样性和去中心化方法，以太坊核心开发分散在来自不同组织的许多团队中。粗略估计，约有 200 多名客户端开发人员、研究人员、测试人员和其他贡献者分布在约 20 个团队中。 
+由于客户端的多样性和去中心化方法，Ethereum 核心开发分散在来自不同组织的许多团队中。粗略估计，约有 200 多名客户端开发人员、研究人员、测试人员和其他贡献者分布在约 20 个团队中。 
 
-为了有效维护和实施影响以太坊协议的各种举措，所有这些人都需要能够达成共识并以富有成效的方式进行协作。一般来说，这要归功于以太坊的免费和开源性质及其基于 UNIX 理念的设计和开发，但仍然需要大量的协调工作。 
+为了有效维护和实施影响 Ethereum 协议的各种举措，所有这些人都需要能够达成共识并以富有成效的方式进行协作。一般来说，这要归功于 Ethereum 的免费和开源性质及其基于 UNIX 理念的设计和开发，但仍然需要大量的协调工作。 
 
-## 以太坊 PM 仓库
+## Ethereum PM 仓库
 
-[ethereum/pm](https://github.com/ethereum/pm) 仓库用于以太坊项目管理目的。它可以协调规划开发人员的通话并存档他们的录音。 
+[ethereum/pm](https://github.com/ethereum/pm) 仓库用于 Ethereum 项目管理目的。它可以协调规划开发人员的通话并存档他们的录音。 
 
 *主要用途：*
- - 执行和共识层 AllCoreDevs 会议
+ - 执行和 Consensus Layer AllCoreDevs 会议
 
 *二次用途：*
- - 关于各种协议相关主题的分组讨论室(例如 EOF、账户抽象等)
+ - 关于各种协议相关主题的分组讨论室 (例如 EOF、Account Abstraction 等)
  - 有一个 Google 日历跟踪即将举行的协议会议。
 
 ### 资源
 
-- [以太坊 Tim Beiko 治理](https://hackmd.io/@timbeiko/eth-governance)
+- [Ethereum Tim Beiko 治理](https://hackmd.io/@timbeiko/eth-governance)

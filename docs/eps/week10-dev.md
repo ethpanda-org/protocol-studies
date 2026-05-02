@@ -16,7 +16,7 @@
 本次演讲将使用 Besu 的示例，Besu 是执行客户端的 Java 实现。建议至少对 Java 语法有基本的了解。
 
 此外，您可以通过学习以下资源来做好准备：
-- [探索以太坊上的预编译合约：深入探究](https://lucasmartincalderon.medium.com/exploring-precompiled-contracts-on-ethereum-a-deep-dive-4e9f9682e0aa)
+- [探索 Ethereum 上的 Precompiled Contracts：深入探究](https://lucasmartincalderon.medium.com/exploring-precompiled-contracts-on-ethereum-a-deep-dive-4e9f9682e0aa)
 - [evm.codes 预编译文档](https://www.evm.codes/precompiled)
 
 ## 概要
@@ -29,6 +29,6 @@
 
 ## 额外阅读和练习
 
-- [EVM预编译及系统合约目录](https://github.com/shemnon/precompiles/)
+- [EVM 预编译及系统合约目录](https://github.com/shemnon/precompiles/)
 - [预编译上的 RollCall 突破](https://www.youtube.com/watch?v=tg01COfxi_M)
 - [Hyperledger Besu 的自定义 RPC 和预编译](https://www.youtube.com/watch?v=djL5nczlYFw)

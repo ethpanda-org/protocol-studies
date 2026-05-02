@@ -1,30 +1,30 @@
 # 轻客户端
 
-> ：警告：本文是一个[存根](https://en.wikipedia.org/wiki/Wikipedia:Stub)，通过[贡献](/contributing.md) 和扩展它来帮助维基。
+> :warning: 本文是一个 [存根](https://en.wikipedia.org/wiki/Wikipedia:Stub)，通过 [贡献](/contributing.md) 和扩展它来帮助维基。
 
-以太坊用户正在使用执行客户端 RPC 连接到网络。这使它们能够与网络交互、读取余额、提交交易等。运行客户端并验证当前状态可能是一项艰巨的任务，需要数百 GB 的存储空间、带宽和计算。大多数钱包默认使用第三方 API 连接到网络，而不验证提供的数据。 
+Ethereum 用户正在使用执行客户端 RPC 连接到网络。这使它们能够与网络交互、读取余额、提交交易等。运行客户端并验证当前状态可能是一项艰巨的任务，需要数百 GB 的存储空间、带宽和计算。大多数钱包默认使用第三方 API 连接到网络，而不验证提供的数据。 
 
 轻客户端的想法是实现对网络的无信任访问，而无需运行全节点的开销。 轻客户端是这个概念的通用术语，但实际方法是使用不同的设计。 轻客户端有多种，有的在生产，有的还在研发。 
 
 - 使用来自 CL 客户端的 Beacon 根验证 EL RPC 数据
 - 无状态客户端
 - LES 协议
-- 门户网
+- Portal Network
 
 ## RPC 代理轻客户端 
 
-这种轻客户端连接到 RPC 提供商，并通过使用来自独立 Beacon 节点的证明来验证响应来提高安全性。它基本上是一个 RPC 代理或中间件，可确保来自提供商的数据有效。 
-它改进了连接到第三方 RPC 的钱包/服务的信任模型，但在网络中不充当节点。使用这种轻客户端方法，用户仍然需要连接到某个 RPC 提供商(一个集中式实体)。
+这种轻客户端连接到 RPC 提供商，并通过使用来自独立 Beacon node 的证明来验证响应来提高安全性。它基本上是一个 RPC 代理或中间件，可确保来自提供商的数据有效。 
+它改进了连接到第三方 RPC 的钱包/服务的信任模型，但在网络中不充当节点。使用这种轻客户端方法，用户仍然需要连接到某个 RPC 提供商 (一个集中式实体)。
 
-客户端通过 p2p 协议在网络中进行通信，不像 RPC 那样对特定数据片段具有特定功能。他们可以从对等节点获取当前提示，请求历史区块等。为了验证它们，他们还需要连接到共识客户端。无法通过p2p请求地址余额，只能下载区块/state，自行验证查找。通过这种方法，我们基本上得到了网络中正常节点的行为。 
+客户端通过 p2p 协议在网络中进行通信，不像 RPC 那样对特定数据片段具有特定功能。他们可以从对等节点获取当前提示，请求历史区块等。为了验证它们，他们还需要连接到共识客户端。无法通过 p2p 请求地址余额，只能下载区块/state，自行验证查找。通过这种方法，我们基本上得到了网络中正常节点的行为。 
 
-RPC 验证“轻客户端”的实现例如是 [Helios](https://github.com/a16z/helios) 或 [Kevlar](https://github.com/lightclients/kevlar)。用户可以将它们作为应用程序/钱包与其 RPC 提供商之间的代理运行。它们提供与公共信标节点的默认连接，因此这两个提供商以完全相同的方式存在的可能性很小。有一个[项目试图在 Helios 中实现 CL p2p](ttps://github.com/eth-protocol-fellows/cohort-three/blob/master/projects/helios-cl-p2p.md)，以便直接与 cl libp2p 一起使用它，而不是依赖第三方 Beacon API。 
+RPC 验证“轻客户端”的实现例如是 [Helios](https://github.com/a16z/helios) 或 [Kevlar](https://github.com/lightclients/kevlar)。用户可以将它们作为应用程序/钱包与其 RPC 提供商之间的代理运行。它们提供与公共 Beacon node 的默认连接，因此这两个提供商以完全相同的方式存在的可能性很小。有一个 [项目试图在 Helios 中实现 CL p2p](ttps://github.com/eth-protocol-fellows/cohort-three/blob/master/projects/helios-cl-p2p.md)，以便直接与 CL libp2p 一起使用它，而不是依赖第三方 Beacon API。 
 
 ## 无状态客户端
 
 使用通过 p2p 网络传播的见证人来验证没有完整状态的数据。
 
-## 门户网
+## Portal Network
 
 Portal 创建了一个覆盖网络，可以概率性地保证数据完整性。 
 

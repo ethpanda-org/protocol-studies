@@ -2,7 +2,7 @@
 
 本研究演讲专门针对 MEV 和抗审查性，讨论当前状态和正在研究的提案。 
 
-在 StreamETH 频道或 Youtube 上观看 [Barnabé Monnot](https://twitter.com/barnabemonnot) 的演示。幻灯片[可在此处获取](https://github.com/eth-protocol-fellows/protocol-studies/blob/main/docs/eps/presentations/week8-research.pdf)。 
+在 StreamETH 频道或 Youtube 上观看 [Barnabé Monnot](https://twitter.com/barnabemonnot) 的演示。幻灯片 [可在此处获取](https://github.com/eth-protocol-fellows/protocol-studies/blob/main/docs/eps/presentations/week8-research.pdf)。 
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/hhYTtQ-GU1s?si=569qf27XN7l4ZL1Q" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
@@ -19,7 +19,7 @@
 ## 概要
 
 - MEV 的协议服务和影响，加密经济学
-- PBS及相关提案 
+- PBS 及相关提案 
 - ePBS 口味
 - MEV 烧录
 - 彩虹质押 
