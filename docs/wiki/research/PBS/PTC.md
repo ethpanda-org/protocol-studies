@@ -1,8 +1,8 @@
-# Payload-Timeliness Committee (PTC) for EPBS
+# 载荷-EPBS 的时效委员会 (PTC)
 
-The Payload-Timeliness Committee (PTC) proposal is a design for enshrining PBS (ePBS) within the Ethereum protocol. It represents an evolution of the mechanism to determine block validity and includes a subset of validators who vote on the timeliness of a block's payload[^1][^2][^3].
+载荷-及时性委员会 (PTC) 提案是将 PBS (ePBS) 纳入以太坊协议的设计。它代表了确定区块有效性的机制的演变，并包括验证者的子集，他们对区块的 载荷[^1][^2][^3] 的及时性进行投票。
 
-## PTC Overview
+## PTC 概述
 
 
 ```mermaid
@@ -41,65 +41,65 @@ sequenceDiagram
     end
 ```
 
-_Figure – Payload-Timeliness Committee Flow._
+_图 – 载荷-及时性委员会流程._
 
 
-The proposal introduces a new slot anatomy with an additional phase for Payload-Timeliness (PT) votes to propagate. It aims to refine the roles of proposers and builders in the block creation process, ensuring that proposers remain lightweight and unsophisticated entities for the goal of decentralization, and specialized builders can create high-value blocks efficiently.
+该提案引入了新的时隙结构，并为载荷-及时性 (PT) 投票传播增加了一个阶段。其目的是细化提议者和构建者在区块创建过程中的角色，确保提议者保持轻量级和不复杂的实体以实现去中心化的目标，并且专门的构建者可以高效地创建高价值的区块。
 
-1. **Block Propagation**: An elected Proof-of-Stake (PoS) validator, known as the proposer, broadcasts a CL block at the beginning of their slot (`t=t0`). This block contains a builder's bid but not the actual payload ( i.e. transactions).
-2. **Attestation Aggregation**: At the attestation deadline (`t=t1`), validators, known as attestors, vote on the perceived head of the chain using their local fork-choice rule.
+1. **区块传播**：选举出来的权益证明 (PoS) 验证者，称为提议者，在其时隙的开头广播 CL 区块 (`t=t0`)。此区块包含构建者的出价，但不包含实际的载荷 (即交易)。
+2. **证明聚合**：在证明截止日期 (`t=t1`)，验证者(称为证明者)使用本地分叉选择规则对感知到的链头进行投票。
 
-3. **Aggregation & Payload Propagation**: The builder sees the CL block and publishes the execution payload. The validator committee begins to broadcast aggregated attestations.
+3. **聚合和载荷传播**：构建者看到 CL 区块并发布执行载荷。 验证者委员会开始广播聚合的证明。
 
-4. **Payload-Timeliness Vote Propagation**: At (`t=t3`), the Payload-Timeliness Committee casts their votes on whether the payload was timely released.
+4. **载荷-及时性投票传播**：在(`t=t3`)，载荷-及时性委员会对载荷是否及时发布进行投票。
 
-5. **Next Block Propagation**: At (`t=t4`), the next proposer publishes their block, deciding to build on either the full or empty block based on the PT votes they've observed.
+5. **下一个区块传播**：在 (`t=t4`)，下一个提议者发布他们的区块，根据他们观察到的 PT 投票决定在完整或空的区块上构建。
 
-#### Honest Attesting Behavior
+#### 诚实证明行为
 
-Honest attestors will consider the payload-timeliness when casting their votes. Their behavior revolves around the PT votes, which influence the subsequent block choice. The votes indicate whether a payload is present, unavailable, or whether there's been an equivocation by the builder. The weight given to a full or empty block in the fork-choice is based on these PT votes.
+诚实的证明者在投票时会考虑载荷-及时性。他们的行为围绕着 PT 投票，这会影响随后的区块选择。投票表明载荷是否存在、不可用，或者构建者是否含糊不清。分叉选择中赋予满或空区块的权重基于这些 PT 投票。
 
-## Properties and Potential New Attack Vectors
+## 属性和潜在的新攻击向量
 
-**Properties**:
+**属性**：
 
-- **Honest-Builder Payment Safety**: If a builder's bid is processed, their payload becomes canonical.
+- **Honest-构建者付款安全**：如果构建者的出价得到处理，则其载荷就会成为规范。
 
-- **Honest-Proposer Safety**: If a proposer commits to a single block on time, they will receive the payment.
+- **诚实-提议者安全**：如果提议者按时提交单个区块，他们将收到付款。
 
-- **Honest-Builder Same-Slot Payload Safety**: An honest builder can ensure their payload for a slot cannot be overridden by another payload in the same slot.
+- **Honest-构建者 Same-时隙载荷安全**：诚实的构建者可以确保时隙的 载荷不能被同一载荷覆盖时隙。
 
-**Non-Properties**:
+**非财产**：
 
-- **Honest-Builder Payload Safety**: Builders can't be sure their payload will become canonical; the design does not protect from next-slot splitting.
+- **诚实-构建者载荷安全**：构建者无法确定他们的载荷会成为规范；该设计无法防止 next-时隙分裂。
 
-**Potential New Attack Vectors**:
+**潜在的新攻击向量**：
 
-- **Proposer-Initiated Splitting**: A proposer could release their block close to the deadline, causing a split in the attesting committee's views.
+- **提议者-发起分裂**：提议者可以在接近截止日期时释放其区块，从而导致证明委员会的观点分裂。
 
-- **Builder-Initiated Splitting**: Builders could selectively reveal payloads to part of the committee to influence the next proposer’s block, potentially causing it to be orphaned if the committee’s votes differ significantly.
+- **构建者-发起的分裂**：构建者可以选择性地将载荷透露给委员会的一部分，以影响下一个提议者的 区块，如果委员会的投票差异很大，则可能导致它被孤立。
 
-**Builder Payment Processing**:
+**构建者付款处理**：
 
-- Payments are processed if the builder’s payload header is part of the canonical chain and there's no evidence of proposer equivocation.
+- 如果构建者的 载荷标头是规范链的一部分并且没有提议者模棱两可的证据，则会处理付款。
 
-## Differences from Other Designs*
+## 与其他设计的差异*
 
-- The PT votes influence the fork-choice weight but do not create separate forks.
-- The payload view informs subsequent committee votes, which usually align with the proposer.
-- In the current ePBS design[^2][^3], builders receive a proposer boost. They don't explicitly create fork choice weight between different forks. Instead, they boost or "deboost" the current block by revealing or withholding it.
+- PT 投票影响分叉选择权重，但不会创建单独的分叉。
+- 载荷视图通知随后的委员会投票，这些投票通常与提议者一致。
+- 在当前的 ePBS 设计[^2][^3]中，构建者获得了提议者提升。他们没有在不同的分叉之间明确创建分叉选择权重。相反，他们通过揭示或保留当前的 ​​区块来增强或“降低”当前的区块。
 
-The [ePBS design specs](/docs/wiki/research/PBS/ePBS-Specs.md) has more details about the implementation specifications and flow.
+[ePBS 设计规范](/docs/wiki/research/PBS/ePBS-Specs.md) 提供了有关实现规范和流程的更多详细信息。
 
-## Resources 
-- [Payload-timeliness committee (PTC) – an ePBS design ](https://ethresear.ch/t/payload-timeliness-committee-ptc-an-epbs-design/16054)
-- [Consider the ePBS](https://notes.ethereum.org/@mikeneuder/consider-the-epbs)
-- [ePBS Breakout Room](https://www.youtube.com/watch?v=63juNVzd1P4)
-- [Notes on Proposer-Builder Separation (PBS)](https://barnabe.substack.com/p/pbs)
-- [Mike Neuder - Towards Enshrined Proposer-Builder Separation](https://www.youtube.com/watch?v=Ub8V7lILb_Q)
-- [ePBS design specs](/docs/wiki/research/PBS/ePBS-Specs.md)
+## 资源 
+- [载荷-及时性委员会 (PTC) – ePBS 设计](https://ethresear.ch/t/payload-timeliness-committee-ptc-an-epbs-design/16054)
+- [考虑 ePBS](https://notes.ethereum.org/@mikeneuder/consider-the-epbs)
+- [ePBS分组讨论室](https://www.youtube.com/watch?v=63juNVzd1P4)
+- [提议者-构建者分离 (PBS) 的注释](https://barnabe.substack.com/p/pbs)
+- [迈克·诺伊德 - 走向神圣的提议者-构建者分离](https://www.youtube.com/watch?v=Ub8V7lILb_Q)
+- [ePBS 设计规范](/docs/wiki/research/PBS/ePBS-Specs.md)
 
-## References
+## 参考文献
 [^1]: https://ethresear.ch/t/payload-timeliness-committee-ptc-an-epbs-design/16054
 [^2]: https://hackmd.io/@potuz/rJ9GCnT1C
 [^3]: https://github.com/potuz/consensus-specs/pull/2

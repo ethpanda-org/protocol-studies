@@ -2,182 +2,244 @@
 
 # Pectra FAQ
 
-**What is Pectra?**
-Pectra, (Prague - Electra), is the next network upgrade scheduled for Ethereum. The full list of EIPs as well as an introduction to the features can be found [here](https://notes.ethereum.org/@ethpandaops/mekong#What-is-in-the-Mekong-testnet).
+**Pectra 是什么？**
+Pectra(Prague - Electra)是以太坊网络升级，于 2025 年 5 月 7 日 10:05 (UTC)在以太坊主网 epoch `364032` 上激活。EIP 的完整列表以及功能介绍可以在[此处](https://notes.ethereum.org/@ethpandaops/mekong#What-is-in-the-Mekong-testnet)找到。
 
-**Who is this guide for?**
-For App developers, Stakers and Node operators who are interested in the upcoming Pectra upgrade.
+**本指南适合谁？**
+适合对即将到来的 Pectra 升级感兴趣的应用开发者、质押者和节点运营者。
 
-## Overall
+## 整体
 
-**FAQ**:
+**FAQ**：
 
-### **Q:** What is Prague/Electra?
+### **问：** 什么是布拉格/伊莱克特拉？
 
-**A:** Prague and Electra are the names of the upcoming Ethereum hard fork. The included EIPs can be found [here](https://eips.ethereum.org/EIPS/eip-7600). Prague is the name of the fork on the execution client side, and Electra is the upgrade name on the consensus layer client side.
+**答：** Prague 和 Electra 是即将到来的以太坊硬分叉名称。纳入的 EIP 可以在[此处](https://eips.ethereum.org/EIPS/eip-7600)找到。Prague 是执行客户端侧的分叉名称，Electra 是共识层客户端侧的升级名称。
 
-There are 3 main features along with some smaller EIPs included in Pectra. They are: [EIP-7251](https://eips.ethereum.org/EIPS/eip-7251) also known as Max effective balance (MaxEB), [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702), and [EIP-7002](https://eips.ethereum.org/EIPS/eip-7002) also known as Execution Layer triggered exits.
+Pectra 包含 3 个主要功能以及一些较小的 EIP。它们是：[EIP-7251](https://eips.ethereum.org/EIPS/eip-7251)也称为最大有效余额(MaxEB)、[EIP-7702](https://eips.ethereum.org/EIPS/eip-7702)和[EIP-7002](https://eips.ethereum.org/EIPS/eip-7002)也称为执行层触发退出。
 
-The [MaxEB](https://eips.ethereum.org/EIPS/eip-7251) feature will allow the user to have a > 32ETH effective balance. This would allow users to consolidate many validators (or deposit new ones) into one up to 2048ETH. The requirement to use this feature is the setting of the `0x02` withdrawal credentials. A user can either make a deposit directly with `0x02` credentials or the user can move from `0x01` to `0x02`.
+[MaxEB](https://eips.ethereum.org/EIPS/eip-7251) 功能将允许用户拥有大于 32 ETH 的有效余额。这将允许用户将多个验证者(或新存入的验证者)合并为一个最高 2048 ETH 的验证者。使用此功能的要求是设置 `0x02` 提款凭证。用户可以直接使用 `0x02` 凭证存款，也可以从 `0x01` 迁移到 `0x02`。
 
-With [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702), the user wallet would be able to delegate control to a smart contract. This pattern allows a new wallet and app interaction design space, leading the path for future full account abstraction solutions.
+借助 [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702)，用户钱包将能够把控制权委托给智能合约。这种模式开启了新的钱包和应用交互设计空间，为未来完整的账户抽象方案铺路。
 
-The [Execution Layer (EL) triggered exits](https://eips.ethereum.org/EIPS/eip-7002) is a new feature that allows the withdrawal address set in the `0x01` or `0x02` withdrawal credential to perform exits directly in EL, without relying on pre-signed BLS keys. This feature is mainly targeted at staking pools, enabling them to use smart contracts to fully control the validator lifecycle.
+[执行层(EL)触发退出](https://eips.ethereum.org/EIPS/eip-7002)是一项新功能，允许`0x01`或`0x02`提款凭证中设置的提款地址直接在 EL 中执行退出，无需依赖预签名的 BLS 密钥。此功能主要面向质押池，使其能够使用智能合约完全控制验证者生命周期。
 
-## Users/Devs
+## 用户/开发人员
 
-More resources and data on Pectra can be found at https://pectra.wtf/. 
+有关 Pectra 的更多资源和数据可在 [https://pectra.wtf/](https://pectra.wtf/) 找到。
 
-**FAQ**:
+**FAQ**：
 
-### **Q:** What is EIP-7702 and how does it relate to Account abstraction?
+### **问：** 什么是 EIP-7702，它与账户抽象有什么关系？
 
-While [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) isn’t quite account abstraction, it does provide execution abstraction, i.e adds additional functionality to externally owned accounts (EOAs. This allows your EOA to do things like send transaction batches and delegate to other cryptographic key schemes, like passkeys. It does this by setting the code associated with the EOA to a protocol-level proxy designation. A full specification can be found [here](https://eips.ethereum.org/EIPS/eip-7702). It introduces a new transaction type that temporarily authorizes specific contract code for an EOA during a single transaction, allowing EOAs to function as smart contract accounts. This enables several use cases for users, including transaction batching, gas sponsorship, and privilege de-escalation.
+虽然 [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) 并不完全是账户抽象，但它确实提供了执行抽象，即向外部拥有的帐户(EOAs)添加了附加功能。这允许您的 EOA 执行诸如发送交易批次和委托给其他加密密钥方案(如密钥)之类的操作。它通过将与 EOA 关联的代码设置为协议级代理名称来实现此目的。完整的规范可以在[此处](https://eips.ethereum.org/EIPS/eip-7702)找到。它引入了一种新的交易类型，该类型在单个交易期间临时授权 EOA 的特定合约代码，从而允许 EOA 发挥作用。 智能合约帐户这为用户启用了多种用例，包括交易批处理、gas 赞助和权限降级。
 
-#### **Q:** Where can I find the specification for EIP-7702? How can I use it as a wallet dev?
+#### **问：** 在哪里可以找到 EIP-7702 的规范？作为钱包开发者我该如何使用它？
 
-The specification for [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) can be found [here](https://eips.ethereum.org/EIPS/eip-7702). To get started as a wallet developer, you'll need to determine a smart contract wallet core to use with the EOA. Pay close attention to how the wallets [should be initialized](https://eips.ethereum.org/EIPS/eip-7702#front-running-initialization). Once you have determined the core wallet to use, you'll need to expose behavior like `eth_sendTransaction` and other custom methods for [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) specific functionality like batch transactions.
+[EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) 的规范可以在[此处](https://eips.ethereum.org/EIPS/eip-7702)找到。作为钱包开发者入门时，您需要确定一个与 EOA 配合使用的智能合约钱包核心。请特别注意钱包[应如何初始化](https://eips.ethereum.org/EIPS/eip-7702#front-running-initialization)。确定要使用的钱包核心后，您需要公开 `eth_sendTransaction` 等行为，以及用于 [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) 特定功能(如批处理交易)的其他自定义方法。
 
-#### **Q:** As a user, how can I use EIP-7702?
+#### **问：** 作为用户，我如何使用EIP-7702？
 
-To get the [benefits](https://ethereum.org/en/roadmap/account-abstraction/) of EIP-7702, which is an early attempt at account abstraction, you need to use a wallet that supports it. Once your wallet of choice supports account abstraction, you will be able to make use of it.
+要获得EIP-7702(账户抽象的早期尝试)的[好处](https://ethereum.org/en/roadmap/account-abstraction/)，您需要使用支持它的钱包。一旦您选择的钱包支持账户抽象，您就可以使用它。
 
-#### **Q:** Do I have to wait for my wallet to support EIP-7702?
+#### **问：** 我需要等待我的钱包支持 EIP-7702 吗？
 
-Unfortunately yes, until your wallet integrates [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) it will not be possible to make use of the new functionalities it provides.
+不幸的是，在您的钱包集成 [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) 之前，将无法使用它提供的新功能。
 
-#### **Q:** What do I need to know about EIP-7702 as a smart contract dev?
+#### **问：** 作为智能合约开发者，我需要了解有关 EIP-7702 的哪些信息？
 
-As a smart contract developer, you should know that after Prague the majority of users on Ethereum will now be able to interact with the chain in more complex ways than were feasible before. Many standards have been developed to work around the limitations of EOAs, such as [ERC-2612 Permit](https://eips.ethereum.org/EIPS/eip-2612).
+作为智能合约开发者，您应该知道，在布拉格之后，以太坊上的大多数用户现在将能够以比以前更复杂的方式与链进行交互。已经制定了许多标准来解决 EOA 的限制，例如 [ERC-2612 许可](https://eips.ethereum.org/EIPS/eip-2612)。
 
-#### **Q:** What do I need to know about EIP-7702 as a security engineer/auditor?
+#### **问：** 作为安全工程师/审核员，我需要了解 EIP-7702 的哪些信息？
 
-As a security engineer / auditor, you must be aware that the previous assumption that a frame cannot be reentered when `msg.sender == tx.origin` no longer holds. This means the check is no longer suitable for reentrancy guards or flash loan protection.
+作为安全工程师/审计员，您必须意识到之前的假设，即当 `msg.sender == tx.origin` 不再成立时，无法重新进入帧。这意味着该支票不再适合重入防护或闪贷保护。
 
-#### **Q:** What does the EIP-2537 BLS precompile add in pectra?
+#### **问：** EIP-2537 BLS 预编译在 pectra 中添加了什么？
 
-[EIP-2537](https://eips.ethereum.org/EIPS/eip-2537) introduces operations on the BLS12-381 curve as precompiles to Ethereum. BLS12-381 precompiles enables efficient BLS signature verification. This is useful for applications where multiple signatures need to be verified, such as proof-checking systems.
+[EIP-2537](https://eips.ethereum.org/EIPS/eip-2537) 引入了对 BLS12-381 曲线的操作作为对以太坊的预编译。 BLS12-381 预编译可实现高效的 BLS 签名验证。这对于需要验证多个签名的应用程序非常有用，例如校对系统。
 
-#### **Q:** How can I use the `BLOCKHASH` OPCODE?
+#### **问：** 如何使用 `BLOCKHASH` 操作码？
 
-The last 8192 blockhash are now stored and available for access in the `BLOCKHASH` system contract. The `BLOCKHASH` opcode semantics remains the same as before, just that the block number can now be specified in big-endian encoding. The blockhash system contract can also be called via the ethCall RPC method, with the block number in question being passed as calldata.
+最后的 8192 个区块哈希现已存储在 `BLOCKHASH` 系统合约中并可供访问。 `BLOCKHASH` 操作码语义与以前相同，只是区块数字现在可以在大端编码中指定。 blockhash 系统合约也可以通过 ethCall RPC 方法调用，其中所涉及的区块号码作为 calldata 传递。
 
-#### **Q:** What are system contracts?
+#### **问：** 什么是系统合约？
 
-System contracts are interfaces defined as contracts, which are essential for certain Ethereum functions to occur. The contract approach is used instead of each client implementing the logic in order to simplify maintenance as well as allow for upgrades in the future with minimal overhead.
+系统合约是定义为合约的接口，对于某些以太坊功能的发生至关重要。使用契约方法而不是每个客户端实现逻辑，以简化维护并允许将来以最小的开销进行升级。
 
-## Stakers
+## 质押者
 
-**FAQ**:
+**FAQ**：
 
-### **Q:** What changes about deposits?
+### **问：** 存款有何变化？
 
-The process of making and submitting deposits will not change. You can continue to use the same tools as earlier. However, the mechanism for processing deposits on Ethereum will undergo an improvement. This improvement is described by [EIP-6110](https://eips.ethereum.org/EIPS/eip-6110) and will allow almost immediate processing of deposits.
+存款和提交存款的流程不会改变。您可以继续使用与之前相同的工具。不过，以太坊的存款处理机制将会进行改进。 [EIP-6110](https://eips.ethereum.org/EIPS/eip-6110) 描述了这一改进，并且几乎可以立即处理存款。
 
-#### **Q:** How long do I have to wait for my deposits to be included?
+#### **问：** 我需要等待多长时间才能将我的存款计入？
 
-After the changes included in [EIP-6110](https://eips.ethereum.org/EIPS/eip-6110), the deposits should show up in <20 minutes during regular finalizing periods of the chain. However, there is still a deposit queue for your validator to be activated, the EIP merely ensures that the deposit is seen faster and more securely by the chain and does not influence how quickly a validator is activated.
+在 [EIP-6110](https://eips.ethereum.org/EIPS/eip-6110) 中包含更改后，在链的常规最终确定期间，存款应在 20 分钟内显示。但是，仍然有一个存款队列等待您的验证者被激活，EIP 只是确保链上更快、更安全地看到存款，并不影响验证者激活的速度。
 
-#### **Q:** What are `0x02` withdrawal credentials?
+#### **问：** `0x02` 提现凭证是什么？
 
-Up until the Pectra fork, Ethereum accepted two types of withdrawal credentials: `0x00` and `0x01`. The main change is that `0x01` contain an execution layer address that receives partial and full withdrawals. The `0x02` withdrawal credentials are a new type of withdrawal credentials that will be introduced in the Pectra upgrade. The `0x02` withdrawal credentials will allow for maximum effective balances of >32 ETH and <2048ETH either via larger deposits or via consolidations of existing validators. The `0x02` withdrawal credentials also enable the ability to exit validators with the execution layer withdrawal address, enabling complete control of the validator via the execution layer.
+在 Pectra 分叉之前，以太坊接受两种类型的提款凭证：`0x00` 和 `0x01`。主要变化是 `0x01` 包含一个接收部分和全部提款的执行层地址。 `0x02` 提款凭证是一种新型提款凭证，将在 Pectra 升级中引入。 `0x02` 提款凭证将允许通过更大的存款或通过现有验证者的合并来实现 >32 ETH 和 <2048ETH 的最大有效余额。 `0x02` 提现凭证还可以使用执行层提现地址退出验证者，从而可以通过执行层完全控制验证者。
 
-#### **Q:** How do I switch to `0x02` withdrawal credentials? How does it help me?
+#### **问：** 如何切换到 `0x02` 提款凭证？它对我有什么帮助？
 
-There are 2 ways in which a validator can have `0x02` withdrawal credentials:
+验证者可以通过两种方式获得 `0x02` 提款凭证：
 
-1. When you deposit a new validator with `0x02` withdrawal credentials
-2. When you consolidate existing validators to `0x02` withdrawal credentials by sending a transaction to consolidation request address
+1. 当您使用 `0x02` 提款凭证存入新的验证者时
+2. 当您通过将交易发送到合并请求地址来将现有验证者合并到 `0x02` 提款凭证时
 
-While both the `0x01` and `0x02` withdrawal credential enables you to control the validator exit from your execution layer address, only `0x02` allows the validator to possess a maximum effective balances of >32 ETH and <2048ETH. This means you can run one validator and have a single validator with a balance of up to 2048 ETH.
+虽然 `0x01` 和 `0x02` 提现凭证都可以让您控制验证者从 执行层地址退出，但只有 `0x02` 允许验证者拥有 >32 ETH 的最大有效余额<2048ETH。这意味着您可以运行一个验证者并拥有一个验证者，其余额最多为 2048 ETH。
 
-#### **Q:** Can I deposit a validator with `0x02` credentials directly?
+#### **问：** 我可以直接使用 `0x02` 凭证存入验证者吗？
 
-Yes, you can deposit a validator with `0x02` credentials directly. This will allow you to have a single validator with a balance of up to 2048 ETH.
+是的，您可以直接使用 `0x02` 凭证存入验证者。这将允许您拥有一个验证者，其余额高达 2048 ETH。
 
-To try out deposits right now, you can use the [`staking-cli`](https://github.com/eth-educators/ethstaker-deposit-cli) from ethstaker, which already supports `0x02` credentials via the `--compounding` flag. You may also specify deposit amounts higher or lower than 32 ETH via the `--amount` flag.
-The official [`staking-deposit-cli`](https://github.com/ethereum/staking-deposit-cli) will support the `0x02` withdrawal credentials in the coming months before the Pectra mainnet Ethereum fork.
+要立即尝试存款，您可以使用 ethstaker 的 [`staking-cli`](https://github.com/eth-educators/ethstaker-deposit-cli)，它已经通过 `--compounding` 标志支持 `0x02` 凭证。您还可以通过 `--amount` 标志指定高于或低于 32 ETH 的存款金额。
+官方 [`staking-deposit-cli`](https://github.com/ethereum/staking-deposit-cli) 将在 Pectra 主网以太坊分叉之前的未来几个月内支持 `0x02` 提现凭证。
 
-The generated deposit data files can then be sent to the networks launchpad to do the deposit transactions as usual.
-For the testnets, you can use the [`Submit Deposits`](https://dora.mekong.ethpandaops.io/validators/deposits/submit) page in Dora to submit the generated deposits. Support for the official launchpad is coming in the next months too.
+然后可以将生成的存款数据文件发送到网络启动板，以像往常一样进行存款交易。
+对于测试网，您可以使用 Dora 中的 [`Submit Deposits`](https://dora.mekong.ethpandaops.io/validators/deposits/submit) 页面提交生成的存款。对官方启动板的支持也将在接下来的几个月内推出。
 
-#### **Q:** I have a validator with `0x00` credentials, how do I move to `0x02`?
+#### **问：** 我有一个带有 `0x00` 凭证的验证者，如何移动到 `0x02`？
 
-There is no direct way to move from `0x00` to `0x02`. You will need to first move your validator from `0x00` to `0x01` withdrawal credentials with a BLS change operation, then consolidate your validators to `0x02` withdrawal credentials. You can alternatively exit the validator and make a new deposit with `0x02` withdrawal credentials during the deposit.
+没有直接的方法可以从 `0x00` 移动到 `0x02`。您需要首先通过 BLS 更改操作将验证者从 `0x00` 移动到 `0x01` 提款凭证，然后将验证者合并到 `0x02` 提款凭证。您也可以在充值期间退出验证者并使用`0x02`提现凭证进行新的充值。
 
-#### **Q:** I have a validator with `0x01` credentials, how do i move to `0x02`?
+#### **问：** 我有一个带有 `0x01` 凭证的验证者，我如何移动到 `0x02`？
 
-You can consolidate your validator to `0x02` withdrawal credentials via a self consolidation with both, the source and target pointing to your validator. This will change your withdrawal credentials to `0x02` and allows you to have a single validator with a balance of up to 2048 ETH. For new deposits, the `staking-cli` will support the `0x02` withdrawal credentials in the coming months before the Pectra mainnet Ethereum fork.
+您可以通过自我合并将您的验证者合并为 `0x02` 提款凭证，其中源和目标都指向您的验证者。这会将您的提款凭证更改为 `0x02`，并允许您拥有一个验证者，其余额最多为 2048 ETH。对于新存款，`staking-cli` 将在 Pectra 主网以太坊分叉之前的未来几个月内支持 `0x02` 提款凭证。
 
-#### **Q:** What is MaxEB?
+#### **问：** MaxEB 是什么？
 
-[EIP-7251](https://eips.ethereum.org/EIPS/eip-7251) or MaxEB increases the `MAX_EFFECTIVE_BALANCE` to 2048 ETH while keeping the minimum staking balance at 32 ETH. Before MaxEB, any entity that wanted to contribute a large amount of ETH to consensus had to spin up multiple validators because each was capped at a maximum of 32 ETH. [EIP-7251](https://eips.ethereum.org/EIPS/eip-7251) will allow large stake operators to consolidate their ETH into fewer validators, using the same stake with up to 64 times less individual validators. It also allows solo stakers' ETH to be compounded into their existing validator and contribute to their rewards without having to use the exact validator amount. For example, 35 ETH will be considered the validator's effective balance by the protocol, instead of leaving out 3 ETH ineffective and waiting till 64 ETH for 2 validators. Overall, consolidating validators will allow for fewer attestations in the consensus network and easing the bandwidth usage by nodes.
+[EIP-7251](https://eips.ethereum.org/EIPS/eip-7251) 或 MaxEB 将 `MAX_EFFECTIVE_BALANCE` 增加到 2048 ETH，同时将最小质押余额保持在 32 ETH。在 MaxEB 之前，任何想要为共识贡献大量 ETH 的实体都必须启动多个验证者，因为每个 ETH 的上限为 32 个。 [EIP-7251](https://eips.ethereum.org/EIPS/eip-7251) 将允许大型权益运营商将其 ETH 合并为更少的验证者，使用相同的权益，而单个验证者最多可减少 64 倍。它还允许单独质押者的 ETH 复合到他们现有的验证者中，并为他们的奖励做出贡献，而无需使用确切的验证者金额。例如，35 ETH 将被协议视为验证者的有效余额，而不是遗漏 3 个 ETH 无效并等到 64 ETH 获取 2 个验证者。总体而言，整合验证者将允许共识网络中的证明减少，并减轻节点的带宽使用。
 
-#### **Q:** How do I consolidate my validators?
+#### **问：** 如何合并我的验证者？
 
-To consolidate your validators, you first need to ensure that both the source and target validators have either `0x01` or `0x02` credentials assigned.
-Validators with withdrawal credentials using the `0x00` prefix or pointing to different execution layer addresses cannot be consolidated.
+要合并验证者，您首先需要确保源验证者和目标验证者都已分配 `0x01` 或 `0x02` 凭据。
+使用 `0x00` 前缀或指向不同执行层地址的提款凭证的验证者无法合并。
 
-To consolidate two validators, send a transaction from your withdrawal address to the consolidation system contract, including the public keys of the source and target validators you wish to consolidate.
+如需合并两个验证者，请从您的提现地址发送一个交易到合并系统合约，其中包含您要合并的源验证者和目标验证者的公钥。
 
-We expect this functionality to be added to various tools in the coming months.
-For testing right now, you can use the [Submit Consolidations](https://dora.mekong.ethpandaops.io/validators/submit_consolidations) page in Dora. Connect with the wallet used as the withdrawal address for your validators, and you should be able to select your validators and craft an appropriate consolidation transaction.
+我们预计此功能将在未来几个月内添加到各种工具中。
+为了立即进行测试，您可以使用 Dora 中的[提交合并](https://dora.mekong.ethpandaops.io/validators/submit_consolidations) 页面。连接用作验证者提款地址的钱包，您应该能够选择您的验证者并制作适当的合并交易。
 
-A consolidation where the source and target point to the same validator is called a self-consolidation.
-In this situation, the validator will not be exited, and no funds will be moved. It will simply be assigned 0x02 credentials.
+源和目标指向同一验证者的合并称为自合并。
+在这种情况下，验证者将不会退出，并且不会转移任何资金。它只会被分配 0x02 凭据。
 
-#### **Q:** What are the validator requirements for consolidation?
+#### **问：** 验证者合并的要求是什么？
 
-The validators must be active on the beacon chain at the time of consolidation execution. This means they cannot be exiting, pending activation, or in any state other than active.
-Both the source and target validators must have `0x01` or `0x02` withdrawal credentials pointing to the same withdrawal address. If these two conditions are met, the validators may be consolidated.
+执行合并时，验证者必须在信标链上处于活动状态。这意味着它们不能退出、等待激活或处于活动以外的任何状态。
+源地址必须授权合并交易，目标必须是具有 `0x02` 凭据的验证者。 验证者不同提现凭证也可以合并。
 
-#### **Q:** What happens to my original, individual validators?
+#### **问：** 我原来的个人验证者会怎样？
 
-During a consolidation, there is a source and a target validator. The source validator is completely exited and the balance is then transferred to the target validator. The target validator will have the sum of the balances of the source validator and the target validator and will continue to perform its beacon chain duties without any change.
+在合并期间，存在源验证者和目标验证者。源验证者完全退出，然后余额转移到目标验证者。目标验证者将拥有源验证者和目标验证者的余额总和，并将继续履行其信标链职责，没有任何变化。
 
-#### **Q:** When does the balance appear on my consolidated validator?
+#### **问：** 余额什么时候会出现在我的综合验证者上？
 
-Once the source validator has completely exited and ceased performing all duties, the balance will be credited to the target validator.
+一旦源验证者完全退出并停止履行所有职责，余额将记入目标验证者。
 
+#### **问：** 如果我将一个验证者与 `0x01` 凭证合并到另一个 `0x00` 凭证，会发生什么情况？
 
-#### **Q:** What happens if I consolidate one validator with `0x01` and another with `0x00` credentials?
+合并请求将被视为无效且不会被处理。如果两个验证者不包含具有完全相同的执行层地址的 `0x01` 提现凭证，则会失败。
 
-The consolidation request will be deemed invalid and will not be processed. It will fail if both validators don't contain a `0x01` withdrawal credential with the exact same execution layer address. 
+#### **问：** 如果我合并已退出的验证者会发生什么？
 
-#### **Q:** What happens if I consolidate validators that are exited?
+合并将失败，因为执行合并时验证者必须在信标链上处于活动状态。
 
-The consolidation will fail as the validators must be active on the beacon chain at the time of consolidation execution.
+#### **问：** 合并系统合约的ABI是多少？
 
-#### **Q:** How can I partially withdraw some ETH from my `0x02` validator?
+EIP-7251 合并合约部署在这里 `0x0000BBdDc7CE488642fb579F8B00f3a590007251`，来源在这里：[ethereum/sys-asm/src/consolidations/main.eas](https://github.com/ethereum/sys-asm/blob/main/src/consolidations/main.eas)。
+合并被放入队列中并以每区块 2 个的速率出列。
+合约不是用 Solidity 写的，他们也没有典型的 Solidity ABI，以免将 API 供奉起来。
 
-You can issue a EL triggered partial withdrawal to withdraw some ETH from the `0x02` validator.
-Send a transaction to the withdrawal system contract (pending address to be finalized when Electra goes live on mainnet) with your validator `pubkey` and the `amount` (a positive non-zero Gwei amount).
-As with consolidations, this transaction must be sent from the withdrawal address set in your validator's withdrawal credentials.
+伪代码功能如下：
 
-We expect this functionality to be added to various tools in the coming months.
-For testing right now, you can use the [Submit Withdrawals](https://dora.mekong.ethpandaops.io/validators/submit_withdrawals) page in Dora. Connect with the wallet that is used as the withdrawal address for your validators, and you should be able to select between your validators and craft an appropriate withdrawal transaction.
+```pseudo
+function(bytes input) {
+    if input.length == 0 {
+        return required_fee
+    }
+    if input.length == 96 {
+        if msg.value < required_fee {
+            return error
+        }
+        source := input[0:48]
+        target := input[48:96]
+        store_consolidation(msg.sender, source, target)
+        emit event(msg.sender, source, target)
+        return
+     }
+     return error
+}
+```
 
-#### **Q:** How much ETH can I withdraw from my validator?
+输入由 96 个字节组成，其中包含源和合并目标的 BLS 公钥。
+源和目标都必须设置 0x01 或 0x02 提款凭证。
+无需输入数据即可再次查询合同来计算所需的合并费用。
+这些资金将从来源到目标进行整合。
+7251 EIP 包含一个关于如何与 [solidity 合约](https://eips.ethereum.org/EIPS/eip-7251#fee-overpayment) 交互的示例。
 
-You can partially withdraw the portion above the full validator amount, as long as the validator contains >32 ETH at the time of withdrawal completion. For example, if you currently have 34 ETH and request a partial withdrawal, a maximum of 2 ETH can be withdrawn.
-You may also decide to request a full withdrawal by specifying an amount of `0` in the request. When sending such a full withdrawal request, your validator will be exited, and the full balance withdrawn.
+#### **问：** 如何从我的 `0x02` 验证者中部分提取一些 ETH？
 
-#### **Q:** What happens to the ETH balance if my validator has `0x02` credentials and goes below 32 ETH?
+您可以发出 EL 触发部分撤回，以从 `0x02` 验证者中撤回一些 ETH。
+使用您的验证者 `pubkey` 和 `amount` (正的非零 Gwei 金额)发送交易到提款系统合约(待 Electra 在主网上线时最终确定的地址)。
+与合并一样，此交易必须从您的验证者提款凭证中设置的提款地址发送。
 
-A normally behaved validator will not have its balance dropped below 32ETH even if you initiate a partial withdrawal request. This can only be achieved if validator receives penalty. Nothing will happen except reduced rewards. However if balance drops below 16ETH, the validator will be exited and the balance will be transferred to the execution layer withdrawal address.
+我们预计此功能将在未来几个月内添加到各种工具中。
+为了立即进行测试，您可以使用 Dora 中的[提交提款](https://dora.mekong.ethpandaops.io/validators/submit_withdrawals) 页面。连接用作验证者提款地址的钱包，您应该能够在验证者之间进行选择并制作适当的提款交易。
 
-#### **Q:** What happens to the ETH balance if my validator has `0x02` credentials and goes above 2048 ETH?
+#### **问：** 我可以从我的验证者中提取多少 ETH？
 
-The balance will continue to collect at the validator until the next partial withdrawal is triggered. The validator will however contain a maximum effective balance of 2048 ETH, the remaining balance will be considered ineffective in the beacon chain.
+您可以部分提取高于验证者总金额的部分，只要提现完成时验证者包含 >32 ETH 即可。例如，您当前有34个ETH，请求部分提现，则最多可以提现2个ETH。
+您还可以决定通过在请求中指定 `0` 的金额来请求全额提款。当发送这样的全额提款请求时，您的验证者将被退出，并且全额余额将被提取。
 
-#### **Q:** What balances between 32ETH and 2048ETH can I earn on?
+#### **问：** 提现系统合约ABI是多少？
 
-The effective balance increments 1 ETH at a time. This means the accrued balance needs to meet a threshold before the effective balance changes. E.g, if the accrued balance is 33.74 ETH, the effective balance will be 33 ETH. If the accrued balance increases to 33.75 ETH, then the effective balance will also be 33 ETH. Consequently, an accrued balance of 34.25 ETH would correspond to an effective balance of 34 ETH.
+EIP-7002 合约部署在这里，`0x00000961Ef480Eb55e80D19ad83579A64c00700` 源代码在这里：[ethereum/sys-asm/src/withdrawals/main.eas](https://github.com/ethereum/sys-asm/blob/main/src/withdrawals/main.eas)。
+提款被放入队列中，每个区块最多有 16 个提款出队。
+合约不是用 Solidity 写的，他们也没有典型的 Solidity ABI，以便不供奉 API。
+提现合约的伪代码功能：
 
-#### **Q:** Can I top up ETH in my `0x02` validator?
+```pseudo
+function(bytes input) {
+    if input.length == 0 {
+        return required_fee
+    }
+    if input.length == 56 {
+        if msg.value < required_fee {
+            return error
+        }
+        pk := input[0:48]
+        amount := input[48:56]
+        store_withdrawal(msg.sender, pk, amount)
+        emit event(msg.sender, pk, amount)
+        return
+    }
+    return error
+}
+```
 
-You can either consolidate a validator into the `0x02` validator to increase its balance or make a fresh deposit.
+正如您所看到的，输入由 56 个字节组成，其中包含我们要提取的 BLS 公钥以及我们要提取的金额。
+您可以在不输入任何数据的情况下调用合约来查询提现所需的费用。
+有关如何从 Solidity 中与其交互的示例可以在[此处](https://eips.ethereum.org/EIPS/eip-7002#fee-overpayment) 找到。
 
-#### **Q:** What happens to the ETH balance if I consolidate and my validator has `0x02` credentials and the total balance goes above 2048 ETH?
+#### **问：** 如果我的验证者具有 `0x02` 凭证并且低于 32 ETH，ETH 余额会发生什么情况？
 
-The balance will continue to collect at the validator until the next partial withdrawal is triggered. The validator will however contain a maximum effective balance of 2048 ETH, the remaining balance will be considered ineffective in the beacon chain. The portion over 2048ETH will be withdrawn when partial withdrawal sweep comes.
+即使您发起部分提款请求，行为正常的验证者余额也不会降至 32 ETH 以下。只有在验证者受到惩罚的情况下才可能发生这种情况。除了奖励减少之外，不会发生其他事情。然而，如果余额低于 16 ETH，验证者将被退出，余额将被转移到执行层提款地址。
+
+#### **问：** 如果我的验证者具有 `0x02` 凭证并且超过 2048 ETH，ETH 余额会发生什么情况？
+
+余额将继续在验证者处收取，直到触发下一次部分提款。然而，验证者将包含最大有效余额 2048 ETH，剩余余额在信标链中将被视为无效。
+
+#### **问：** 我可以赚取 32ETH 到 2048ETH 之间的哪些余额？
+
+有效余额每次递增1ETH。这意味着在有效余额发生变化之前，应计余额需要达到阈值。例如，如果应计余额为 33.74 ETH，则有效余额将为 33 ETH。如果应计余额增加到 33.75 ETH，则有效余额也将为 33 ETH。因此，应计余额 34.25 ETH 对应的有效余额为 34 ETH。
+
+#### **问：** 我可以在我的 `0x02` 验证者中充值 ETH 吗？
+
+您可以将验证者合并到 `0x02` 验证者以增加其余额或进行新存款。
+
+#### **问：** 如果我合并并且我的验证者具有 `0x02` 凭证并且总余额超过 2048 ETH，ETH 余额会发生什么情况？
+
+余额将继续在验证者处收取，直到触发下一次部分提款。然而，验证者将包含最大有效余额 2048 ETH，剩余余额在信标链中将被视为无效。当部分提款扫荡到来时，超过2048ETH的部分将被提取。

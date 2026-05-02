@@ -1,33 +1,33 @@
-# Testing
+# 测试
 
-Ethereum client implementations undergo constant testing on different levels which ensures security and stability of the network. For a decentralized network, ensuring all clients communicate correctly, behave the same way and therefore agree on transaction outcomes as defined by the protocol is indispensable. A difference in a single state transition would cause a network split resulting in finalization failure and many problems for users. To achieve stability, Ethereum clients must undergo rigorous testing against a standardized suite of test cases. 
+以太坊客户端的实现经过不同级别的不断测试，确保网络的安全性和稳定性。对于去中心化网络，确保所有客户端正确通信、行为方式相同并因此就协议定义的交易结果达成一致是必不可少的。单个状态转换的差异会导致网络分裂，从而导致最终确定失败并给用户带来许多问题。为了实现稳定性，以太坊客户端必须针对标准化测试用例套件进行严格的测试。 
 
-These tests verify adherence to [execution](/wiki/EL/el-specs.md) and [consensus](/wiki/CL/cl-specs.md) specifications, guaranteeing all clients interpret and execute transactions identically. This rigorous testing also functions as a proactive bug-detection tool that safeguards against network forks (disagreements on the canonical blockchain state).
+这些测试验证是否遵守[执行](/wiki/EL/el-specs.md)和[共识](/wiki/CL/cl-specs.md)规范，保证所有客户端以相同的方式解释和执行交易。这种严格的测试还可以作为主动错误检测工具，防止网络分叉(对规范区块链状态的分歧)。
 
-## Resources
+## 资源
 
-### Walkthrough
-- [Testing & Security Overview](https://www.youtube.com/watch?v=PQVW5dJ8J0c)
+### 演练
+- [测试与安全概述](https://www.youtube.com/watch?v=PQVW5dJ8J0c)
 
-### Common test suite
-- [pytest: Python test framework](https://docs.pytest.org/en/8.0.x/)
-- [Ethereum Tests: Common tests for all implementations](https://github.com/ethereum/tests)
-- [Hive: Ethereum end-to-end test harness](https://github.com/ethereum/hive)
+### 通用测试套件
+- [pytest：Python测试框架](https://docs.pytest.org/en/8.0.x/)
+- [以太坊测试：所有实现的通用测试](https://github.com/ethereum/tests)
+- [Hive：以太坊端到端测试工具](https://github.com/ethereum/hive)
 
-### Execution layer tests
-- [Execution Spec Tests: Test cases for execution clients](https://github.com/ethereum/execution-spec-tests)
-- [FuzzyVM: Differential fuzzer for EVM](https://github.com/MariusVanDerWijden/FuzzyVM).
-- [retesteth: Test generation tool](https://github.com/ethereum/retesteth)
-- [EVM lab utilities](https://github.com/ethereum/evmlab)
-- [Go evmlab: Evm laboratory inspired by EVMLAB](https://github.com/holiman/goevmlab)
-- [Collection of execution APIs](https://github.com/ethereum/execution-apis)
+### 执行层测试
+- [执行规范测试：执行客户端的测试用例](https://github.com/ethereum/execution-spec-tests)
+- [FuzzyVM：EVM 的差分模糊器](https://github.com/MariusVanDerWijden/FuzzyVM)。
+- [retesteth：测试生成工具](https://github.com/ethereum/retesteth)
+- [EVM 实验室实用程序](https://github.com/ethereum/evmlab)
+- [Go evmlab：受 EVMLAB 启发的 Evm 实验室](https://github.com/holiman/goevmlab)
+- [执行API集合](https://github.com/ethereum/execution-apis)
 
-### Consensus layer test
-- [Consensus Spec Tests](https://github.com/ethereum/consensus-specs/tree/dev/tests)
+### 共识层测试
+- [共识规范测试](https://github.com/ethereum/consensus-specs/tree/dev/tests)
 
-### Tools for testing chains
-- [Assertoor: Ethereum Testnet Testing Tool](https://github.com/ethpandaops/assertoor)
-- [Ethereum package: Testnet deployer](https://github.com/kurtosis-tech/ethereum-package) (Recommended for beginners)
+### 测试链条的工具
+- [断言者：以太坊测试网测试工具](https://github.com/ethpandaops/assertoor)
+- [以太坊包：测试网部署器](https://github.com/kurtosis-tech/ethereum-package)(推荐初学者使用)
 
-### Dashboards
-- [Hive test results](https://hivetests.ethdevops.io/)
+### 仪表板
+- [Hive测试结果](https://hivetests.ethdevops.io/)

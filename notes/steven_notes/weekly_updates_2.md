@@ -1,36 +1,36 @@
-# Weekly Update #2
+# 每周更新 #2
 
-> Discover more about [Steven's EPF journey](https://hackmd.io/@qz8qnEAKSzCXkPyX1NRrAg)
+> 详细了解 [Steven 的 EPF 旅程](https://hackmd.io/@qz8qnEAKSzCXkPyX1NRrAg)
 
-## Objectives
+## 目标
 
-This week I will explore more on two topics: PBS(proposer-builder separation) 
-and Portal network, which are pivotal to understanding the concepts of "the Splurge" and "the Purge", respectively.
+本周我将进一步探讨两个主题：PBS(提议者-构建者分离) 
+和门户网络，它们分别对于理解“挥霍”和“净化”的概念至关重要。
 
 ![Ethereum_phases](https://hackmd.io/_uploads/Byq5uOlxC.jpg)
 
-I need to:
-- **develop two comprehensive research documents**
-    - For each topic(PBS and Portal network), I will prepare a detailed research document to cover the following aspects:
-        - why it should be done
-        - how it can be done
-        - current progress and future work
+我需要：
+- **制定两份综合研究文件**
+    - 对于每个主题(PBS和Portal网络)，我都会准备一份详细的研究文档，涵盖以下几个方面：
+        - 为什么应该这样做
+        - 如何做到
+        - 当前进展和未来工作
 
-- **select one as EPF project based on research**
-    - Based on the insight gained from the research documents, I will make an decision on which topic to pursue. The selection will include factors such as potential impact, feasibility, and personal interest
+- **根据研究选择一个作为 EPF 项目**
+    - 根据从研究文件中获得的见解，我将决定要研究哪个主题。选择将包括潜在影响、可行性和个人兴趣等因素
 
 
 
-## Output
+## 输出
 ### PBS
-My notes: [PBS Overview](/notes//steven_notes/PBS.md) 
+我的笔记：[PBS概述](/notes//steven_notes/PBS.md) 
 
-### Portal Network
-[The Portal Network](https://ethereum.org/en/developers/docs/networking-layer/portal-network/). This resource from the official Ethereum website provides an excellent explanation of the Portal Network, addressing pertinent queries and serving as a valuable reference point.
+### 门户网
+[门户网](https://ethereum.org/en/developers/docs/networking-layer/portal-network/)。来自官方以太坊网站的此资源提供了对门户网络的精彩解释，解决了相关问题并作为有价值的参考点。
 
-## Decision and Next Steps
-Both the Proposer-Builder Separation (PBS) and the Portal Network hold substantial importance for the future of Ethereum, sparking a keen interest in contributing to their development. However, upon careful consideration, I have decided to focus on the Portal Network for the following reasons:
-- **Stage of Development**: ePBS remains in the research phase, representing a vast undertaking that could extend over one to two years. Although I plan to monitor its progress closely, the current stage presents challenges for immediate involvement
-- **Opportunity for Contribution**: The Portal Network already boasts a detailed specification and is supported by three client implementations, yet it lacks a Go-based client. This gap presents a unique opportunity for me to contribute by developing a Go client, leveraging my skills and interests.
+## 决定和后续步骤
+提议者-构建者分离 (PBS) 和门户网络对于以太坊的未来都具有重大意义，激发了为它们的发展做出贡献的浓厚兴趣。但经过深思熟虑，我决定将重点放在Portal Network上，原因如下：
+- **发展阶段**：ePBS 仍处于研究阶段，这是一项可能持续一到两年的艰巨任务。尽管我计划密切关注其进展，但现阶段对立即参与提出了挑战
+- **贡献机会**：Portal Network 已经拥有详细的规范，并由三个客户端实现支持，但它缺少基于 Go 的客户端。这个差距为我提供了一个独特的机会，可以利用我的技能和兴趣开发 Go 客户端来做出贡献。
 
-Starting next week, my endeavors will be directed towards gaining a deeper understanding of the Portal Network. Concurrently, I will continue to enhance my knowledge of Geth and related technologies, balancing my commitment to contributing meaningfully while expanding my expertise.
+从下周开始，我的努力将转向对门户网络有更深入的了解。同时，我将继续增强我对 Geth 和相关技术的了解，平衡我的承诺以做出有意义的贡献，同时扩展我的专业知识。

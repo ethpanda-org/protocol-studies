@@ -1,20 +1,26 @@
-# **Welcome to the protocol!**
+# **欢迎来到协议！**
 
-The EPF Wiki is a collection of technical resources about the Ethereum protocol. It's home to all resources from EPF Study Group and the Protocol Wiki. These include technical information covering all core protocol domains and ongoing research. It's dedicated to serve aspiring core contributors and does not cover any smart contract or other high level development. The content consists of 2 parts: Study Group materials and community maintained Protocol Wiki. 
+EPF Wiki 是有关以太坊协议的技术资源的集合。它是 EPF 学习小组和 协议 Wiki 的所有资源的所在地。其中包括涵盖所有核心协议领域和正在进行的研究的技术信息。它致力于为有抱负的核心贡献者提供服务，不涵盖任何智能合约或其他高级开发。对于那些希望更深入地研究并直接使用以太坊协议的人来说，这也可以作为协议研究员计划的介绍。  
 
-## Protocol Study Group
+## 协议学习小组
 
-Ethereum Protocol Fellowship Study Group (EPFsg) is an open study program for anyone interested in learning about internals of the protocol. The first part of EPF Wiki follows all the content presented during the study group. Materials provided by speakers and all their presentation are listed by weeks. 
+以太坊协议学习小组 (EPS) 是一个开放的学习计划，适合任何有兴趣了解协议内部结构的人。 学习小组资源可作为自学课程提供，但每年 2 月至 4 月期间还组织现场学习小组。关注 blog.ethereum.org，了解加入学生社区的公告。 
 
-**[Start your studies](/eps/intro.md) by joining 2025 Study Group**, learn more about the study group in the [announcement blog](https://blog.ethereum.org/2025/02/05/ethereum-protocol-studies). 
+**学习小组 2026** 将于 2 月 23 日开始，为期 8 周的内容。与我们一起学习 [study.epf.wiki](https://study.epf.wiki)
 
-> The study group is not just a list of resources but a community of people maintaining them and learning about the core protocol. **Join the community in our [Discord server](https://discord.gg/8RPnPGEQtJ)**.
+> 学习小组不仅仅是一个资源列表，而且是一个由维护资源和学习核心协议的人员组成的社区。 **加入我们的 [Discord 服务器](https://discord.gg/8RPnPGEQtJ) 社区**。
+
+## 协议 Wiki
+
+协议 Wiki是以太坊核心开发研究主要部分的技术文档。它指导任何有兴趣了解协议底层并做出贡献的人。该 wiki 由围绕学习小组形成的社区维护，并持续关注最新研究。 
+
+> ：警告：协议 Wiki 仍在建设中，许多重要主题尚未完全涵盖。 **如果您发现缺失内容或问题，请随时[贡献](contributing.md)**。
+>
+>
+
+## 协议研究员计划
+
+[以太坊协议研究员计划](/wiki/epf) (EPF) 是一个为对该协议深感兴趣的开发人员和研究人员提供的程序。这是一个直接与客户端团队合作并通过构建更大范围的项目做出贡献的机会。该项目为期 5 个月，通常每年 6 月至 11 月举办。请密切关注申请公告。 
 
 
-## Protocol Wiki 
-
-Protocol Wiki is a technical documentation of the main parts of Ethereum core development and research. It guides anyone interested in looking under the hood of the protocol and contributing. The wiki is maintained by the community formed around the study group and keeps following the latest research. 
-
-> :warning: Protocol Wiki is still under construction, many important topics are not fully covered. **If you find a missing content or issues, don't hesitate to [contribute](contributing.md)**. 
-
-![](https://raw.githubusercontent.com/eth-protocol-fellows/protocol-studies/wiki-pages/docs/images/epfsg_hero.jpg)
+![](https://raw.githubusercontent.com/eth-protocol-fellows/protocol-studies/wiki-pages/docs/images/epf7_hero.png)

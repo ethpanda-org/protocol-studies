@@ -1,28 +1,33 @@
-# Study Group Lecture 18 | EL Networking, Devp2p
+# 第 18 讲 | 学习小组 EL 网络，DevP2P
 
-The introductory part of the study group is now over and we are now starting the deeper dive with live sessions from core developers. The second week of the main phase of the study group is dedicated to networking. 
+学习小组的介绍部分现已结束，我们现在开始通过核心开发人员的现场会议进行更深入的探讨。 学习小组主阶段的第二周致力于网络。 
 
-The first live session this week is dedicated to execution layer networking stack, diving into devp2p. [Felix Lange](https://github.com/fjl) is a long term core developer from go-ethereum team and the maintainer of devp2p specification. 
+本周的第一场现场会议专门讨论执行层网络堆栈，深入探讨 devp2p。 [Felix Lange](https://github.com/fjl)是go-ethereum团队的长期核心开发人员，也是devp2p规范的维护者。 
 
-> Join the live talk by Felix on [Monday, 17.3. at 3PM UTC](https://www.timeanddate.com/worldclock/converter.html?iso=20250317T150000&p1=1440&p2=37&p3=136&p4=237&p5=923&p6=204&p7=671&p8=16&p9=41&p10=107&p11=28) to watch the lecture and ask questions directly. [Use this link to connect.](https://meet.ethereum.org/eps-office-hours) 
+https://www.youtube.com/watch?v=kYJ7Rj0OGv4
 
+在 [Youtube](https://www.youtube.com/watch?v=44-ddRK2aBc) 上观看讲座并遵循讲座中演示的 [DevP2P 规范](https://github.com/ethereum/devp2p) 
 
-## Pre-reading
+<iframe width="560" height="315" src="https://www.youtube.com/embed/44-ddRK2aBc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-Before starting with the Day 16 content, make yourself familiar with resources in previous weeks, especially day 3 on EL and day 7 on EL client. You should have general understanding of the execution layer and basic overview of its networking capabilities. 
+## 预读
 
-Additionally, you can get ready by studying the following resources.
+在开始第 18 天的内容之前，请先熟悉前几周的资源，尤其是 EL 上的第 3 天和 EL 客户端上的第 7 天。您应该对执行层及其网络功能有基本的了解。 
 
-- [Devp2p spec](https://github.com/ethereum/devp2p)
-- [devp2p development update by Felix Lange (Devcon4)](https://www.youtube.com/watch?v=N2VTqUZRxjY)
+此外，您可以通过学习以下资源来做好准备。
 
+- [DevP2P 规范](https://github.com/ethereum/devp2p)
 
-## Outline
+## 概要
 
-- EL networking
-- devp2p...
+- EL 网络
+- devp2p 规范
+- ENR
+- 光盘v5
+- 子协议
 
-## Additional reading and exercises
+## 额外阅读和练习
 
-- [Demo of devp2p Wireshark Dissector](https://www.youtube.com/watch?v=AhE4KbV-f1w)
-- 
+- [devp2p Wireshark解析器演示](https://www.youtube.com/watch?v=AhE4KbV-f1w)
+- [Felix Lange (Devcon4) 的 devp2p 开发更新](https://www.youtube.com/watch?v=N2VTqUZRxjY)
+- [Hive devp2p测试模拟器](https://github.com/ethereum/hive/tree/master/simulators/devp2p)

@@ -1,11 +1,11 @@
-# Hangout call #1
+# 环聊通话 #1
 
-On Thursday, March 7 we are having our first EPFsg hangout. Looking forward to finally speak to folks from the group. 
+3 月 7 日星期四，我们将举行第一次 EPFsg 聚会。期待最终与小组中的人们交谈。 
 
-Use this folder to create your own notes during the call, collect resources and share them with others. 
+使用此文件夹可以在通话期间创建您自己的笔记、收集资源并与其他人共享。 
 
-The call is informal but will be divided to main parts:
+该通话是非正式的，但将分为主要部分：
 
-- Breakout rooms
-- Wiki work in progress
-- Free chat
+- 分组讨论室
+- 维基工作正在进行中
+- 免费聊天

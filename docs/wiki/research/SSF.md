@@ -1,57 +1,56 @@
-# Single slot finality (SSF)
+# 单个时隙最终确定性 (SSF)
 
-## Roadmap tracker
+## 路线图跟踪器
 
-| Upgrade |   URGE    | Track |          Topic           |                                               Cross-references                                               |
+|升级|   URGE |轨道 |          主题 |                                               交叉引用|
 | :-----: | :-------: | :---: | :----------------------: | :----------------------------------------------------------------------------------------------------------: |
-|   SSF   | the Merge |   -   | PoS upgrades, finality and security | intersection with: [MAX_EB](/docs/wiki/research/cl-upgrades.md), [ePBS](/docs/wiki/research/PBS/ePBS.md) |
+|   SSF |合并|   - | PoS 升级，最终确定性和安全 |与: [MAX_EB](/docs/wiki/research/cl-upgrades.md), [ePBS](/docs/wiki/research/PBS/ePBS.md) | 交集
 
-[Single Slot Finality](/docs/eps/week10-research.md) is a research concept of an improvement to Beacon Chain's consensus mechanism that addresses inefficiencies associated with the time it takes to finalize blocks. It's proposing a significant raise in blocks validation efficiency and a drastic reduction of time-to-finality.
-Instead of waiting for 2 epochs, blocks could get proposed and finalized in the same slot. The topic was also covered in (EPS week 10](https://github.com/eth-protocol-fellows/protocol-studies/blob/ssf/docs/eps/week10-research.md).
+[Single 时隙最终确定性](/docs/eps/week10-research.md) 是一个改进信标链共识机制的研究概念，解决与最终确定区块所需时间相关的低效率问题。它建议显着提高区块验证效率并大幅缩短最终确定性的时间。
+区块可以在同一个时隙中提出并最终确定，而不是等待 2 epoch。 [EPS 第 10 周](https://github.com/eth-protocol-fellows/protocol-studies/blob/ssf/docs/eps/week10-research.md) 中也涵盖了该主题。
 
-## Context and Motivation
-Ethereum consensus layer implements Gasper protocol which includes Casper Friendly Finality Gadget. Casper FFG ensures that the network keeps producing blocks and accumulates validator attentions for each epoch. Finality is the ultimate state of PoS economic security and its change would require 2/3 of the validator set to be slashed. 
-Beacon Chain achieves finality every 2 epochs, or every 64 slots. With each slot being 12 seconds long, finalization takes around 12.8 minutes, at the moment of writing.
-This current time to finality has turned out to be too long for most users, and is inconvenient for apps and exchanges that might not want to wait that long to be certain their transactions are permanent. 
-The delay between a block's proposal and finalization also creates an opportunity for short reorgs that an attacker could use to censor certain blocks or extract MEV.
+## 背景和动机
+以太坊共识层实现 Gasper 协议，其中包括 Casper 友好最终确定性 Gadget。 Casper FFG 确保网络不断生成区块并为每个 epoch 积累验证者注意力。 最终确定性是 PoS 经济安全的最终状态，其改变需要削减 2/3 的验证者集。 
+信标链每 2 个 epoch 或每 64 个时隙达到最终确定性。由于每个时隙长 12 秒，在撰写本文时，最终完成大约需要 12.8 分钟。
+对于大多数用户来说，最终确定性的当前时间太长，并且对于可能不想等待那么长时间来确定其交易是永久的应用程序和交易所来说不方便。 
+区块的提案和最终确定之间的延迟也为短期重组创造了机会，攻击者可以利用它来审查某些区块或提取 MEV。
 
-## Benefits of SSF
-* More convenient for apps - transactions finalization time improved by an order of magnitude, i.e. 12 seconds instead of 12 minutes means better UX for all Ethereum users
-* Much more difficult to attack - multi block MEV re-orgs can be eliminated as it would only take 1 block for the chain to finalize instead of 64 blocks
-* The future consensus mechanism (in SSF scenario) would have a reduced complexity compared to current LMD-GHOST & Casper-FFG combination, which can lead to attacks (balancing attacks, withholding and savings attacks)
+## SSF 的好处
+* 对应用程序来说更方便 - 交易最终确定时间提高了一个数量级，即 12 秒而不是 12 分钟，这意味着对所有以太坊用户来说更好的 UX
+* 攻击难度更大 - 可以消除多个区块 MEV 重组，因为链只需 1 个区块即可完成，而不是 64 个区块
+* 与当前的 LMD-GHOST 和 Casper-FFG 组合相比，未来的共识机制(在 SSF 场景中)的复杂性将降低，这可能导致攻击(平衡攻击、扣留和储蓄攻击)
 
-## The fork-choice rule in SSF
-Today's consensus mechanism relies on the coupling[^1] between Casper-FFG (the algorithm that determines whether 2/3 of validators have attested to a certain chain) and the fork choice rule (LMD-GHOST is the algorithm that decides which chain is the correct one when there are multiple options). 
-The fork choice algorithm only considers blocks since the last finalized block. Under SSF there will not be any blocks for the fork choice rule to consider, because finality occurs in the same slot as the block is proposed. This means that under SSF **either** the fork choice algorithm **or** the finality gadget would be active at any time. 
-The finality gadget will finalize blocks where $2/3$ of validators were online and attesting honestly. If a block is not able to exceed the $2/3$ threshold, the fork choice rule would kick in to determine which chain to follow. This also creates an opportunity to maintain the inactivity leak mechanism that recovers a chain where $>1/3$ validators go offline. If a block is not able to exceed the $2/3$ threshold, the fork choice rule would kick in to determine which chain to follow.
+## SSF 中的分叉选择规则
+今天的共识机制依赖于Casper-FFG(确定验证者的2/3是否已证明某个链的算法)和分叉选择规则(LMD-GHOST是在有多个选项时决定哪条链是正确的算法)之间的耦合[^1]。 
+分叉选择算法仅考虑自上次最终确定的区块以来的区块。在 SSF 下，将不会有任何区块供 分叉选择规则考虑，因为最终确定性出现在与提议的区块相同的时隙中。这意味着在 SSF 下，**分叉选择算法**或** 最终确定性小工具将随时处于活动状态。 
+最终确定性小工具将最终确定区块，其中验证者的 $2/3$ 在线并诚实地证明。如果区块无法超过 $2/3$ 阈值，则分叉选择规则将启动以确定要遵循哪个链。这也为维护不活动泄漏机制创造了机会，该机制可恢复 $>1/3$ 验证者离线的链。如果区块无法超过 $2/3$ 阈值，则分叉选择规则将启动以确定要遵循哪个链。
 
-Some interaction issues between the fork choice and the consensus do remain in any such design, and it’s still important to work through them. 
-Short-term improvements to the existing fork choice (eg. view-merge) may also feed into work on the SSF fork choice.[^2]
+分叉选择和共识之间的一些交互问题确实存在于任何此类设计中，解决这些问题仍然很重要。对现有分叉选择的短期改进(例如视图合并)也可能会融入到 SSF 分叉选择的工作中。[^2]
 
-## What are the key questions we need to solve to implement single slot finality?
-Three open questions outlined by Vitalik[^4]: 
+## 实现单个时隙最终确定性需要解决哪些关键问题？
+Vitalik[^4] 概述了三个开放性问题： 
 
-* What will be the exact consensus algorithm?
+* 确切的共识算法是什么？
 
-* What will be the aggregation strategy (for signatures)?
+* 聚合策略是什么(对于签名)？
 
-* What will be the design for validator economics?
+* 验证者经济学的设计是什么？
 
-## MAX_EB and Zipfian ETH distribution
+## MAX_EB 和 Zipfian ETH 分布
 
-## References
+## 参考文献
 
-[^1]: Combining GHOST and Casper https://arxiv.org/pdf/2003.03052.pdf, [[archived]](https://arxiv.org/pdf/2003.03052.pdf)
+[^1]: 结合 GHOST 和 Casper https://arxiv.org/pdf/2003.03052.pdf, [[已存档]](https://arxiv.org/pdf/2003.03052.pdf)
 
-[^2]: SSF page on Ethereum.org https://ethereum.org/en/roadmap/single-slot-finality/#role-of-the-fork-choice-rule, [[archived]](https://web.archive.org/web/20240309234119/https://ethereum.org/en/roadmap/single-slot-finality/#role-of-the-fork-choice-rule)
+[^2]: SSF 以太坊.org 上的页面 https://ethereum.org/en/roadmap/single-slot-finality/#role-of-the-fork-choice-rule, [[已存档]](https://web.archive.org/web/20240309234119/https://ethereum.org/en/roadmap/single-slot-finality/#role-of-the-fork-choice-rule)
 
-[^3]: EIP-7251: Increase the MAX_EFFECTIVE_BALANCE https://eips.ethereum.org/EIPS/eip-7251, [[archived]](https://web.archive.org/web/20240324072459/https://eips.ethereum.org/EIPS/eip-7251)
+[^3]: EIP-7251：增加MAX_EFFECTIVE_BALANCE https://eips.ethereum.org/EIPS/eip-7251, [[已存档]](https://web.archive.org/web/20240324072459/https://eips.ethereum.org/EIPS/eip-7251)
 
-[^4]: VB's SSF notes https://notes.ethereum.org/@vbuterin/single_slot_finality, [[archived]](https://web.archive.org/web/20240330010706/https://notes.ethereum.org/@vbuterin/single_slot_finality)
+[^4]: VB 的 SSF 笔记 https://notes.ethereum.org/@vbuterin/single_slot_finality, [[已存档]](https://web.archive.org/web/20240330010706/https://notes.ethereum.org/@vbuterin/single_slot_finality)
 
-[^5]: Sticking to 8192 signatures per slot post-SSF https://ethresear.ch/t/sticking-to-8192-signatures-per-slot-post-ssf-how-and-why/17989. [[archived]](https://web.archive.org/web/20240105131126/https://ethresear.ch/t/sticking-to-8192-signatures-per-slot-post-ssf-how-and-why/17989)
+[^5]: 坚持每个时隙后的 8192 签名 SSF https://ethresear.ch/t/sticking-to-8192-signatures-per-slot-post-ssf-how-and-why/17989. [[已存档]](https://web.archive.org/web/20240105131126/https://ethresear.ch/t/sticking-to-8192-signatures-per-slot-post-ssf-how-and-why/17989)
 
-[^6]: A simple Single Slot Finality protocol https://ethresear.ch/t/a-simple-single-slot-finality-protocol/14920, [[archived]](https://web.archive.org/web/20231214080806/https://ethresear.ch/t/a-simple-single-slot-finality-protocol/14920)
+[^6]: 一个简单的单一时隙最终确定性协议 https://ethresear.ch/t/a-simple-single-slot-finality-protocol/14920, [[已存档]](https://web.archive.org/web/20231214080806/https://ethresear.ch/t/a-simple-single-slot-finality-protocol/14920)
 
-[^7]: Notes on SSF Lincoln Murr https://publish.obsidian.md/single-slot-finality/Welcome+to+My+Research!,
-[[archived]](https://web.archive.org/save/https://publish.obsidian.md/single-slot-finality/Welcome+to+My+Research!)
+[^7]: 关于 SSF 的注释林肯·穆尔 https://publish.obsidian.md/single-slot-finality/Welcome+to+My+Research!,
+[[已存档]](https://web.archive.org/save/https://publish.obsidian.md/single-slot-finality/Welcome+to+My+Research!)

@@ -1,33 +1,33 @@
-# Light Clients
+# 轻客户端
 
-> :warning: This article is a [stub](https://en.wikipedia.org/wiki/Wikipedia:Stub), help the wiki by [contributing](/contributing.md) and expanding it.
+> ：警告：本文是一个[存根](https://en.wikipedia.org/wiki/Wikipedia:Stub)，通过[贡献](/contributing.md) 和扩展它来帮助维基。
 
-Ethereum users are connecting to the network using an execution client RPC. This allows them to interact with the network, read balances, submit transactions, etc. Running the client and verifying the current state can be a demanding task requiring hundreds of GBs storage space, bandwidth and computation. Most wallets default to using a third party API to connect to the network without verifying the provided data. 
+以太坊用户正在使用执行客户端 RPC 连接到网络。这使它们能够与网络交互、读取余额、提交交易等。运行客户端并验证当前状态可能是一项艰巨的任务，需要数百 GB 的存储空间、带宽和计算。大多数钱包默认使用第三方 API 连接到网络，而不验证提供的数据。 
 
-The idea of a light client is to enable trustless access to the network without overhead of running a full node. Light client is a general term for this concept but the actual approach is using different designs. There are multiple kinds of light clients, some in production, some still being researched and developed. 
+轻客户端的想法是实现对网络的无信任访问，而无需运行全节点的开销。 轻客户端是这个概念的通用术语，但实际方法是使用不同的设计。 轻客户端有多种，有的在生产，有的还在研发。 
 
-- Verifying EL RPC data using Beacon root from a CL client
-- Stateless clients
-- LES protocol
-- Portal network
+- 使用来自 CL 客户端的 Beacon 根验证 EL RPC 数据
+- 无状态客户端
+- LES 协议
+- 门户网
 
-## RPC proxy light client 
+## RPC 代理轻客户端 
 
-This sort of light clients connect to an RPC provider and improves the security by verifying responses using a proof from an independent Beacon Node. It's basically an RPC proxy or a middleware which ensures that data from the provider are valid. 
-It improves the trust model of a wallet/service connected to a third party RPC but doesn't act as a node in the network. With this light client approach, users still need to connect to some RPC provider, a centralized entity.
+这种轻客户端连接到 RPC 提供商，并通过使用来自独立 Beacon 节点的证明来验证响应来提高安全性。它基本上是一个 RPC 代理或中间件，可确保来自提供商的数据有效。 
+它改进了连接到第三方 RPC 的钱包/服务的信任模型，但在网络中不充当节点。使用这种轻客户端方法，用户仍然需要连接到某个 RPC 提供商(一个集中式实体)。
 
-Clients communicating in the network over p2p protocol don't have specific functions for specific pieces of data like with RPC. They can get current tip from the peer, request historical blocks, etc. And to verify them, they also need connection to a consensus client. There is no way to request balance of an address over p2p, only download blocks/state, verify and find it yourself. With this approach, we basically arrive at the behavior of a normal node in the network. 
+客户端通过 p2p 协议在网络中进行通信，不像 RPC 那样对特定数据片段具有特定功能。他们可以从对等节点获取当前提示，请求历史区块等。为了验证它们，他们还需要连接到共识客户端。无法通过p2p请求地址余额，只能下载区块/state，自行验证查找。通过这种方法，我们基本上得到了网络中正常节点的行为。 
 
-The implementation of the RPC verifying 'light client' is for example [Helios](https://github.com/a16z/helios) or [Kevlar](https://github.com/lightclients/kevlar). User can run them as a proxy between an app/wallet and their rpc provider. They offer a default connection to a public beacon node so the chance that both of these providers lie in the same exact way is minimal. There was a [project trying to implement the CL p2p in Helios](ttps://github.com/eth-protocol-fellows/cohort-three/blob/master/projects/helios-cl-p2p.md) in order to use it directly with cl libp2p instead of relying on a third party Beacon API. 
+RPC 验证“轻客户端”的实现例如是 [Helios](https://github.com/a16z/helios) 或 [Kevlar](https://github.com/lightclients/kevlar)。用户可以将它们作为应用程序/钱包与其 RPC 提供商之间的代理运行。它们提供与公共信标节点的默认连接，因此这两个提供商以完全相同的方式存在的可能性很小。有一个[项目试图在 Helios 中实现 CL p2p](ttps://github.com/eth-protocol-fellows/cohort-three/blob/master/projects/helios-cl-p2p.md)，以便直接与 cl libp2p 一起使用它，而不是依赖第三方 Beacon API。 
 
-## Stateless clients
+## 无状态客户端
 
-Using witnesses gossiped over p2p network to verify the data without full state.
+使用通过 p2p 网络传播的见证人来验证没有完整状态的数据。
 
-## Portal Network
+## 门户网
 
-Portal creates an overlay network which guarantees data integrity probabilistically. 
+Portal 创建了一个覆盖网络，可以概率性地保证数据完整性。 
 
 ## LES
 
-Light client mode pioneered by Geth enables to run a node in light config which subscribes to les p2p protocol. The node doesn't download the entire chain, only downloads the latest data from other nodes serving les. The full node needs to be configured to provide les data, it's not a default option. Therefore there are not enough les providers in the network to enable using geth in light mode reliable. 
+由 Geth 首创的轻客户端模式可以在订阅 les p2p 协议的轻配置中运行节点。 节点不会下载整个链，仅从其他节点服务文件下载最新数据。 全节点需要配置为提供 les 数据，这不是默认选项。因此，网络中没有足够的文件提供程序来保证在轻量模式下可靠地使用 geth。 

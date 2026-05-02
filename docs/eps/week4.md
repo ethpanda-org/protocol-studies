@@ -1,25 +1,25 @@
-# Study Group Lecture 4 | Testing and Security
+# 第 4 讲 | 学习小组测试和安全
 
-Lecture 4 is diving into the testing tools and practices necessary to keep the network secure. 
+第 4 讲深入探讨保持网络安全所需的测试工具和实践。 
 
-Watch the presentation on Ethereum core testing infrastructure on [Youtube](https://www.youtube.com/watch?v=PQVW5dJ8J0c). Presentations slides are [available here](https://github.com/eth-protocol-fellows/protocol-studies/tree/main/docs/eps/presentations/week4.pdf). 
+在 [Youtube](https://www.youtube.com/watch?v=PQVW5dJ8J0c) 上观看有关以太坊核心测试基础设施的演示。演示幻灯片[可在此处获取](https://github.com/eth-protocol-fellows/protocol-studies/tree/main/docs/eps/presentations/week4.pdf)。 
 
-[recording](https://www.youtube.com/embed/PQVW5dJ8J0c?si=fv5ww4_6zInGXpjO ':include :type=iframe width=100% height=560 frameborder="0" allow="fullscreen" allowfullscreen encrypted-media gyroscope picture-in-picture web-share')
+[录音](https://www.youtube.com/embed/PQVW5dJ8J0c?si=fv5ww4_6zInGXpjO ':include :type=iframe width=100% height=560 frameborder="0" allow="fullscreen" allowfullscreen encrypted-media gyroscope picture-in-picture web-share')
 
-For written summary of lecture 4 presentation, check the [notes](https://github.com/eth-protocol-fellows/protocol-studies/files/14850974/Week.4.EPFsg.Test.Security.Overview.pdf)
+第四讲演讲的书面总结，请查看[笔记](https://github.com/eth-protocol-fellows/protocol-studies/files/14850974/Week.4.EPFsg.Test.Security.Overview.pdf)
 
-For archive of the discussion during the talk, check [this thread](https://discord.com/channels/1205546645496795137/1216771776810455160/1216771782040621118) in our Discord server.
+有关演讲期间讨论的存档，请检查我们的 Discord 服务器中的[此线程](https://discord.com/channels/1205546645496795137/1216771776810455160/1216771782040621118)。
 
-## Pre-reading
+## 预读
 
-Before starting with the lecture 4 content, make yourself familiar with resources in [lecture 3](/eps/week3.md) and before. 
+在开始第 4 讲内容之前，请先熟悉[第 3 讲](/eps/week3.md) 及之前的资源。 
 
-Additionally, you can read and get ready by studying the following resources:
+此外，您可以通过学习以下资源来阅读并做好准备：
 
 - https://ethereum-tests.readthedocs.io/en/latest/
 - https://ethereum.github.io/execution-spec-tests
 
-## Outline
+## 概要
 
 - https://github.com/ethereum/execution-spec-tests
 - https://github.com/ethereum/hive
@@ -31,8 +31,8 @@ Additionally, you can read and get ready by studying the following resources:
 - https://github.com/MariusVanDerWijden/FuzzyVM
 - https://github.com/MariusVanDerWijden/tx-fuzz
 
-## Additional reading and exercises 
+## 额外阅读和练习 
 
-- [Quest for the Best Tests, a Retrospective on #TestingTheMerge by Pari](https://archive.devcon.org/archive/watch/6/quest-for-the-best-tests-a-retrospective-on-testingthemerge/?tab=YouTube)
-- [Killing ETH - Finding Consensus Issues on Layer 1 by Marius](https://archive.devcon.org/archive/watch/6/killing-eth-finding-consensus-issues-on-layer-1/?tab=YouTube)
-- [Dencun testing](https://www.youtube.com/watch?v=88tZticGbTo)
+- [寻求最佳测试，Pari 的 #TestingTheMerge 回顾](https://archive.devcon.org/archive/watch/6/quest-for-the-best-tests-a-retrospective-on-testingthemerge/?tab=YouTube)
+- [杀死 ETH - Marius 发现第 1 层的共识问题](https://archive.devcon.org/archive/watch/6/killing-eth-finding-consensus-issues-on-layer-1/?tab=YouTube)
+- [Dencun测试](https://www.youtube.com/watch?v=88tZticGbTo)

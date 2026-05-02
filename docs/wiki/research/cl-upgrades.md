@@ -1,17 +1,17 @@
-# Beacon Chain upgrades
+# 信标链升级
 
-### Inclusion Lists
-### Preconfirmations
-### Raise MAX_EFFECTIVE_BALANCE
-### Staking pools solutions
+### 包含列表
+### 预确认
+### 提高MAX_EFFECTIVE_BALANCE
+### 质押池解决方案
 
-* [Minimal viable enshrinement of liquid staking](#resources)
+* [流动性质押最小可行内置化](#resources)
 
 ### RESOURCES
-[Wiki Roadmap](https://github.com/eth-protocol-fellows/protocol-studies/pull/78)
+[维基路线图](https://github.com/eth-protocol-fellows/protocol-studies/pull/78)
 
-[ethereum/EIPs github repository](https://github.com/ethereum/EIPs/tree/master#ethereum-improvement-proposals-eips)
+[以太坊/EIPs github仓库](https://github.com/ethereum/EIPs/tree/master#ethereum-improvement-proposals-eips)
 
-[notes on Minimal viable enshrinement of liquid staking](https://gist.github.com/gorondan/671062f279542bcaca80f0faec53c0a4)
+[流动性质押最小可行内置化说明](https://gist.github.com/gorondan/671062f279542bcaca80f0faec53c0a4)
 
-[Ethresearch](https://ethresear.ch/)
+[以太坊研究](https://ethresear.ch/)

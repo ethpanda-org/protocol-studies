@@ -1,4 +1,4 @@
-# Topics
+# 主题
 
 ### #(##) [A](#a)|[B](#b)|[C](#c)|[D](#d)|[E](#e)|[F](#f)|[G](#g)|[H](#h)|[I](#i)|[J](#j)|[K](#k)|[L](#l)|[M](#m)|[N](#n)|[O](#o)|[P](#p)|[Q](#q)|[R](#r)|[S](#s)|[T](#t)|[U](#u)|[V](#v)|[W](#w)|[X](#x)|[Y](#y)|[Z](#z)
 
@@ -9,34 +9,34 @@
 ### A
 [AA]()
 [ASE]
-[Attestations]
+[证明]
 ### B
 [BFT]
 [BLS]
 
 ### C
-[Consensus layer]
-[Commitments]
+[共识层]
+[承诺]
 
 ### D
-[Design principles]
+[设计原则]
 [DAS]
 [Danksharding]
 
 ### E 
-[Encodings]
+[编码]
 [EOF]
 [EVM]
-[Execution layer]
+[执行层]
 
 ### F
-[Forkchoice]
+[分叉选择]
 
 ### G
-[Gas metering]
+[Gas 计量]
 
 ### H
-[History expiry]()  
+[历史过期]()  
 
 ### J
 [JSON-RPC](/wiki/EL/JSON-RPC.md)
@@ -45,11 +45,11 @@
 
 
 ### L
-[Light clients]
+[轻客户端]
 
 ### M
 [MEV]
-[Mempool]
+[内存池]
 [MPT]
 
 ### P
@@ -58,25 +58,25 @@
 
 ### R
 [RLP]
-[Roadmap]
+[路线图]
 
 ### S
-[Statelessness]
+[无状态]
 [SSF]
 [SSZ]
 
 ### T
-[Transactions]
+[交易]
 
 ### U
-[Unix philosophy]
+[Unix哲学]
 
 ### V
-[Verkle trees]
-[VDFs]
+[Verkle 树]
+[VDF]
 
 ### W
-Weak subjectivity
+弱主观性
 
 ### Z
-ZK proofs
+ZK 证明

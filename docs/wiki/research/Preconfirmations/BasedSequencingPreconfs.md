@@ -1,106 +1,106 @@
-# Ethereum Based Sequencing with Preconfirmations
+# 以太坊基于排序和 预确认
 
-## [Overview](#overview)
+## [概述](#overview)
 
-Ethereum's evolving ecosystem is set to introduce new paradigms for rollups and chain interactions, emphasizing seamless transitions and enhanced user experiences. This wiki article introduces a framework for Ethereum sequencing and preconfirmations, originally proposed by Justin Drake[^1][^4], a step toward realizing this vision, offering a unified platform for all Ethereum chains and rollups. 
+以太坊不断发展的生态系统将为 Rollup 和链交互引入新的Paradigm，强调无缝过渡和增强的用户体验。这篇 wiki 文章介绍了以太坊排序和 预确认的框架，最初由 Justin Drake[^1][^4] 提出，是实现这一愿景的一步，为所有以太坊链和 Rollup 提供统一的平台。 
 
 
-## [Motivation](Motivation)
+## [动机](#Motivation)
 
-### [United Chains of Ethereum](#united-chains-of-ethereum)
+### [联合连锁以太坊](#united-chains-of-ethereum)
 
-The vision for Ethereum is not just a network of isolated chains but a cohesive ecosystem where all rollups and chains coexist without friction, termed the "United Chains of Ethereum." This concept envisions a scenario where users can move between different states (rollups) with ease, akin to crossing state lines without the need for passports or the imposition of tariffs. Such an environment would not only enhance user experience but also foster a more integrated and efficient blockchain ecosystem.
+以太坊的愿景不仅仅是一个孤立的链网络，而是一个有凝聚力的生态系统，其中所有 Rollup 和链无摩擦地共存，称为“以太坊联合链”。这一概念设想了一种场景，用户可以轻松地在不同州 (Rollup) 之间移动，类似于跨越州界线，无需护照或征收关税。这样的环境不仅可以增强用户体验，还可以培育更加集成和高效的区块链生态系统。
 
 ![United Chains of Ethereum](../img/preconfs/united-chains-of-ethereum.jpg)
 
-_Figure: United Chains of Ethereum, Credit Justin Drake_
+_图：以太坊的 United Chains，信用 Justin Drake_
 
-### [Ethereum's Services for Rollups](#ethereums-services-for-rollups)
+### [以太坊为 Rollup 提供的服务](#ethereums-services-for-rollups)
 
-- **Current Services:** Ethereum currently provides two critical services to rollups: settlement and data availability. These services lay the foundation for rollups to operate effectively on Ethereum's decentralized platform.
+- **当前服务：** 以太坊目前为 Rollup 提供两项关键服务：结算和数据可用性。这些服务为Rollup在以太坊的去中心化平台上有效运营奠定了基础。
 
-- **Introduction of Ethereum Sequencing:** Ethereum sequencing[^2][^3], is proposed to complement the existing ones, offering a new resource that rollups can leverage to further optimize their operations. Although sequencing has always been inherent to Ethereum, its potential as a dedicated service for rollups represents an innovative application, akin to the adaptive use of core data for new functionalities.
+- **引入以太坊排序：** 以太坊排序[^2][^3]，旨在补充现有资源，提供 Rollup 可以利用的新资源来进一步优化其操作。尽管排序一直是以太坊固有的，但它作为 Rollup 专用服务的潜力代表了一种创新应用程序，类似于为新功能自适应使用核心数据。
 
-### [Current Sequencing Options](#current-sequencing-options)
+### [当前排序选项](#current-sequencing-options)
 
 ![Sequencing Types](../img/preconfs/based-sequencing-problems-space.png)
 
-_Figure: Different Sequencing Options and their Problem Space, Credit Justin Drake_
+_图：不同的排序选项及其问题空间，图片来源：Justin Drake_
 
 
-#### [Decentralized Sequencing](#decentralized-sequencing)
+#### [去中心化排序](#decentralized-sequencing)
 
-**Overview:** Decentralized sequencing distributes the responsibility of transaction ordering among multiple nodes rather than a single central authority. This method enhances security and resistance to censorship, as no single node can dictate the transaction order by itself.
+**概述：** 去中心化的排序将 交易排序的责任分配给多个节点，而不是单个中央机构。此方法增强了安全性和对审查的抵抗力，因为没有任何一个节点可以自行决定交易的顺序。
 
-**Problems and Challenges:**
-- **Complexity in Coordination:** Since multiple nodes are involved in transaction ordering, achieving consensus can be challenging and complex, particularly when the nodes have varying incentives.
-- **Network Integrity Maintenance:** Ensuring that all participating nodes follow the protocol without any malicious behavior can be difficult to enforce.
-- **Front-Running and MEV:** Miners or validators might exploit their ability to order transactions to extract maximal extractable value (MEV), which can lead to unfair transaction processing and a negative user experience.
-- **Resilience to Censorship:** Although decentralized sequencing makes censorship more difficult, it doesn't eliminate the possibility, especially if a collusion of nodes occurs.
+**问题和挑战：**
+- **协调的复杂性：** 由于交易排序涉及多个节点，因此达成共识可能具有挑战性且复杂，特别是当节点具有不同的激励措施时。
+- **网络完整性维护：** 确保所有参与的节点都遵循协议且没有任何恶意行为可能很难执行。
+- **前置运行和 MEV：** 矿工或验证者可能会利用其订购交易的能力来提取最大可提取价值 (MEV)，这可能导致不公平的交易处理和负面的用户体验。
+- **对审查的弹性：** 尽管去中心化的排序使审查变得更加困难，但这并不能消除这种可能性，特别是如果节点发生串通的话。
 
-#### [Shared Sequencing](#shared-sequencing)
+#### [共享排序](#shared-sequencing)
 
-**Concept:** Shared sequencing is a form of decentralized sequencing where the task of ordering transactions is shared among several entities, typically across different layers or platforms. This approach is designed to further decentralize the process and reduce the influence any single participant might have over the sequence of transactions.
+**概念：** 共享排序是去中心化排序的一种形式，其中订购交易的任务在多个实体之间共享，通常跨不同的层或平台。这种方法旨在进一步分散流程并减少任何单个参与者可能对交易序列产生的影响。
 
-**Application:** In Ethereum, shared sequencing could involve various rollups solutions that coordinate to manage transaction order. This coordination can help ensure that transactions are processed efficiently and fairly, reducing the potential for bottlenecks or biased sequencing practices.
+**应用：** 在以太坊中，共享排序可能涉及协调管理交易订单的各种 Rollup 解决方案。这种协调有助于确保交易得到高效、公平的处理，减少出现瓶颈或有偏见的排序做法的可能性。
 
-**Benefits:** Shared sequencing aims to promote scalability by distributing the load of transaction processing and enhancing the network’s throughput. It also strives for neutrality and fairness in transaction handling, critical for maintaining trust in a decentralized ecosystem.
+**优点：** 共享排序旨在通过分配交易处理负载并增强网络吞吐量来提高可扩展性。它还致力于交易处理的中立性和公平性，这对于维护去中心化生态系统的信任至关重要。
 
-**Problems and Challenges:**
-- **MEV Sharing:** Coordinating MEV sharing, like the approach Espresso is investigating, requires sophisticated mechanisms to fairly distribute MEV across participating rollups and chains[^5].
-- **Deposits Sharing:** Solutions like zkSync's deposit sharing are innovative but require widespread adoption and trust among different rollups to function effectively, potentially leading to centralization of trust[^6].
-- **Execution Sharing:** Implementation of execution sharing strategies, such as Polygon's aggregation layer, requires standardization and integration across different rollups to ensure compatibility and trustless atomicity[^7].
+**问题和挑战：**
+- **MEV 共享：** 协调 MEV 共享，就像 Espresso 正在研究的方法一样，需要复杂的机制来在参与的 Rollup 和链之间公平分配 MEV [^5]。
+- **存款共享：** 像 zkSync 的存款共享这样的解决方案是创新的，但需要不同 Rollup 之间的广泛采用和信任才能有效发挥作用，可能导致信任的中心化[^6]。
+- **执行共享：**执行共享策略的实现，例如Polygon的聚合层，需要跨不同Rollup进行标准化和集成，以确保兼容性和去信任原子性[^7]。
 
-**Based Sequencing:**
+**基于排序：**
 
-**Concept:** A specialized form of decentralized sequencing that uses the base layer of a Ethereum, Beacon chain, to manage transaction ordering. This method leverages the security and consensus mechanisms of the Beacon chain to ensure that transactions are sequenced in a trustless manner.
+**概念：** 去中心化排序的一种特殊形式，它使用以太坊的基础层信标链来管理交易排序。该方法利用信标链的安全和共识机制来确保交易以去信任的方式进行排序。
 
-**Focus:** Based sequencing aims to integrate the robust security features of the Beacon chain into transaction sequencing, reducing dependency on external sequencers or centralized systems. It aligns with Ethereum's decentralized principles by using the existing Ethereum infrastructure to secure transaction order.
+**重点：** 基于排序，旨在将信标链强大的安全特性集成到交易排序中，减少对外部排序器或中心化系统的依赖。它通过使用现有的以太坊基础设施来保护交易订单，符合以太坊的去中心化原则。
 
-**Integration with Shared Sequencing:** Based sequencing can be a pivotal part of a larger shared sequencing strategy, providing a reliable, secure foundation that other layers or rollups can build upon. It ensures that at least one layer of the transaction ordering process is closely tied to the highly secure, well-tested consensus mechanisms of the Ethereum blockchain.
+**与共享排序集成：** 基于排序可以成为更大的共享排序策略的关键部分，为其他层或 Rollup 可以构建提供可靠、安全的基础。它确保交易排序过程的至少一层与以太坊区块链的高度安全、经过充分测试的共识机制紧密相关。
 
-**Problems and Challenges:**
-- **Proposer Responsibility:** Proposers must opt into based sequencing by posting collateral, adding financial risk and responsibility to their role.
-- **Inclusion List Management:** The concept of inclusion lists must be maintained and managed carefully to ensure fair transaction inclusion.
-- **Consensus Mechanism Dependence:** Based sequencing is inherently tied to the underlying consensus mechanism, which means any issues with the consensus could directly affect transaction sequencing.
-- **Preconfirm Complexity:** Implementing preconfirm mechanisms, where users get assurance of transaction execution from proposers, adds complexity to transaction processing and requires a new level of trust and interaction between users and proposers.
+**问题和挑战：**
+- **提议者责任：** 提议者必须通过发布抵押品来选择基于排序，从而增加其角色的财务风险和责任。
+- **包含列表管理：** 包含列表的概念必须谨慎维护和管理，以确保公平地包含交易。
+- **共识机制依赖：** 基于排序与底层共识机制有着内在的联系，这意味着共识的任何问题都可能直接影响交易排序。
+- **预确认复杂性：** 实施预确认机制(用户可以从提议者获得交易执行的保证)增加了交易处理的复杂性，并且需要用户和提议者之间的信任和交互达到新的水平。
 
-## [Technical Construction](#technical-construction)
+## [技术施工](#technical-construction)
 
-### [Based Sequencing](#based-sequencing)
+### [基于排序](#based-sequencing)
 
-- **Mechanism:** The proposal for based sequencing involves utilizing the beacon chain's look-ahead period to invite proposers to opt into providing sequencing services by posting collateral. This approach leverages Ethereum's existing structure to introduce a new layer of functionality for rollups.
+- **机制：** 基于排序的提案涉及利用信标链的预见期邀请提议者通过发布抵押品选择提供排序服务。此方法利用以太坊的现有结构为 Rollup 引入新的功能层。
 
-- **Look-Ahead Period:** By capitalizing on the beacon chain's ability to predict the next set of proposers, the system can prepare and designate specific proposers to take on the additional role of sequencers, ensuring that rollups have predictable and reliable sequencing services.
+- **预测期：**通过利用信标链预测下一组提议者的能力，系统可以准备并指定特定的提议者来承担排序器的附加角色，确保Rollup具有可预测性和可靠性排序服务。
 
 
-### [Preconfirm Mechanism](#preconfirm-mechanism)
+### [预确认机制](#preconfirm-mechanism)
 
-In the [Preconfirmations](/wiki/research/Preconfirmations/Preconfirmations.md) article, I explained the details on how Preconfirmations work and the promise acquisition process flow[^2][^3]. 
+在 [预确认](/wiki/research/Preconfirmations/Preconfirmations.md) 文章中，我详细解释了预确认的工作原理以及 Promise 获取流程[^2][^3]。 
 
-- **User Interaction with Proposers:** Users can identify which proposers within the look-ahead period have opted for based sequencing and request preconfirmations from them. These preconfirmations are akin to promises that the user's transaction will be included and executed in the future, with penalties applied for non-fulfillment.
+- **用户与提议者的交互：** 用户可以识别在预测期内哪些提议者选择了基于排序并向他们请求预确认。这些预确认类似于承诺用户的交易将在未来被包含并执行，并对不履行的处罚。
 
-- **Slashing for Non-Fulfillment:** The system imposes penalties, or slashing, for proposers who fail to fulfill their preconfirmations. This adds a layer of accountability, ensuring that proposers are incentivized to honor their commitments.
+- **未履行的削减：** 系统会对未能履行预确认的 提议者实施处罚或削减。这增加了一层责任，确保提议者受到激励来兑现他们的承诺。
 
-### [Look-Ahead Preconf Construction](#look-ahead-preconf-construction)
+### [前瞻预确认构造](#look-ahead-preconf-construction)
 
 ![Look-ahead preconf construction](../img/preconfs/lookahead-preconfs.png)
 
-_Figure: Look-ahead mechanism for Preconfirmations, Credit Justin Drake_
+_图：预确认的前瞻机制，图片来源：Justin Drake_
 
 
-- **Lookahead Period:** On the Ethereum Beacon chain, there is a lookahead period where upcoming proposers for block slots are known ahead of time. This period can typically include a set number of the next 32 slots.
-- **Preconfirmation Request:** A user who wants to make a transaction sends a preconfirmation request to a proposer who is scheduled to create a block in the near future (within the lookahead period). The request includes the transaction details and possibly a fee offer.
-- **Promise Issuance:** Upon receiving the preconfirmation request, the chosen proposer – referred to as a preconfer – assesses the transaction and decides whether or not to make a promise. If the proposer agrees, they issue a promise to the user, committing to include and execute the transaction in a future block when their turn to propose comes up. This promise is backed by collateral that the proposer has posted, which can be slashed if they fail to honor their promise.
-- **Inclusion of the Preconfirmed Transaction:** When the proposer's slot (n+1 in the above figure) arrives, they must include and execute the preconfirmed transaction as they promised. If the proposer fails to do so without a valid reason, they risk being slashed.
-- **Sharing of the Preconfirmation:** The promise made by the proposer may need to be communicated to others in the network, especially if there are multiple proposers who might include the transaction before the proposer’s slot arrives. This communication can be facilitated through various means, including MEV boost relays, to ensure that the transaction is settled and included appropriately.
-- **Execution of the Transaction:** Once the proposer’s turn comes, and if they have not been preempted by an earlier proposer, they include the preconfirmed transaction in the block they are proposing. This ensures that the transaction is executed on-chain as was promised to the user.
+- **前瞻期：** 在以太坊信标链上，有一个前瞻期，其中提前知道区块时隙的即将到来的提议者。该周期通常可以包括接下来的 32 个时隙的设定数量。
+- **预确认请求：** 想要创建交易的用户向计划在不久的将来(在前瞻期内)创建区块的 提议者发送预确认请求。该请求包括交易详细信息以及可能的费用报价。
+- **承诺发布：** 在收到预确认请求后，选定的提议者(称为预授予者)评估交易并决定是否做出承诺。如果提议者同意，他们会向用户发出承诺，承诺在轮到他们提出建议时在未来的区块中包含并执行交易。这一承诺得到了提议者发布的抵押品的支持，如果他们未能兑现承诺，抵押品可能会被削减。
+- **包含预先确认的交易：** 当提议者的时隙(上图中的n+1)到达时，他们必须按照他们的承诺包含并执行预先确认的交易。如果提议者无正当理由未能这样做，他们将面临被削减的风险。
+- **共享预确认：** 提议者做出的承诺可能需要传达给网络中的其他人，特别是如果有多个提议者可能在提议者的 时隙到达之前包含交易。可以通过各种方式促进这种通信，包括 MEV boost 中继，以确保交易得到适当的解决和包含。
+- **执行交易：** 一旦轮到提议者，并且如果它们没有被较早的提议者抢占，它们会将预先确认的交易包含在它们提议的区块中。这确保了交易正如向用户承诺的那样在链上执行。
 
-### [Communication through MEV Boost](#communication-through-mev-boost)
+### [通过MEV Boost进行通信](#communication-through-mev-boost)
 
-The integration of preconfirmations with MEV Boost represents a critical aspect of the technical construction, facilitating the efficient flow of information between users, proposers, builders, and the Ethereum network. By routing preconfirmation details through MEV Boost, the system ensures that builders are aware of preconfirmed transactions and can construct blocks accordingly. This process not only optimizes the inclusion of transactions but also maintains the integrity and value of the constructed blocks, aligning with the overarching goals of the Ethereum sequencing and preconfirmation framework.
+预确认与 MEV Boost 的集成代表了技术建设的一个关键方面，促进了用户、提议者、构建者和 以太坊网络之间的信息高效流动。通过通过 MEV Boost 路由预确认详细信息，系统确保构建者知道预先确认的交易并可以相应地构造区块。此过程不仅优化了交易的包含，还保持了构建的区块的完整性和价值，与以太坊排序和 预确认框架的总体目标保持一致。
 
-## [Preconfirmations Flow through MEV Boost](#preconfirmations-flow-through-mev-boost)
+## [预确认流经 MEV Boost](#preconfirmations-flow-through-mev-boost)
 
 
 ```mermaid
@@ -121,73 +121,73 @@ sequenceDiagram
     BC-->>-U: Execute and Finalize Tx
 ```
 
-*Figure: Preconfirmations Flow through MEV Boost*
+*图：预确认通过 MEV Boost 的流量*
 
 
-The process of how preconfirmations would flow through MEV Boost within the context of Ethereum's base layer sequencing and preconfirmations involves several key steps and entities and it is valuable to discuss in details. This mechanism aims to ensure that transactions preconfirmed by proposers (who have opted into providing sequencing services) are communicated effectively to builders through Relays in MEV Boost and ultimately included in the constructed blocks. Here's a detailed step-by-step explanation of the process:
+预确认如何在以太坊的基础层排序和 预确认的上下文中流经 MEV Boost 的过程涉及几个关键步骤和实体，详细讨论是有价值的。该机制旨在确保提议者(已选择提供排序服务)预先确认的交易通过MEV Boost中的中继有效传达给构建者，并最终包含在构建的构建者中。 区块。以下是该过程的详细分步说明：
 
-- **User Requests Preconfirmation:**
-  - A user identifies proposers within the beacon chain's look-ahead period who have opted into providing based sequencing by posting collateral.
-  - The user then sends a preconfirmation request to one of these proposers, seeking assurance that their transaction will be included and executed in a future slot.
+- **用户请求预确认：**
+  - 用户在信标链的预测期内识别排序，并选择通过发布抵押品来提供基于排序。
+  - 然后，用户向这些提议者之一发送预确认请求，以确保它们的交易将包含在未来的时隙中并执行。
 
-- **Proposer Provides Preconfirmation:**
-  - The selected proposer evaluates the request and, if accepted, provides the user with a preconfirmation. This preconfirmation is essentially a promise to include and execute the user's transaction in a specified future slot, subject to certain conditions and penalties for non-fulfillment.
+- **提议者提供预确认:**
+  - 选定的提议者评估请求，如果接受，则向用户提供预确认。这个预确认本质上是一个承诺，在指定的未来时隙中包含并执行用户的交易，但须遵守某些条件和不履行的处罚。
 
-- **Proposer to MEV Boost Communication:**
-  - Once a proposer issues a preconfirmation, they communicate this information to MEV Boost. MEV Boost acts as an intermediary that facilitates the communication between proposers (now acting as sequencers for their respective slots), builders, and ultimately, the Ethereum network.
+- **提议者至 MEV 增强通信：**
+  - 一旦提议者发出预确认，它们就会将此信息传达给 MEV Boost。 MEV Boost 充当中介，促进提议者(现在充当各自时隙的 排序器)、构建者和最终以太坊网​​络之间的通信。
 
-- **MEV Boost Relays Preconfirmations to Builders:**
-  - MEV Boost relays the preconfirmation details to builders, who are responsible for constructing the blocks. Builders receive information about all preconfirmed transactions, which they must consider while building their blocks.
+- **MEV 提升中继预确认到 构建者：**
+  - MEV 将中继 Boost 预确认详细信息传递给构建者，后者负责构建区块。 构建者接收有关所有预先确认的交易的信息，他们在构建区块时必须考虑这些信息。
 
-- **Builders Construct Blocks Considering Preconfirmations:**
-  - With the preconfirmation details at hand, builders construct blocks that honor these preconfirmations. This involves including the preconfirmed transactions in the block for the specified slot and ensuring that the execution conditions promised in the preconfirmations are met.
+- **构建者构造区块考虑预确认:**
+  - 有了预确认详细信息，构建者构造区块来尊重这些预确认。这涉及到将预先确认的交易包含在指定时隙的区块中，并确保满足预确认中承诺的执行条件。
 
-- **Blocks Are Proposed to the Network:**
-  - Once builders construct a block that respects all preconfirmations and optimizes for other factors (like MEV), the block is proposed to the Ethereum network. The proposer for the relevant slot, who initially issued the preconfirmation, is responsible for ensuring that this block gets submitted.
+- **区块向网络提出：**
+  - 一旦构建者构建了一个尊重所有预确认并针对其他因素(如 MEV)进行优化的区块，区块就会被提议到以太坊网络。最初发布预确认的相关时隙的 提议者负责确保此区块得到提交。
 
-- **Execution and Settlement:**
-  - If the block is successfully included in the blockchain, the preconfirmed transactions are executed as promised, fulfilling the proposer's commitment to the user. If a proposer fails to fulfill the preconfirmation, penalties (slashing) may be applied depending on the nature of the fault (e.g., liveness fault, safety fault).
+- **执行及结算：**
+  - 如果区块成功包含在区块链中，则按照约定执行预先确认的交易，将提议者的承诺履行给用户。如果提议者未能满足预确认，则可能会根据故障的性质(例如，活性故障、安全故障)进行处罚(削减)。
 
-**Additional Considerations:**
+**其他注意事项：**
 
-- **Slashing Mechanism:** The process incorporates a slashing mechanism to penalize proposers if they fail to honor their preconfirmations. This ensures a level of accountability and trust in the system.
-- **Dynamic Communication:** The flow of information through MEV Boost allows for dynamic adjustments based on real-time conditions, such as changes in transaction priority or network congestion.
+- **削减机制：** 该过程采用了削减机制，如果提议者未能遵守预确认，则对其进行惩罚。这确保了对系统的一定程度的问责和信任。
+- **动态通信：** 通过 MEV Boost 的信息流允许根据实时情况进行动态调整，例如交易优先级的变化或网络拥塞。
 
-## [Future Areas of Research](#future-areas-of-research)
+## [未来的研究领域](#future-areas-of-research)
 
-Previous discussions on Ethereum Based Sequencing with Preconfirmations[^4] revealed that the design space of this framework involves many complex topics and left with several open questions and concerns raised by community. Below are the some of the areas of research and complexities involved:
+之前对以太坊基于排序和 预确认[^4] 的讨论表明，该框架的设计空间涉及许多复杂的主题，并留下了社区提出的一些悬而未决的问题和担忧。以下是一些研究领域和所涉及的复杂性：
 
-- **Suboptimal Block Value**: Preconfirmations could lead to less valuable blocks for validators, as constraints imposed by preconfirmed transactions could limit MEV opportunities.
-- **Complexity with Multiple Preconfirms**: Managing and coordinating multiple preconfirms can complicate the execution state and challenge the uniformity of transaction sequencing.
-- **Pricing and Economic Incentives**: Determining the right price for preconfirmation tips is complex, as preconfirms could affect the expected MEV and thus the economic incentives for proposers and users.
-- **Execution Guarantees**: Variability in the execution guarantees of preconfirms might require different levels of sophistication from proposers, with more complex preconfirms potentially necessitating higher capabilities.
-- **Centralization Risks**: Some expressed concerns that the preconfirmation system could lead to centralization, with a few entities controlling the sequence of transactions.
-- **Liveness and Safety Faults**: Understanding and implementing the proper response to liveness and safety faults within the system, including the correct attribution of faults and management of associated slashing, is complex.
-- **Infrastructure Requirements**: The need for validators to run full nodes, manage bandwidth, and provide Denial-of-Service protection adds to the operational complexity.
-- **Collateral Posting**: Managing the posting and efficiency of collateral for preconfirms is a significant consideration, particularly concerning the scaling of collateral relative to the value of transactions.
-- **User Experience**: How users experience the process, including the speed and reliability of preconfirmations, and the transparency of the system.
-- **Relay Trust**: Trust in relays and their role in the preconfirmation process, considering that relays must balance the interests of various network participants and manage the associated risks.
-- **Communication Channels**: Establishing secure and efficient channels for communication between users, proposers, relays, and builders.
-- **Lookahead and Selection Mechanisms**: The lookahead mechanism's impact on preconfer selection and whether an alternative selection mechanism would be more advantageous.
-- **Layer 1 and Layer 2 Coordination**: Coordinating between Beacon Chain proposers and Layer 2 sequencers, particularly with rollups designating their own sequencers, can be challenging.
-- **Legal and Regulatory Considerations**: Potential legal and regulatory implications of the preconfirmation process, especially regarding financial transactions.
-- **Technological Adaptability**: The need for the system to adapt to new technologies, like the eventual integration of execution tickets, which could alter the preconfirmation landscape.
+- **次优区块价值**：预确认可能会导致验证者的 区块价值降低，因为预先确认的交易施加的约束可能会限制 MEV 机会。
+- **多个预确认的复杂性**：管理和协调多个预确认可能会使执行状态复杂化，并对交易排序的一致性提出挑战。
+- **定价和经济激励**：确定预确认提示的正确价格很复杂，因为预先确认可能会影响预期的 MEV，从而影响提议者和用户的经济激励。
+- **执行保证**：预确认的执行保证的可变性可能需要与提议者不同级别的复杂性，更复杂的预确认可能需要更高的功能。
+- **中心化风险**：一些人担心预确认系统可能导致中心化，少数实体控制交易的序列。
+- **活跃度和安全性故障**：理解并实施对系统内活跃度和安全性故障的正确响应，包括正确的故障归因和相关削减的管理，是很复杂的。
+- **基础设施要求**： 验证者需要运行全节点、管理带宽并提供拒绝服务保护，这增加了操作复杂性。
+- **抵押品过帐**：管理预确认抵押品的过帐和效率是一个重要的考虑因素，特别是涉及相对于交易价值的抵押品缩放比例。
+- **用户体验**：用户体验过程如何，包括预确认的速度和可靠性，以及系统的透明度。
+- **中继信任**：对中继及其在预确认流程中的角色的信任，考虑到中继必须平衡各个网络参与者的利益并管理相关风险。
+- **通讯渠道**：建立用户提议者、中继、构建者之间安全高效的沟通渠道。
+- **先行和选择机制**：先行机制对预授予选择的影响以及替代选择机制是否会更有利。
+- **第 1 层和第 2 层协调**：信标链提议者和第 2 层排序器之间的协调，尤其是 Rollup 指定自己的排序器时，可能具有挑战性。
+- **法律和监管考虑因素**：预确认流程的潜在法律和监管影响，尤其是有关财务交易的影响。
+- **技术适应性**：系统需要适应新技术，例如执行票据的最终集成，这可能会改变预确认的格局。
 
-## Resources
-- [Ethereum Sequencing](https://docs.google.com/presentation/d/1v429N4jdikMIWWkcVwfjMlV2LlOXSawFCMKoBnZVDNU/)
-- [Based preconfirmations](https://ethresear.ch/t/based-preconfirmations/17353)
-- [Preconfirmations](/docs/wiki/research/Preconfirmations/Preconfirmations.md)
-- [Ethereum Sequencing and Preconfirmations Call #1](https://youtu.be/2IK136vz-PM)
-- [Espresso Shared Sequencing](https://hackmd.io/@EspressoSystems/SharedSequencing)
-- [Zksync Deposit Sharing](https://docs.zksync.io/zk-stack/components/shared-bridges.html)
-- [Polygon Aggregate Layer](https://polygon.technology/blog/aggregated-blockchains-a-new-thesis)
+## 资源
+- [以太坊排序](https://docs.google.com/presentation/d/1v429N4jdikMIWWkcVwfjMlV2LlOXSawFCMKoBnZVDNU/)
+- [基于预确认](https://ethresear.ch/t/based-preconfirmations/17353)
+- [预确认](/docs/wiki/research/Preconfirmations/Preconfirmations.md)
+- [以太坊排序和 预确认呼叫 #1](https://youtu.be/2IK136vz-PM)
+- [浓缩咖啡共享排序](https://hackmd.io/@EspressoSystems/SharedSequencing)
+- [Zksync充值分享](https://docs.zksync.io/zksync-protocol/contracts/l1-contracts/shared-bridges)
+- [多边形聚合层](https://polygon.technology/blog/aggregated-blockchains-a-new-thesis)
 
 
-## References
+## 参考文献
 [^1]: https://docs.google.com/presentation/d/1v429N4jdikMIWWkcVwfjMlV2LlOXSawFCMKoBnZVDNU/
 [^2]: https://ethresear.ch/t/based-preconfirmations/17353
 [^3]: https://epf.wiki/#/wiki/research/Preconfirmations/Preconfirmations
 [^4]: https://youtu.be/2IK136vz-PM
 [^5]: https://hackmd.io/@EspressoSystems/SharedSequencing
-[^6]: https://docs.zksync.io/zk-stack/components/shared-bridges.html
+[^6]: https://docs.zksync.io/zksync-protocol/contracts/l1-contracts/shared-bridges
 [^7]: https://polygon.technology/blog/aggregated-blockchains-a-new-thesis
