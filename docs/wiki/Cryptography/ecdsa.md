@@ -1,112 +1,112 @@
-# A Brief Introduction to ECDSA
+# ECDSA 简介
 
-It is impossible to overstate how modern cryptography redefines trust for all our digital interactions - from securing bank account logins with encryption to verifying the authenticity of your favorite apps through digital certificates.
+现代密码学如何重新定义我们所有数字交互的信任都不为过——从通过加密保护银行帐户登录到通过数字证书验证您喜爱的应用程序的真实性。
 
-Public key cryptography is a key concept empowering these interactions. It consists of two key pairs:
+公钥密码学是支持这些交互的关键概念。它由两个密钥对组成：
 
-**Public key**: Widely distributed and used by anyone to verify an entity's identity.
-**Private key**: Confidential and known only to the owner, used for encryption and signing messages.
+**公钥**：广泛分发并由任何人使用来验证实体的身份。
+**私钥**：保密且只有所有者知道，用于加密和签名消息。
 
-**Elliptic curve cryptography (ECC)** is a specific type of public key cryptography that uses mathematics of elliptic curves to create smaller, and more efficient keys. This is especially beneficial in resource-constrained environments like Ethereum. Within Ethereum, the **Elliptic Curve Digital Signature Algorithm (ECDSA)** helps verify the legitimacy of submitted transactions.
+**椭圆曲线加密 (ECC)** 是一种特定类型的公钥加密，它使用椭圆曲线的数学来创建更小、更高效的密钥。这在 Ethereum 等资源受限的环境中尤其有用。在 Ethereum 中，**椭圆曲线数字签名算法 (ECDSA)** 有助于验证提交的交易的合法性。
 
-Let's consider a real-world scenario to understand how ECDSA works in action.
+让我们考虑一个现实场景，以了解 ECDSA 的实际工作原理。
 
-Alice, a diligent businesswoman, has been abducted and held captive on a remote island. Her captors demand a hefty ransom of $1 million for her release. With limited options for communication, they provide a single postcard for her to instruct her associate, Bob, to transfer the funds.
+Alice 是一位勤奋的女商人，她被绑架并被囚禁在一个偏远的岛屿上。绑架者索要 100 万美元的巨额赎金才能释放她。由于沟通方式有限，他们为她提供了一张明信片，指示她的同事 Bob 转移资金。
 
-Alice considers writing the ransom amount and signing the postcard like a check. However, this method poses a significant risk: the kidnappers could easily forge the postcard, inflate the amount, and deceive Bob into sending them more money.
+Alice 考虑写下赎金金额并像签署支票一样在明信片上签名。然而，这种方法存在很大的风险：绑匪可以轻松伪造明信片，夸大金额，并欺骗 Bob 给他们寄更多的钱。
 
-Alice needs a robust approach that allows:
+Alice 需要一种强大的方法来允许：
 
-1. Bob to verify that the transfer has be authorized by her, and
-2. ensure that postcard's message has not been tampered with.
+1. Bob 验证转账已获得她的授权，并且
+2. 确保明信片的信息未被篡改。
 
-The goal of this exercise is device a method for Alice to create a **secret key 🔑** known only to her. This key will be crucial for her to prove her identity and ensure the message's authenticity to Bob.
+本练习的目标是为 Alice 设计一种方法来创建只有她自己知道的**密钥🔑**。该密钥对于她证明自己的身份并确保 Bob 收到的消息的真实性至关重要。
 
-Mathematics, as always, comes to the rescue. Through ingenious use of **Elliptic Curves**, let's explore how Alice can generate the **secret key 🔑**.
+一如既往，数学可以拯救你。通过巧妙地利用**椭圆曲线**，我们来探讨一下 Alice 如何生成**秘钥🔑**。
 
-## Elliptic curves
+## 椭圆曲线
 
-An elliptic curve is a curve **described by the equation**:
+椭圆曲线是一条曲线**由方程式**描述：
 
 $$
 y^2 = x^3 + ax+b
 $$
 
-Such that $4a^3 + 27b^2 \ne 0$ to ensure the curve is non-singular.
-The equation above is what is called the **Weierstrass normal form** of the long equation:
+这样$4a^3 + 27b^2 \ne 0$就保证了曲线是非奇异的。
+上面的方程就是长方程的 **Weierstrass Paradigm**：
 
 $$
 y^2 + a_1 xy + a_3 y = x^3 + a_2 x^2 + a_4 x + a_6
 $$
 
-Examples:
+示例：
 
 <img src="images/elliptic-curves/examples.gif" width="500"/>
 
-Observe that elliptic curves are symmetric about the x-axis.
+观察椭圆曲线关于 x 轴对称。
 
-Ethereum uses a standard curve known as [secp256k1](http://www.secg.org/sec2-v2.pdf) with parameters $a=0$, and $b=7$; which is the curve:
+Ethereum 使用名为 [secp256k1](http://www.secg.org/sec2-v2.pdf) 的标准曲线，参数为 $a=0$ 和 $b=7$；这是曲线：
 $$y^2=x^3+7$$
 
 <img src="images/elliptic-curves/secp256k1.png" width="500"/>
 
-## Groups and Fields
+## 组和字段
 
-### Group
-In mathematics, a **GROUP** is a set $G$, containing at least two elements, which is closed under a binary operation usually referred to as **addition** ($+$). A set is closed under an operation when the result of the operation is also a member of the set. 
+### 集团
+在数学中，**GROUP**是一个集合$G$，包含至少两个元素，在通常称为**加法**的二元运算下封闭 ($+$)。当操作的结果也是集合的成员时，集合在操作下是封闭的。 
 
-The set of real numbers $\mathbb{R}$ is a familiar example of a group, since arithmetic addition of two real numbers is closed.
+实数集 $\mathbb{R}$ 是一个常见的群示例，因为两个实数的算术加法是闭集的。
 
 $$
- 3 \in \mathbb{R},  5 \in \mathbb{R} \\
+ 3 \in \mathbb{R}, 5 \in \mathbb{R} \\
  3 + 5 = 8 \in \mathbb{R}
 $$
 
-## Field
-Similarly, a **FIELD** is a set $F$, containing at least two elements, which is closed under two binary operations usually referred to as **addition** ($+$), and **multiplication**($\times$). 
+## 领域
+类似地，**FIELD**是一个集合$F$，包含至少两个元素，在通常称为**加法**($+$) 和**乘法**($\times$) 的两个二元运算下封闭。 
 
-In other words, A **FIELD** is a **GROUP** under both addition and multiplication.
+换句话说，A **FIELD** 在加法和乘法下都是一个**GROUP**。
 
-Elliptic curves are interesting because the points on the curve form a group, i.e the result of "addition" of two points remains on the curve. This geometric addition, distinct from arithmetic counterparts, involves drawing a line through chosen points (**P** and **Q**) and reflecting the resulting curve intersection(**R'**) across the x-axis to yield their sum (**R**).
+椭圆曲线很有趣，因为曲线上的点形成一个组，即两个点“相加”的结果保留在曲线上。这种几何加法与算术加法不同，涉及通过选定点 (**P** 和 **Q**) 绘制一条线，并反映 x 轴上所得的曲线交点 (**R'**)，以得出它们的总和 (**R**)。
 
 <br />
 <img src="images/elliptic-curves/addition.gif" width="500"/>
 
-A point (**P**) can also be added to itself ($P+P$), in which case the straight line becomes a tangent to **P** that reflects the sum (**2P**).
+点 (**P**) 也可以添加到自身 ($P+P$)，在这种情况下，直线将成为反映总和 (**2P**) 的 **P** 的切线。
 
 <br />
 <img src="images/elliptic-curves/scalar-multiplication.png" width="500"/>
 
-Repeated point-addition is known as **scalar multiplication**:
+重复点加法称为**标量乘法**：
 
 $$
 nP = \underbrace{P + P + \cdots + P}_{n\ \text{times}}
 $$
 
-## Discrete logarithm problem
+## 离散对数问题
 
-Let's leverage scalar multiplication to generate the **secret key 🔑**. This key, denoted by $K$, represents the number of times a base point $G$ is added to itself, yielding the resulting public point $P$:
+让我们利用标量乘法来生成**密钥🔑**。这个键由 $K$ 表示，表示基点 $G$ 与其自身相加的次数，产生结果公共点 $P$：
 
 $$
 P = K*G
 $$
 
-Given $P$ and $G$ it is possible derive the secret key $K$ by effectively reversing the multiplication, similar to the **logarithm problem**.
+给定 $P$ 和 $G$，可以通过有效地反转乘法来导出密钥 $K$，类似于**对数问题**。
 
-We need to ensure that scalar multiplication does not leak our **secret key 🔑**. In other words, scalar multiplication should be "easy" one way and "untraceable" the other way around.
+我们需要确保标量乘法不会泄露我们的**密钥🔑**。换句话说，标量乘法一方面应该是“容易的”，另一方面应该是“不可追踪的”。
 
-The analogy of a clock helps illustrate the desired one-way nature. Imagine a task starting at 12 noon and ending at 3. Knowing only the final time (3) makes it impossible to determine the exact duration without additional information. This is because **modular arithmetic** introduces a "wrap-around" effect. The task could have taken 3 hours, 15 hours, or even 27 hours, all resulting in the same final time modulo 12.
+时钟的类比有助于说明所需的单向性质。想象一项任务从中午 12 点开始到 3 点结束。仅知道最终时间 (3) 就无法在没有其他信息的情况下确定确切的持续时间。这是因为**模算术**引入了“环绕”效应。该任务可能需要 3 小时、15 小时，甚至 27 小时，所有这些都导致最终时间模 12 相同。
 
 <br />
 <img src="images/elliptic-curves/clock.gif" width="500"/>
 
-Over a **prime modulus**, this is especially hard and is known as **discrete logarithm problem**.
+对于**质数模数**，这尤其困难，被称为**离散对数问题**。
 
-## Elliptic curves over finite field
+## 有限域上的椭圆曲线
 
-So far, we have implicitly assumed elliptic curves over the rational field ($\mathbb{R}$). Ensuring **secret key 🔑** security through the discrete logarithm problem requires a transition to elliptic curves over finite fields defined by a **prime modulus**. This essentially restricts the points on the curve to a finite set by performing modular reduction with a specific prime number.
+到目前为止，我们隐式地假设有理场 ($\mathbb{R}$) 上的椭圆曲线。通过离散对数问题确保**密钥🔑**安全性需要在由**素数模数**定义的有限域上过渡到椭圆曲线。这本质上是通过使用特定素数执行模约简来将曲线上的点限制为有限集。
 
-For the sake of this discussion, we will consider the **secp256k1** curve defined over an **arbitrary finite field** with prime modulus **997**:
+为了便于讨论，我们将考虑在具有素数模数 **997** 的 **任意有限域** 上定义的 **secp256k1** 曲线：
 
 $$
 y^2 = x^3 + 7 \pmod {997}
@@ -114,33 +114,33 @@ $$
 
 <img src="images/elliptic-curves/finite-field.png" width="500"/>
 
-While the geometric representation of the curve in the finite field may appear abstract compared to a continuous curve, its symmetry remains intact. Additionally, scalar multiplication remains closed, although the "tangent" now "wraps around" given the modulus nature.
+虽然有限域中曲线的几何表示与连续曲线相比可能显得抽象，但其对称性保持不变。此外，标量乘法仍然是封闭的，尽管考虑到模数性质，“切线”现在“环绕”。
 
 <br />
 <img src="images/elliptic-curves/finite-scalar-multiplication.gif" width="500"/>
 
-## Generating key pair
+## 生成密钥对
 
-Alice can finally generate a key pair using elliptic curve over finite field.
+Alice 最终可以在有限域上使用椭圆曲线生成密钥对。
 
-Let's define the elliptic curve over the finite field of prime modulus 997 in [Sage.](https://www.sagemath.org/)
+让我们在 [Sage.](https://www.sagemath.org/) 中素数模 997 的有限域上定义椭圆曲线。
 
 ```python
 sage: E = EllipticCurve(GF(997),[0,7])
 Elliptic Curve defined by y^2 = x^3 + 7 over Finite Field of size 997
 ```
 
-Define the generator point $G$ by selecting an arbitrary point on the curve.
+通过选择曲线上的任意点来定义生成点 $G$。
 
 ```python
 sage: G = E.random_point()
 (174 : 487 : 1)
 ```
 
-Scalar multiplication over an elliptic curve defines a cyclic **subgroup of order $n$**. This means that repeatedly adding any point in the subgroup $n$ times results in the point at infinity ($O$), which acts as the identity element.
+椭圆曲线上的标量乘法定义了一个阶数为 $n$** 的循环**子群。这意味着重复添加子组 $n$ 次中的任何点都会得到无穷远点 ($O$)，该点充当单位元。
 
 $$
-nP  = O
+nP = O
 $$
 
 ```python
@@ -151,52 +151,52 @@ sage: n*G
 (0 : 1 : 0)
 ```
 
-A key pair consists of:
+密钥对包括：
 
-1. **Secret key 🔑**($K$): A random integer chosen from the order of the subgroup $n$. Ensures only Alice can produce valid signatures.
+1. **密钥🔑**($K$)：从子组 $n$ 的顺序中选择的随机整数。确保只有 Alice 可以生成有效的签名。
 
-Alice randomly chooses **42** as the **secret key 🔑**.
+Alice 随机选择 **42** 作为**密钥🔑**。
 
 ```python
 sage: K = 42
 ```
 
-2. **Public key** ($P$): A point on the curve, the result of scalar multiplication of **secret key 🔑**($K$) and generator point ($G$). Allows anyone to verify Alice's signature.
+2. **公钥**($P$)：曲线上的一个点，**私钥🔑**($K$) 与生成点 ($G$) 标量相乘的结果。允许任何人验证 Alice 的签名。
 
 ```python
 sage: P = K*G
 (858 : 832 : 1)
 ```
 
-We have established that Alice's key pair $=[P, K] = [(858, 832), 42]$.
+我们已经建立了 Alice 的密钥对$=[P, K] = [(858, 832), 42]$。
 
-## ECDSA in action
+## ECDSA 在行动
 
-ECDSA is a variant of the Digital Signature Algorithm (DSA). It creates a signature based on a "fingerprint" of the message using a cryptographic hash.
+ECDSA 是数字签名算法 (DSA) 的变体。它使用加密哈希基于消息的“指纹”创建签名。
 
-For ECDSA to work, Alice and Bob must establish a common set of domain parameters. Domain parameters for this example are:
+为了使 ECDSA 工作，Alice 和 Bob 必须建立一组通用的域参数。此示例的域参数为：
 
-| Parameter                             | Value           |
+| 参数 | 价值 |
 | ------------------------------------- | --------------- |
-| The elliptic curve equation.          | $y^2 = x^3 + 7$ |
-| The prime modulo of the finite field. | 997             |
-| The generator point, $G$.             | (174, 487)      |
-| The order of the subgroup, $n$.       | 1057            |
+| 椭圆曲线方程。 | $y^2 = x^3 + 7$ |
+|有限域的素数模。 | 997 | 997
+| 发电机点，$G$。 | (174, 487) |
+|子群的阶，$n$。 | 1057 | 1057
 
-Importantly, Bob is confident that the public key $P = (858, 832)$ actually belongs to Alice.
+重要的是，Bob 确信公钥 $P = (858, 832)$ 实际上属于 Alice。
 
-### Signing
+### 签约
 
-Alice intends to sign the message **"Send $1 million"**, by following the steps:
+Alice 打算通过以下步骤签署消息 **“发送 100 万美元”**：
 
-1. Compute the cryptographic hash **$m$**.
+1. 计算加密哈希 **$m$**。
 
 ```python
 sage: m = hash("Send $1 million")
 -7930066429007744594
 ```
 
-2. For every signature, a random **ephemeral key pair [$eK$, $eP$]** is generated to mitigate an [attack](https://youtu.be/DUGGJpn2_zY?si=4FZ3ZlQZTG9-eah9&t=2117) exposing her **secret key 🔑**.
+2. 对于每个签名，都会生成一个随机的**临时密钥对 [$eK$，$eP$]**，以减轻暴露她的**秘密密钥🔑**的 [攻击](https://youtu.be/DUGGJpn2_zY?si=4FZ3ZlQZTG9-eah9&t=2117)。
 
 ```python
 # Randomly selected ephemeral secret key.
@@ -206,13 +206,13 @@ sage: eP = eK*G
 (215 : 295 : 1)
 ```
 
-Ephemeral key pair $=[eK, eP] = [10, (215, 295)]$.
+临时密钥对 $=[eK, eP] = [10, (215, 295)]$。
 
-3. Compute signature component **$s$**:
+3. 计算签名组件 **$s$**：
 
-$$ s = k^{−1} (e + rK ) \pmod n$$
+$$ s = k^{−1} (e + rK) \pmod n$$
 
-Where $r$ is the x-coordinate of the ephemeral public key **(eP)**, i.e **215**. Notice the signature uses both Alice's **secret key 🔑 ($K$)** and the ephemeral key pair **[$eK$, $eP$]**.
+其中 $r$ 是临时公钥 **(eP)** 的 x 坐标，即 **215**。请注意，签名使用 Alice 的**秘密密钥 🔑 ($K$)** 和临时密钥对 **[$eK$, $eP$]**。
 
 ```python
 # x-coordinate of the ephemeral public key.
@@ -223,26 +223,26 @@ sage: s = mod(eK**-1 * (m + r*K), n)
 160
 ```
 
-The tuple $(r,s) =  (215, 160)$ is the **signature pair**.
+元组 $(r,s) = (215, 160)$ 是 **签名对**。
 
-Alice then writes the message and signature to the postcard.
+然后，Alice 将消息和签名写入明信片。
 
 <img src="images/elliptic-curves/postcard.jpg" width="500"/>
 
-### Verification
+### 验证
 
-Bob verifies the signature by independently calculating the **exact same ephemeral public key** from the signature pair **$(r,s)$**, message, and Alice's public key **$P$**:
+Bob 通过从签名对 **$(r,s)$**、消息和 Alice 的公钥 **$P$** 独立计算**完全相同的临时公钥**来验证签名：
 
-1. Compute the cryptographic hash **$m$**.
+1. 计算加密哈希 **$m$**。
 
 ```python
 sage: m = hash("Send $1 million")
 -7930066429007744594
 ```
 
-2. Compute the ephemeral public key **$R$**, and compare it with **$r$**:
+2. 计算临时公钥 **$R$**，并将其与 **$r$** 进行比较：
 
-$$R =  (es^{−1} \pmod n)*G + (rs^{−1} \pmod n)*P$$
+$$R = (es^{−1} \pmod n)*G + (rs^{−1} \pmod n)*P$$
 
 ```python
 sage: R = int(mod(m*s^-1,n)) * G  + int(mod(r*s^-1,n)) * P
@@ -252,7 +252,7 @@ sage: R[0] == r
 True # Signature is valid ✅
 ```
 
-If Alice's captors were to modify the message, it would alter the cryptographic hash, leading to verification failure due to the mismatch with the original signature.
+如果 Alice 的捕获者要修改消息，就会改变加密的哈希，从而由于与原始签名不匹配而导致验证失败。
 
 ```python
 sage: m = hash("Send $5 million")
@@ -264,49 +264,49 @@ sage: R[0] == r
 False # Signature is invalid ❌
 ```
 
-Verification of the signature assures Bob of the message's authenticity, enabling him to transfer the funds and rescue Alice. Elliptic curves saves the day!
+对签名的验证可以向 Bob 保证消息的真实性，使他能够转移资金并营救 Alice。 椭圆曲线拯救了一切！
 
-## Wrapping up
+## 总结
 
-Just like Alice, every account on the [Ethereum uses ECDSA to sign transactions](https://web.archive.org/web/20240229045603/https://lsongnotes.wordpress.com/2018/01/14/signing-an-ethereum-transaction-the-hard-way/). However, ECC in Ethereum involves additional security considerations. While the core principles remain the same, we use secure hash functions like keccak256 and much larger prime field, boasting 78 digits: $2^{256}-2^{32}-977$.
+就像 Alice 一样，[Ethereum 上的每个帐户都使用 ECDSA 来签名交易](https://web.archive.org/web/20240229045603/https://lsongnotes.wordpress.com/2018/01/14/signing-an-ethereum-transaction-the-hard-way/)。然而，Ethereum 中的 ECC 涉及额外的安全考虑。虽然核心原理保持不变，但我们使用安全的哈希函数，如 keccak256 和更大的素数字段，拥有 78 位数字：$2^{256}-2^{32}-977$。
 
 
 
-This discussion is a preliminary treatment of Elliptic Curve Cryptography. For a nuanced understanding, consider the resources below.
+本次讨论是对椭圆曲线密码学的初步处理。为了获得细致入微的理解，请考虑以下资源。
 
-And finally: **never roll your own crypto!** Use trusted libraries and protocols to protect your data and transactions.
+最后：**永远不要推出自己的加密货币！**使用受信任的库和协议来保护您的数据和交易。
 
-> ℹ️ Note  
-> ECDSA faces potential obsolescence from quantum computers – learn about how [Post-Quantum Cryptography tackles this challenge.](/wiki/Cryptography/post-quantum-cryptography.md)
+> ℹ️注意  
+> ECDSA 面临着量子计算机的潜在淘汰——了解 [Post-Quantum Cryptography 如何应对这一挑战。](/wiki/Cryptography/post-quantum-cryptography.md)
 
-## Further reading
+## 进一步阅读
 
-**Elliptic curve cryptography**
+**椭圆曲线密码学**
 
-- 📝 Standards for Efficient Cryptography Group (SECG), ["SEC 1: Elliptic Curve Cryptography."](http://www.secg.org/sec1-v2.pdf)
-- 📝 Standards for Efficient Cryptography Group (SECG), ["SEC 2: Recommended Elliptic Curve Domain Parameters."](http://www.secg.org/sec2-v2.pdf)
-- 📘 Alfred J. Menezes, Paul C. van Oorschot and Scott A. Vanstone, [Handbook of Applied Cryptography](https://cacr.uwaterloo.ca/hac/)
-- 🎥 Fullstack Academy, ["Understanding ECC through the Diffie-Hellman Key Exchange."](https://www.youtube.com/watch?v=gAtBM06xwaw)
-- 📝 Andrea Corbellini, ["Elliptic Curve Cryptography: a gentle introduction."](https://andrea.corbellini.name/2015/05/17/elliptic-curve-cryptography-a-gentle-introduction/)
-- 📝 William A. Stein, ["Elliptic Curves."](https://wstein.org/simuw06/ch6.pdf)
-- 📝 Khan Academy, ["Modular Arithmetic."](https://www.khanacademy.org/computing/computer-science/cryptography/modarithmetic/a/what-is-modular-arithmetic)
-- 🎥 Khan Academy, ["The discrete logarithm problem."](https://www.youtube.com/watch?v=SL7J8hPKEWY)
+- 📝 高效密码学组标准 (SECG)，[“SEC 1：椭圆曲线密码学。”](http://www.secg.org/sec1-v2.pdf)
+- 📝 高效密码学组标准 (SECG)，[“SEC 2：推荐的椭圆曲线域参数。”](http://www.secg.org/sec2-v2.pdf)
+- 📘 Alfred J. Menezes、Paul C. van Oorschot 和 Scott A. Vanstone，[应用密码学手册](https://cacr.uwaterloo.ca/hac/)
+- 🎥 Fullstack Academy，[“通过 Diffie-Hellman 密钥交换了解 ECC。”](https://www.youtube.com/watch?v=gAtBM06xwaw)
+- 📝 Andrea Corbellini，[“椭圆曲线密码学：温和的介绍。”](https://andrea.corbellini.name/2015/05/17/elliptic-curve-cryptography-a-gentle-introduction/)
+- 📝 威廉·斯坦因，[“椭圆曲线。”](https://wstein.org/simuw06/ch6.pdf)
+- 📝 可汗学院，[“模块化算术”。](https://www.khanacademy.org/computing/computer-science/cryptography/modarithmetic/a/what-is-modular-arithmetic)
+- 🎥 可汗学院，[“离散对数问题。”](https://www.youtube.com/watch?v=SL7J8hPKEWY)
 
-**Mathematics of Elliptic Curves**
+**椭圆曲线的数学**
 
-- 📘 Joseph H. Silverman, ["The Arithmetic of Elliptic Curves."](https://books.google.co.in/books?id=6y_SmPc9fh4C&redir_esc=y)
-- 📝 Joseph H. Silverman, ["An Introduction to the Theory of Elliptic Curves."](https://www.math.brown.edu/johsilve/Presentations/WyomingEllipticCurve.pdf)
-- 📘 Neal Koblitz, ["A Course in Number Theory and Cryptography."](https://link.springer.com/book/10.1007/978-1-4419-8592-7)
-- 📝 Ben Lynn, ["Stanford Crypto: Elliptic Curves."](https://crypto.stanford.edu/pbc/notes/elliptic/)
-- 📝 Rareskills.io, ["Elliptic Curve Point Addition."](https://www.rareskills.io/post/elliptic-curve-addition)
-- 📝 John D. Cook, ["Finite fields."](https://www.johndcook.com/blog/finite-fields/)
+- 📘 Joseph H. Silverman，[“椭圆曲线的算术。”](https://books.google.co.in/books?id=6y_SmPc9fh4C&redir_esc=y)
+- 📝 Joseph H. Silverman，[“椭圆曲线理论简介”](https://www.math.brown.edu/johsilve/Presentations/WyomingEllipticCurve.pdf)
+- 📘 Neal Koblitz，[“数论和密码学课程。”](https://link.springer.com/book/10.1007/978-1-4419-8592-7)
+- 📝 Ben Lynn，[“斯坦福加密货币：椭圆曲线。”](https://crypto.stanford.edu/pbc/notes/elliptic/)
+- 📝 Rareskills.io，[“椭圆曲线积分添加。”](https://www.rareskills.io/post/elliptic-curve-addition)
+- 📝 约翰·D·库克，[“有限域。”](https://www.johndcook.com/blog/finite-fields/)
 
-**Useful tools**
+**有用的工具**
 
-- 🎥 Tommy Occhipinti, ["Elliptic curves in Sage."](https://www.youtube.com/watch?v=-fRWR_QKzuI)
-- 🎥 Desmos, ["Introduction to the Desmos Graphing Calculator."](https://www.youtube.com/watch?v=RKbZ3RoA-x4)
-- 🧮 Andrea Corbellini, ["Interactive Elliptic Curve addition and multiplication."](https://andrea.corbellini.name/ecc/interactive/reals-add.html)
+- 🎥 Tommy Occhipinti，[“圣人中的椭圆曲线。”](https://www.youtube.com/watch?v=-fRWR_QKzuI)
+- 🎥 Desmos，[“Desmos 图形计算器简介。”](https://www.youtube.com/watch?v=RKbZ3RoA-x4)
+- 🧮 Andrea Corbellini，[“交互式椭圆曲线加法和乘法。”](https://andrea.corbellini.name/ecc/interactive/reals-add.html)
 
-## Credits
+## 制作人员
 
-- Thanks to Michael Driscoll for his work on [animated elliptic curves.](https://github.com/syncsynchalt/animated-curves)
+- 感谢 Michael Driscoll 在 [动画椭圆曲线.](https://github.com/syncsynchalt/animated-curves) 上所做的工作

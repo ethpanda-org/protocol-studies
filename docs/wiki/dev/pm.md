@@ -1,22 +1,22 @@
-# Core development coordination 
+# 核心开发协调 
 
-> :warning: This article is a [stub](https://en.wikipedia.org/wiki/Wikipedia:Stub), help the wiki by [contributing](/contributing.md) and expanding it.
+> :warning: 本文是一个 [存根](https://en.wikipedia.org/wiki/Wikipedia:Stub)，通过 [贡献](/contributing.md) 和扩展它来帮助维基。
 
-Because of the approach of client diversity and decentralization, Ethereum core development is spread across many teams from various organizations. Roughly estimated, there is around 200+ client developers, researchers, testers and other contributors split across ~20 teams. 
+由于客户端的多样性和去中心化方法，Ethereum 核心开发分散在来自不同组织的许多团队中。粗略估计，约有 200 多名客户端开发人员、研究人员、测试人员和其他贡献者分布在约 20 个团队中。 
 
-To effectively maintain and implement various initiatives affecting the Ethereum protocol, all of these people need be able to reach consensus and collaborate in a productive manner. Generally, this is possible thanks to free and open source nature of Ethereum and it's design and development based unix philosophy but still requires lot of coordination work. 
+为了有效维护和实施影响 Ethereum 协议的各种举措，所有这些人都需要能够达成共识并以富有成效的方式进行协作。一般来说，这要归功于 Ethereum 的免费和开源性质及其基于 UNIX 理念的设计和开发，但仍然需要大量的协调工作。 
 
-## Ethereum PM repository
+## Ethereum PM 仓库
 
-The [ethereum/pm](https://github.com/ethereum/pm) repository is used for Ethereum project management purposes. It serves as a coordination for planning developer calls and archiving their recordings. 
+[ethereum/pm](https://github.com/ethereum/pm) 仓库用于 Ethereum 项目管理目的。它可以协调规划开发人员的通话并存档他们的录音。 
 
-*main use:*
- - Execution and Consensus Layer AllCoreDevs meetings
+*主要用途：*
+ - 执行和 Consensus Layer AllCoreDevs 会议
 
-*secondary uses:*
- - Breakout Rooms on various protocol-related topics (e.g. EOF, account abstraction, etc)
- - There's a Google Calendar tracking upcoming protocol meetings.
+*二次用途：*
+ - 关于各种协议相关主题的分组讨论室 (例如 EOF、Account Abstraction 等)
+ - 有一个 Google 日历跟踪即将举行的协议会议。
 
-### Resources
+### 资源
 
-[Ethereum Governance by Tim Beiko](https://hackmd.io/@timbeiko/eth-governance)
+- [Ethereum Tim Beiko 治理](https://hackmd.io/@timbeiko/eth-governance)

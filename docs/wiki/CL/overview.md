@@ -1,45 +1,45 @@
-# Consensus Layer Overview
+# Consensus Layer 概述
 
-The main challenge a consensus protocol aims to solve is building a reliable distributed system on top of unreliable infrastructure. Research on consensus protocols dates back to the 1970s, but the scale of what Ethereum is trying to achieve is far more ambitious.
+共识协议旨在解决的主要挑战是在不可靠的基础设施之上构建可靠的分布式系统。对共识协议的研究可以追溯到 20 世纪 70 年代，但 Ethereum 试图实现的规模更为雄心勃勃。
 
-In Ethereum's consensus layer, the goal is to ensure that tens of thousands of independent nodes around the world stay reasonably synchronized. Each node keeps a ledger with the state of every account, and all these ledgers must match exactly. There can be no differences; the nodes must agree and do so quickly. This is what we mean by "a reliable distributed system."
+在 Ethereum 的 Consensus Layer 中，目标是确保世界各地数以万计的独立节点保持合理同步。每个节点都保存一个包含每个帐户状态的分类帐，并且所有这些分类帐必须完全匹配。不能有任何差异； 节点必须同意并尽快这样做。这就是我们所说的“可靠的分布式系统”。
 
-These nodes often use [consumer grade hardware](https://stakefromhome.com/) and communicate over internet connections that may be slow, lose data, or disconnect unexpectedly. Node operators might misconfigure their software or fail to update it. Additionally, there could be many bad actors running rogue nodes or tampering with communications for personal gain. This is what we mean by "unreliable infrastructure."
+这些节点通常使用 [消费级硬件](https://stakefromhome.com/) 并通过互联网连接进行通信，这些连接可能很慢、丢失数据或意外断开连接。 节点操作员可能会错误配置其软件或无法更新它。此外，可能有许多不良行为者运行流氓节点或篡改通信以谋取个人利益。这就是我们所说的“不可靠的基础设施”。
 
-### Byzantine Fault Tolerance (BFT) and Byzantine Generals' Problem
+### Byzantine Fault Tolerance (BFT) 和 Byzantine Generals' Problem
 
-Byzantine Fault Tolerance (BFT) is a property of distributed systems that allows them to function correctly even when some components fail or act maliciously. BFT is crucial in decentralized networks, where trust among nodes cannot be assumed. In other words, a system exhibiting BFT can tolerate Byzantine faults, which are arbitrary failures that include malicious behavior. For a system to be Byzantine fault-tolerant, it must reach consensus despite these faults. For more on the problem and practical solutions read [this](https://hackmd.io/@kira50/SknuPZMIC).
+Byzantine Fault Tolerance (BFT) 是分布式系统的一项属性，即使在某些组件发生故障或恶意行为时，也允许它们正常运行。 BFT 在去中心化网络中至关重要，因为不能假定节点之间的信任。换句话说，表现出 BFT 的系统可以容忍拜占庭错误，这是包含恶意行为的任意故障。对于一个具有 Byzantine Fault Tolerance 能力的系统来说，尽管存在这些错误，它仍然必须达成共识。有关该问题和实际解决方案的更多信息，请阅读 [this](https://hackmd.io/@kira50/SknuPZMIC)。
 
-## Introduction to Consensus Layer (CL)
+## Consensus Layer 简介 (CL)
 
-> Consensus is a way to build reliable distributed systems with unreliable components. Blockchain-based distributed systems aim to agree on a single history of transactions.
+> 共识是一种用不可靠的组件构建可靠的分布式系统的方法。基于区块链的分布式系统旨在就交易的单一历史达成一致。
 >
-> Proof-of-work and Proof-of-stake are not consensus protocols, but enable consensus protocols. In Ethereum, Nodes and validators are the actors of the consensus system. Slots and epochs regulate consensus time. Blocks and attestations are the currency of consensus.
+> Proof-of-Work 和 Proof-of-Stake 不是共识协议，而是启用共识协议。在 Ethereum 中，节点和验证者是共识系统的参与者。 时隙和 epoch 调节共识时间。 区块和 证明是共识货币。
 
-The Consensus Layer (CL) is a fundamental component that ensures the network's security, reliability, and efficiency. Originally, Ethereum utilized Proof-of-work (PoW) as its consensus mechanism, similar to Bitcoin. PoW, while effective in maintaining decentralization and security, has significant drawbacks, including high energy consumption and limited scalability. To address these issues, Ethereum has transitioned to Proof-of-Stake (PoS), a more sustainable and scalable consensus mechanism.
+Consensus Layer (CL) 是保证网络安全、可靠、高效的基础组件。最初，Ethereum 使用 Proof-of-Work (PoW) 作为其共识机制，类似于 Bitcoin。 PoW 虽然可以有效保持去中心化和安全性，但也存在明显的缺点，包括高能耗和有限的可扩展性。为了解决这些问题，Ethereum 已转向 Proof-of-Stake (PoS)，这是一种更具可持续性和可扩展性的共识机制。
 
-The Ethereum network consists of many individual nodes. Each node operates independently and communicates over the Internet, which is often unreliable and asynchronous.
+Ethereum 网络由许多个体节点组成。每个节点独立运行并通过互联网进行通信，这通常是不可靠和异步的。
 
-Users send transactions to this network of nodes, and the consensus protocol ensures that all honest nodes eventually agree on a single, consistent transaction history. This means they agree on the order of transactions and their outcomes. For example, if I have 1 ETH and tell the network to send it to both Alice and Bob at the same time, the network must eventually agree on whether I sent it to Alice or Bob. It would be a failure if both Alice and Bob received the Ether, or if neither did. A consensus protocol is the process that enables this agreement on transaction order.
+用户将交易发送到节点这个网络，共识协议确保所有诚实的节点最终就单个一致的交易历史达成一致。这意味着他们同意交易的顺序及其结果。例如，如果我有 1 ETH 并告诉网络同时将其发送给 Alice 和 Bob，则网络最终必须就我将其发送给 Alice 还是 Bob 达成一致。如果 Alice 和 Bob 都收到了 Ether，或者两者都没有收到，那么就会失败。共识协议是在交易订单上启用此协议的过程。
 
-Ethereum's consensus protocol actually _bolts together_ two different consensus protocols. One is called [LMD GHOST](/wiki/CL/gasper.md?lmd-ghost), the other [Casper FFG](/wiki/CL/gasper.md?casper-ffg). The combination has become known as [Gasper](/wiki/CL/gasper.md). In subsequent sections we will be looking at these both separately and in combination.
+Ethereum 的共识协议实际上将两种不同的共识协议“结合在一起”。一个称为 [LMD GHOST](/wiki/CL/gasper.md?lmd-ghost)，另一个称为 [Casper FFG](/wiki/CL/gasper.md?casper-ffg)。该组合被称为 [Gasper](/wiki/CL/gasper.md)。在后续部分中，我们将单独或组合地研究它们。
 
-## Proof-of-work and Proof-of-stake
+## Proof-of-Work 和 Proof-of-Stake
 
-This is a good point to clarify that neither Proof-of-work (PoW) nor Proof-of-Stake (PoS) are consensus protocols by themselves. They are often incorrectly referred to as such, but they are actually mechanisms that enable consensus protocols. Both PoW and PoS primarily serve as Sybil resistance mechanisms, placing a cost on participating in the protocol. This prevents attackers from overwhelming the system cheaply.
+这是一个很好的观点，可以澄清 Proof-of-Work (PoW) 和 Proof-of-Stake (PoS) 本身都不是共识协议。它们经常被错误地这样称呼，但它们实际上是启用共识协议的机制。 PoW 和 PoS 主要用作 Sybil 抵抗机制，为参与协议带来成本。这可以防止攻击者以低廉的代价压垮系统。
 
-However, both PoW and PoS are closely linked to the consensus mechanisms they support through [fork choice](/wiki/CL/cl-architecture.md?id=fork-choice-rules) rules. They help assign a weight or score to a chain of blocks: in PoW, it's the total computational work done; in PoS, it's the total value staked that supports a particular chain. Beyond these basics, PoW and PoS can support various consensus protocols, each with its own dynamics and trade-offs.
+然而，PoW 和 PoS 都通过 [分叉选择](/wiki/CL/cl-architecture.md?id=fork-choice-rules) 规则与其支持的共识机制密切相关。它们帮助为区块链分配权重或分数：在 PoW 中，它是完成的总计算工作；在 PoS 中，它是支持特定链的总价值​​。除了这些基础知识之外，PoW 和 PoS 还可以支持各种共识协议，每个协议都有自己的动态和权衡。
 
-### Blockchains
+### 区块链
 
-The basic element of a blockchain is the block. A block contains a set of transactions assembled by a leader (block proposer). The contents of a block can vary based on the protocol.
+区块链的基本元素是区块。 区块包含一组由领导者 (区块提议者) 组装的交易。 区块的内容可能因协议而异。
 
-- The payload of a block on Ethereum's execution chain is a list of user transactions.
-- In the pre-Merge PoS Beacon Chain, a block's payload was mostly a set of attestations by validators.
-- Post-Merge Beacon Chain blocks also include the execution payload (user transactions).
-- After [EIP-4844](https://eips.ethereum.org/EIPS/eip-4844)(Deneb upgrade), blocks now also contain commitments to opaque data blobs alongside user transactions.
+- Ethereum 执行链上的区块的载荷是用户交易的列表。
+- 在合并前的 PoS Beacon Chain 中，一个区块的 载荷主要是证明 by 验证者的集合。
+- 合并后 Beacon Chain 区块还包括执行载荷 (用户交易)。
+- 在 [EIP-4844](https://eips.ethereum.org/EIPS/eip-4844)(Deneb 升级) 之后，区块现在还包含承诺到不透明数据 blob 以及用户交易。
 
-Except for the Genesis block, each block builds on and points to a parent block, forming a chain of blocks: a blockchain. The goal is for all nodes on the network to agree on the same canonical blockchain history.
+除了 Genesis 区块之外，每个区块都建立在父区块之上并指向父区块，形成区块链：区块链。目标是让网络上的所有节点都同意相同的规范区块链历史记录。
 
 <a id="img_blockchain"></a>
 
@@ -49,59 +49,58 @@ Except for the Genesis block, each block builds on and points to a parent block,
 
 <figcaption>
 
-_Time moves from left to right and, except for the Genesis block, each block points to the parent block it builds on._
+_时间从左向右移动，除了 Genesis 区块之外，每个区块都指向它所构建的父区块。_
 
 </figcaption>
 </figure>
 
-The chain grows as nodes add new blocks to its tip. This is done by temporarily selecting a "leader", the node that extends the chain. In PoW, the leader is the miner who first solves the PoW puzzle for its block. In Ethereum's PoS, the proposer(leader) is pseudo-randomly selected from active validator set.
+随着节点添加新的区块到其尖端，该链不断增长。这是通过临时选择一个“领导者”来完成的，即延伸链条的节点。在 PoW 中，领导者是第一个解决其区块的 PoW 难题的矿工。在 Ethereum 的 PoS 中，提议者 (leader) 是从活跃的验证者集合中伪随机选择的。
 
-The leader (block proposer) adds a block to the chain, choosing and ordering its contents. The block must be valid according to protocol rules, or the network will ignore it. Using blocks is an optimization. Adding individual transactions one by one would create a huge consensus overhead. So blocks are batches of transactions, In Ethereum's execution chain, block size is limited by the block gas limit (the amount of work needed to process the transactions). [Beacon block](/wiki/CL/beacon-api.md?id=beaconblockbody) sizes are limited by hard-coded constants.
+领导者 (区块提议者) 将区块添加到链中，选择并排序其内容。根据协议规则，区块必须有效，否则网络将忽略它。使用区块是一种优化。逐一添加单个交易会产生巨大的共识开销。所以区块是交易的批次，在 Ethereum 的执行链中，区块的大小受到区块 gas 限制 (处理交易所需的工作量)。 [Beacon 区块](/wiki/CL/beacon-api.md?id=beaconblockbody) 大小受硬编码常量限制。
 
-## Transition to Proof-of-Stake
+## 过渡到 Proof-of-Stake
 
-> The engine was changed mid-flight! September 15, 2022 — the day Ethereum switched to Proof-of-Stake. That new engine is the Consensus Layer, formerly known as Ethereum 2.0’s Beacon Chain.
+> 飞行途中更换引擎！ 2022 年 9 月 15 日 — Ethereum 切换到 Proof-of-Stake 的那一天。该新引擎是 Consensus Layer，以前称为 Ethereum 2.0 的 Beacon Chain。
 
-The Paris hard fork (The merge) in Ethereum was activated based on "terminal total difficulty" (TTD) instead of block height to avoid risks like malicious forks. This ensures the transition to Proof-of-Stake (PoS) occurs only when the cumulative difficulty reaches a critical threshold. The terminal block is the last Proof-of-work (PoW) block where its total difficulty surpasses a predefined threshold, ensuring security. The total difficulty is calculated recursively, reflecting the computational effort in the blockchain. 
+Ethereum 中的 Paris hard fork (合并) 是根据“终端总难度”(TTD) 而不是区块高度激活的，以避免恶意分叉等风险。这确保只有当累积难度达到临界阈值时才会过渡到 Proof-of-Stake (PoS)。终端区块是最后一个 Proof-of-Work (PoW) 区块，其总难度超过预定义的阈值，保证了安全性。总难度是递归计算的，反映了区块链中的计算量。 
 
-This is relevant because testnets, devnets and any Ethereum network running the latest software needs to activate the Merge - not by block height but by Total Terminal Difficulty (TTD). More details on the [transition criteria](https://hackmd.io/@kira50/rJ2y7jImR) and [Total Terminal Difficulty](https://bordel.wtf).
+这是相关的，因为测试网、开发网和任何运行最新软件的 Ethereum 网络都需要激活合并 - 不是通过区块高度，而是通过总终端难度 (TTD)。有关 [过渡标准](https://hackmd.io/@kira50/rJ2y7jImR) 和 [总终端难度](https://bordel.wtf) 的更多详细信息。
 
-The merge introduces the following:
+合并引入了以下内容：
 
-- **Beacon Chain Takes Over**: The Beacon Chain, already running in parallel with the Ethereum mainnet, assumes the responsibility for processing new blocks. Under PoS, blocks are validated by validators who stake their ETH to participate in the consensus mechanism, rather than by miners solving cryptographic puzzles.
+- **Beacon Chain 接管**：Beacon Chain 已经与 Ethereum 主网并行运行，承担处理新区块的责任。在 PoS 下，区块由 验证者验证，ETH 质押 ETH 参与共识机制，而不是由解决密码难题的矿工验​​证。
 
-- **Security and Efficiency**: This transition not only aims to enhance the security of the Ethereum network by making it more decentralized but also significantly reduces its energy consumption, addressing one of the major criticisms of traditional PoW systems.
+- **安全性和效率**：这一转变不仅旨在通过使其更加去中心化来增强 Ethereum 网络的安全性，而且还显着降低其能源消耗，解决传统 PoW 系统的主要批评之一。
 
-- **New Consensus Mechanism**: The consensus under PoS is achieved through a combination of staking, attestation by validators, and algorithms that randomly select block proposers and committees to ensure the network remains secure and transactions are processed efficiently.
+- **新的共识机制**：PoS 下的共识是通过证明 by 验证者和随机选择区块提议者和委员会的算法相结合来实现的，以确保网络保持安全并且交易得到有效处理。
 
-### Beacon Chain Introduction
-The Beacon Chain plays a crucial role in managing the PoS consensus. It oversees validators who propose and attest to new blocks, ensuring the network’s integrity and security. Validators are selected based on a number of criteria, one of them being the amount of ETH they stake, which also acts as collateral against dishonest behavior. Some high level responsibilities of validators are:
+### Beacon Chain 简介
+Beacon Chain 在管理 PoS 共识方面发挥着至关重要的作用。它监督提出并证明新区块的 验证者，确保网络的完整性和安全性。 验证者的选择基于多项标准，其中之一是他们所持有的 ETH 的数量，这也可以作为防止不诚实行为的抵押品。 验证者的一些高级职责是：
 
-- **Staking ETH**: Validators must stake a minimum of 32 ETH to participate.
-- **Proposing Blocks**: A Validator is randomly selected to propose a new block. They must construct valid blocks and broadcast them to the network
-- **Attesting Blocks**: Validators attest to the validity of blocks proposed by others. Attestations are essentially votes on the validity of the blocks, ensuring consensus.
-- **Participating in Consensus**: Validators participate in consensus by voting on the state of the blockchain at regular intervals, helping to finalize the blockchain's state.
+- **质押 ETH**：验证者必须质押至少 32 个 ETH 才能参与。
+- **提议区块**：随机选择一个验证者来提议一个新的区块。他们必须构造有效的区块并将其广播到网络
+- **证明区块**：验证者证明其他人提出的区块的有效性。 证明本质上是对区块的有效性进行投票，确保达成共识。
+- **参与共识**：验证者通过定期对区块链的状态进行投票来参与共识，帮助最终确定区块链的状态。
 
-The Paris hard fork was a pivotal event in Ethereum's history, setting the stage for more scalable, sustainable, and secure operations. It represents Ethereum's commitment to innovation and its responsiveness to the broader societal concerns about the environmental impact of cryptocurrency mining.
+Paris hard fork 是 Ethereum 历史上的一个关键事件，为更具可扩展性、可持续性和安全性的运营奠定了基础。它代表了 Ethereum 的 承诺对创新及其对加密货币挖矿对环境影响的更广泛社会关注的响应。
 
-## Beacon Chain and its Preliminaries
+## Beacon Chain 及其预赛
 
-The Beacon Chain is the backbone of Ethereum’s consensus. It coordinates validators, manages the PoS protocol, and ensures consensus across the network. This section will cover the anatomy of Beacon chain.
+Beacon Chain 是 Ethereum 共识的支柱。它协调验证者，管理 PoS 协议，并确保整个网络达成共识。本节将介绍 Beacon Chain 的剖析。
 
-### Validators
+### 验证者
 
-Validators are essentially the participants in the PoS Protocol. They propose and validate new blocks, ensuring the integrity and security of the blockchain. Validators must stake ETH as collateral, aligning their interests with the network’s health. Validators are chosen to propose blocks based on several factors:
+验证者本质上是 PoS 协议的参与者。他们提出并验证了新的区块，确保了区块链的完整性和安全性。 验证者必须将 ETH 作为抵押品，使他们的利益与网络的健康状况保持一致。基于以下几个因素选择验证者来提议区块：
 
-- **Staked Ether**: Each validator can stake a maximum of 32 ETH. Stakers with more ETH can increase their influence by running multiple validator nodes, each staking 32 ETH. This system ensures decentralization and aligns the interests of validators with the network's security and integrity.
-- **Randomness**: The selection process incorporates cryptographic randomness to prevent predictability and manipulation. This is achieved through the [RANDAO](https://inevitableeth.com/home/ethereum/network/consensus/randao) and [VDF (Verifiable Delay Function)](https://inevitableeth.com/home/ethereum/upgrades/consensus-updates/vdf) mechanisms.
-- **Committees**: Validators are grouped into committees for block proposal and attestation. Each committee is responsible for validating and attesting to blocks, ensuring a decentralized and secure validation process.
-- **Staking Requirements**: To become a validator, an individual must deposit a minimum of 32 ETH into the official deposit contract. This ETH acts as collateral to incentivize honest behavior. The validator's ETH is at risk if they fail to perform their duties or engage in malicious activities.
+- **质押 Ether**：要成为验证者，个人必须在官方存款合约中存入至少 32 个 ETH。每个验证者最多可以质押 2048 个 ETH。这个 ETH 充当激励诚实行为的抵押品。 验证者的 ETH 如果不履行职责或从事恶意活动，就会面临风险。
+- **随机性**：选择过程结合了加密随机性，以防止可预测性和操纵。这是通过 [RANDAO](https://inevitableeth.com/ethereum/randao) 和 [VDF (可验证延迟函数)](https://inevitableeth.com/ethereum/vdf) 机制实现的。
+- **委员会**：验证者分为区块提案委员会和证明委员会。每个委员会负责验证和证明区块，确保去中心化且安全的验证过程。
 
-### Slots and Epochs
+### 时隙和 epoch
 
-Each slot is 12 seconds and an epoch is 32 slots: 384 seconds or 6.4 minutes. Each slot has a validator assigned to propose a block, while committees of validators attest to the block’s validity.
+每个时隙为 12 秒，一个 epoch 为 32 时隙：384 秒或 6.4 分钟。每个时隙都有一个验证者被分配来提议区块，而验证者的委员会则证明区块的有效性。
 
-A slot is a chance for a block to be added to the Beacon Chain. Every 12 seconds, one block is added. Validators need to be roughly [synchronized with time](https://ethresear.ch/t/network-adjusted-timestamps/4187). A slot is like the block time, but slots can be empty. The Beacon Chain genesis block is at Slot 0.
+时隙是 区块添加到 Beacon Chain 的机会。每 12 秒添加一个区块。 验证者需要大致 [与时间同步](https://ethresear.ch/t/network-adjusted-timestamps/4187)。 时隙就像区块时间，但时隙可以为空。 Beacon Chain 起源区块位于时隙 0。
 
 
 <a id="img_slots_epochs"></a>
@@ -112,17 +111,17 @@ A slot is a chance for a block to be added to the Beacon Chain. Every 12 seconds
 
 <figcaption style="margin-left: 15%">
 
-_The first 32 slots are in Epoch 0. Genesis block is at Slot 0._
+_前 32 个时隙位于 epoch 0。创世区块位于时隙 0._
 
 </figcaption>
 </figure>
 
 
-### Validators and Attestations
+### 验证者和 证明
 
-A block proposer is a validator that has been pseudo-randomly selected to build a block. Validators propose blocks and attest to the blocks proposed by others. Most of the time, validators are attesters that vote on blocks. These votes are recorded in the Beacon Chain and determine the head of the Beacon Chain.
+区块提议者是伪随机选择的验证者来构建区块。 验证者提出区块并证明其他人提出的区块。大多数时候，验证者就是对区块进行投票的证明者。这些投票记录在 Beacon Chain 中并确定 Beacon Chain 的头部。
 
-Attestations are votes on the validity of the blocks, which are aggregated into the Beacon Chain to ensure consensus. 
+证明是对区块有效性的投票，这些投票被 Rollup 到 Beacon Chain 中以确保共识。 
 
 <a id="img_validators"></a>
 
@@ -132,22 +131,22 @@ Attestations are votes on the validity of the blocks, which are aggregated into 
 
 <figcaption style="margin-left: 15%">
 
-_A slot can be missed as you can see in this diagram on 28th slot_
+_如您在第 28 个槽位上的图中所示，可能会错过时隙_
 
 </figcaption>
 </figure>
 
-An **attestation** is a validator’s vote, weighted by the validator’s stake.  Attestations are broadcasted by validators in addition to blocks. Validators also police each other and are rewarded for reporting other validators that make conflicting votes, or propose multiple blocks.
+**证明** 是验证者的投票，由验证者的股份加权。 除了区块之外，证明还由验证者广播。 验证者还互相监督，并因报告其他进行冲突投票的验证者或提出多个区块而获得奖励。
 
-The contents of the Beacon Chain is primarily a registry of validator addresses, the state of each validator, and attestations.  Validators are activated by the Beacon Chain and can transition to states
+Beacon Chain 的内容主要是验证者地址的注册表、每个验证者和 证明的状态。 验证者由 Beacon Chain 激活并可以转换到状态
 
-**IMPORTANT NOTE on Staking Validators Semantics:** *In Ethereum's PoS, users activate validators by staking ETH, similar to buying hardware in PoW. Stakers are associated with the amount staked, while validators have a maximum balance of 32 ETH each. For every 32 ETH staked, one validator is activated. Validators are run by validator clients, which use a beacon node to follow and read the Beacon Chain. A single validator client can manage multiple validators.*
+**IMPORTANT NOTE 关于 Stake 验证者语义：** *在 Ethereum 的 PoS 中，用户通过 Stake ETH 来激活验证者，类似于 PoW 中购买硬件。质押者与质押金额相关联，而验证者的最小激活余额为 32 ETH，最大有效余额为 2048 ETH。 验证者由 验证者客户端运行，它使用 Beacon node 来跟踪和读取 Beacon Chain。单个验证者客户端可以管理多个验证者。*
 
-### Committees
+### 委员会
 
-Committees are groups of at least 128 validators assigned to each slot for added security. An attacker has less than a 1 in a trillion chance of controlling ⅔ of a committee.
+委员会是至少由 128 个验证者组成的组，分配给每个时隙以提高安全性。攻击者控制委员会 ⅔ 的机会不到万亿分之一。
 
-The concept of a randomness beacon that emits random numbers for the public, is how Beacon Chain got it's name. The Beacon Chain enforces consensus on a pseudorandom process called RANDAO.
+Beacon Chain 的名字来源于向公众发出随机数的随机信标的概念。 Beacon Chain 对名为 RANDAO 的伪随机过程强制达成共识。
 
 <a id="img_randao"></a>
 <figure class="diagram" style="text-align:center">
@@ -156,16 +155,16 @@ The concept of a randomness beacon that emits random numbers for the public, is 
 
 <figcaption>
 
-_At every epoch, a pseudorandom process RANDAO selects proposers for each slot, and shuffles validators to committees._
+_在每个 epoch 处，伪随机进程 RANDAO 为每个时隙选择提议者，并将验证者洗牌到委员会。_
 
 </figcaption>
 </figure>
 
-**Validator Selection:**
-- As mentioned earlier, Proposers are chosen by RANDAO, weighted by validator balance.
-- A validator can be both a proposer and a committee member for the same slot, but this is rare (1/32 probability).
+**验证者选择：**
+- 前面提到，提议者是由 RANDAO 选择的，由验证者余额加权。
+- 验证者可以既是提议者又是同一个时隙的委员会成员，但这种情况很少见 (1/32 的概率)。
 
-The sketch depicts a scenario with less than 8,192 validators, otherwise there would be at least two committees per slot.
+该草图描绘了一个少于 8,192 验证者的场景，否则每个时隙至少有两个委员会。
 
 
 <a id="img_committee"></a>
@@ -175,28 +174,28 @@ The sketch depicts a scenario with less than 8,192 validators, otherwise there w
 
 </figure>
 
-The diagram is a combined depiction of what happened in 3 slots:
-- Slot 1: A block is proposed and attested by two validators; one validator is offline.
-- Slot 2: A block is proposed, but one validator misses it and attests to the previous block.
-- Slot 3: All validators in Committee C attest to the same head, following the LMD GHOST rule.
+该图综合描述了 3 时隙中发生的情况：
+- 时隙 1：提出一个区块，并由两个验证者证明； 1 验证者离线。
+- 时隙 2：提出了一个区块，但一个验证者错过了它并证明了前一个区块。
+- 时隙 3：C 委员会中的所有验证者都遵循 LMD GHOST 规则证明同一头。
 
-Validators attest to their view of the Beacon Chain head using the LMD GHOST rule.
-Attestations help finalize blocks by reaching consensus on the blockchain’s state.
+验证者使用 LMD GHOST 规则证明他们对 Beacon Chain 头的看法。
+证明通过就区块链的状态达成共识来帮助最终确定区块。
 
-**Committee Size and Security:**
-- With more than 8,192 validators, multiple committees per slot are formed.
-- Committees must be at least 128 validators for optimal security.
-- Security decreases with fewer than 4,096 validators, as committee sizes drop below 128.
+**委员会规模和安全性：**
+- 超过 8,192 个验证者，每个时隙形成多个委员会。
+- 为了获得最佳安全性，委员会必须至少为 128 验证者。
+- 随着委员会规模降至 128 以下，安全性下降，验证者不足 4,096 个。
 
-> At every epoch, validators are evenly divided across slots and then subdivided into committees of appropriate size. All of the validators from that slot attest to the Beacon Chain head. A shuffling algorithm scales up or down the number of committees per slot to get at least 128 validators per committee. More details on shuffling can be found in [proto's repo.](https://github.com/protolambda/eth2-docs#shuffling)
+> 在每个 epoch 中，验证者在时隙之间均匀划分，然后再细分为适当规模的委员会。 时隙中的所有验证者都证明了 Beacon Chain 头。洗牌算法会增加或减少每个时隙的委员会数量，以获得每个委员会至少 128 个验证者。有关洗牌的更多详细信息可以在 [proto 的仓库](https://github.com/protolambda/eth2-docs#shuffling) 中找到。
 
-### Blobs
+### blob
 
-[EIP-4844](https://eips.ethereum.org/EIPS/eip-4844), also known as proto-danksharding, is part of the Deneb/Cancun hardfork. It introduces a data availability layer to Ethereum, allowing for the temporary storage of arbitrary data on the blockchain. This arbitrary data stored this way are called `blobs`, and each block can have 3 ~ 6 blob sidecars (wrappers for blobs). EIP-4844 marks Ethereum's first step towards sharding and scalability, enabling Layer 2 solutions (L2s) to use this data availability layer to lower gas fees and process more transactions.
+[EIP-4844](https://eips.ethereum.org/EIPS/eip-4844)，也称为 proto-danksharding，是 Deneb/Cancun hard fork 的一部分。它向 Ethereum 引入了数据可用性层，允许在区块链上临时存储任意数据。这样存储的任意数据称为`blobs`，每个区块可以有 3~6 个 blob sidecar (blob 的包装)。 EIP-4844 标志着 Ethereum 迈向分片和可扩展性的第一步，使第 2 层解决方案 (L2s) 能够使用此数据可用性层来降低 gas 费用并处理更多交易。
 
-### Design and Implementation
+### 设计与实现
 
-A key design decision in EIP-4844 is the use of [KZG commitments](/wiki/Cryptography/kzg.md) to verify blobs and support future proposer-builder separation. To use KZG commitments, a Trusted Setup is needed. For the Deneb hardfork, a [KZG Ceremony](https://github.com/ethereum/kzg-ceremony) was conducted to create this Trusted Setup.
+EIP-4844 的一个关键设计决策是使用 [KZG 承诺](/wiki/Cryptography/KZG.md) 来验证 blob 并支持未来的 Proposer-Builder Separation。要使用 KZG 承诺，需要可信设置。对于 Deneb hard fork，进行了 [KZG 仪式](https://github.com/ethereum/kzg-ceremony) 来创建此可信设置。
 
 <a id="img_blobs"></a>
 
@@ -206,9 +205,9 @@ A key design decision in EIP-4844 is the use of [KZG commitments](/wiki/Cryptogr
 
 </figure>
 
-### Storage Requirements
+### 存储要求
 
-The most significant impact on node operators is the increased storage requirement. Node runners will need more storage:
+对节点运营商最显着的影响是存储需求的增加。 节点跑步者将需要更多存储空间：
 
 ```
 131,928 ssz bytes per blob * 4096 blobs retention period * 
@@ -217,13 +216,13 @@ The most significant impact on node operators is the increased storage requireme
 = 52~104GB
 ```
 
-By default, these blobs will be retained for 4096 epochs, and clients would prune the oldest blobs once the retention period is reached.
+默认情况下，这些 blob 将保留 4096 个 epoch，一旦达到保留期，客户端将修剪最旧的 blob。
 
-### Checkpoints and Finality
+### 检查点和 最终确定性
 
-At the end of each epoch, checkpoints are created. A checkpoint is a block in the first slot of an epoch.  If there is no such block, then the checkpoint is the preceding most recent block.  There is always one checkpoint block per epoch. A block can be the checkpoint for multiple epochs.
+在每个 epoch 的末尾，都会创建检查点。 检查点是 epoch 的第一个时隙中的区块。 如果不存在这样的区块，则检查点是前面的最近的区块。 每个 epoch 始终有一个检查点区块。一个区块可以是多个 epoch 的检查点。
 
-A block becomes a checkpoint if it receives attestations from a majority of validators. Checkpoints are used to finalize the blockchain's state. A block is considered final when it is included in two-thirds of the most recent checkpoint attestations, ensuring it cannot be reverted.
+如果区块从大多数验证者接收到证明，则它会变成检查点。 检查点用于最终确定区块链的状态。当区块包含在最新检查点证明的三分之二中时，它被视为最终的，确保它无法恢复。
 
 <a id="img_checkpoints"></a>
 <figure class="diagram" style="text-align:center">
@@ -232,20 +231,20 @@ A block becomes a checkpoint if it receives attestations from a majority of vali
 
 <figcaption>
 
-_Checkpoints for a scenario where an epoch contain 64 slots_
+_epoch 包含 64 个时隙的场景的检查点_
 
 </figcaption>
 </figure>
 
-For example, if Slots 65 to 128 are empty, the Epoch 2 checkpoint defaults to the block at Slot 64. Similarly, if Slot 192 is empty, the Epoch 3 checkpoint is the block at Slot 180. **Epoch boundary blocks (EBB)** is a term in some literature (such as the [Gasper](https://arxiv.org/abs/2003.03052) paper, the source of the diagram above and a later one), and they can be considered synonymous with checkpoints.
+例如，如果时隙 65 至 128 为空，则 epoch 2 检查点默认为时隙 64 处的区块。同样，如果时隙 192 为空，则 epoch 3 检查点是 时隙 180 处的区块。 **epoch 边界区块 (EBB)** 是某些文献中的术语 (例如 [Gasper](https://arxiv.org/abs/2003.03052) 论文，上图和后一张图的来源)，它们可以被认为是检查点的同义词。
 
-Validators cast two types of votes: **LMD GHOST** votes for blocks and **Casper FFG** votes for checkpoints. An **FFG** vote includes a source checkpoint from a previous epoch and a target checkpoint from the current epoch. For example, a validator in Epoch 1 might vote for a source checkpoint at the genesis block and a target checkpoint at Slot 64, repeating the same vote in Epoch 2. Only Validators assigned to a slot cast LMD GHOST votes, while all validators cast FFG votes for epoch checkpoints.
+验证者投了两种类型的票： **LMD GHOST** 投票给区块和 **Casper FFG** 投票给检查点。 **FFG** 投票包括来自先前 epoch 的源检查点和来自当前 epoch 的目标检查点。例如，epoch 1 中的验证者可能投票给创世区块处的源检查点和 时隙 64 处的目标检查点，在 epoch 2 中重复相同的投票。只有分配给时隙的 验证者投了 LMD GHOST 票，而所有验证者都为 epoch 检查点投了 FFG 票。
 
-#### Supermajority and Finality
+#### 绝对多数和最终确定性
 
-A supermajority, defined as ⅔ of the total validator balance, is required for a checkpoint to be justified. For instance, if validators have balances of 8 ETH, 8 ETH, and 32 ETH, a supermajority needs the vote of the 32 ETH validator. Once a checkpoint receives a supermajority, it becomes justified. If the subsequent epoch's checkpoint also achieves justification, the previous checkpoint is finalized, securing all preceding blocks. Typically, this process spans two epochs (12.8 minutes).
+检查点需要绝对多数 (定义为总验证者余额的 2/3) 才能证明是合理的。例如，如果验证者的余额为 8 ETH、8 ETH 和 32 ETH，则绝对多数需要 32 ETH 验证者的投票。一旦检查点获得了绝对多数，它就变得合理了。如果后续的 epoch 的检查点也实现了合理化，则前一个检查点被最终确定，从而确保所有前面的区块的安全。通常，此过程跨越两个 epoch(12.8 分钟)。
 
-When a user transaction is included in a block, on average it would be somewhere in the middle of an epoch. It takes half an epoch (about 3.2 minutes) to reach the next checkpoint, suggesting transaction finality of 2.5 epochs: 16 minutes. Optimally, more than ⅔ of attestations will have been included by the 22nd (2/3rd of 32) slot of an epoch. Thus, transaction finality is an average of 14 minutes (16+32+22 slots). Block confirmations emerge from a block’s attestations, then move to its justification, to its finality. Use cases can decide whether they need finality or an earlier safety threshold is sufficient.
+当用户交易包含在区块中时，平均而言，它会位于 epoch 中间的某个位置。需要半个 epoch (大约 3.2 分钟) 才能到达下一个检查点，建议交易最终确定性为 2.5 epoch：16 分钟。最佳情况下，超过 2/3 的证明将包含在 epoch 的第 22 个 (32 个中的 2/3) 时隙中。因此，交易最终确定性是 14 分钟的平均值 (16+32+22 时隙)。 区块确认来自区块的 证明，然后转到其理由，到其最终确定性。用例可以决定是否需要最终确定性或较早的安全阈值就足够了。
 
 <a id="img_finality"></a>
 <figure class="diagram" style="text-align:center">
@@ -254,76 +253,76 @@ When a user transaction is included in a block, on average it would be somewhere
 
 <figcaption>
 
-_Example of one checkpoint getting justified (Slot 64) and finalizing a prior checkpoint (Slot 32)._
+_一个检查点得到合理化 (时隙 64) 并最终确定先前的检查点 (时隙 32) 的示例._
 
 </figcaption>
 </figure>
 
-**What happened at the Beacon Chain head:**
-At Slot 96, a block is proposed that includes attestations (votes) for the Epoch 2 checkpoint. These attestations reach the required two-thirds supermajority, justifying the Epoch 2 checkpoint. This action finalizes the previously justified Epoch 1 checkpoint. When the Epoch 1 checkpoint is finalized, all preceding blocks (up to Slot 32) also become final. Finality calculations happen at epoch boundaries, but attestations accumulate with each block.
+**Beacon Chain 头发生了什么：**
+在时隙 96 处，提出了区块，其中包括 epoch 2 检查点的证明 (投票)。这些证明达到了所需的三分之二绝对多数，证明了 epoch 2 检查点的合理性。此操作最终确定了先前合理的 epoch 1 检查点。当 epoch 1 检查点被最终确定时，所有前面的区块 (直到时隙 32) 也成为最终的。 最终确定性计算发生在 epoch 边界，但证明随每个区块累加。
 
-**What could have happened from genesis to the head:**
-- **Scenario 1:**
-   - Proposers from Slot 1 to Slot 63 propose blocks.
-   - Each block in Epoch 1 contributes attestations for the checkpoint at Slot 32, eventually reaching 55%.
-   - The block at Slot 64 includes additional attestations, bringing support for the Slot 32 checkpoint to 70%, causing its justification.
-   - Throughout Epoch 2, the Slot 64 checkpoint gathers attestations but doesn't reach the two-thirds threshold until Slot 96, where it is justified.
-   - Justifying the Epoch 2 checkpoint finalizes the Epoch 1 checkpoint and all preceding blocks.
+**从起源到头部可能发生了什么：**
+- **场景 1：**
+   - 提议者从 时隙 1 到时隙 63 建议区块。
+   - epoch 1 中的每个区块为 时隙 32 处的检查点贡献证明，最终达到 55%。
+   - 时隙 64 处的区块包含额外的证明，使对时隙 32 检查点的支持达到 70%，从而产生其合理性。
+   - 在整个 epoch 2 中，时隙 64 检查点收集了证明，但直到时隙 96 才达到三分之二阈值，此时它是合理的。
+   - 证明 epoch 2 检查点的合理性最终确定了 epoch 1 检查点和所有前面的区块。
 
-- **Scenario 2:**
-   - The checkpoint at Epoch 1 could reach the two-thirds supermajority before the next epoch.
-   - For example, blocks from Slot 32 to Slot 54 could provide enough attestations to justify the checkpoint at Slot 32.
-   - In this case, the Slot 32 checkpoint would be justified within its current epoch but would need the next epoch to finalize.
+- **场景 2：**
+   - epoch 1 处的检查点可以在下一个 epoch 之前达到三分之二的绝对多数。
+   - 例如，从时隙 32 到时隙 54 的区块可以提供足够的证明来证明时隙 32 处的检查点合理。
+   - 在这种情况下，时隙 32 检查点在其当前的 epoch 内是合理的，但需要下一个 epoch 才能最终确定。
 
-**Special Cases:**
-The justification of a checkpoint can sometimes finalize blocks from two or more epochs ago, especially during periods of high latency, network partitions, or attacks, You can find more such cases, discussed in the Gasper paper. These scenarios are exceptional and not the norm.
+**特殊情况：**
+检查点的合理性有时可以从两个或多个 epoch 之前最终确定区块，特别是在高延迟、网络分区或攻击期间，您可以找到更多此类案例，在 Gasper 论文中进行了讨论。这些情况是特殊情况，而不是常态。
 
 
-#### Closer Look on Attestations
+#### 仔细看看证明
 
-Validators submit one attestation per epoch, containing both an LMD GHOST and an FFG vote. These attestations have 32 chances per epoch for inclusion on-chain, with earlier inclusions receiving higher rewards. This means a validator may have two attestations included on-chain in a single epoch. Validators are rewarded the most when their attestation is included on-chain at their assigned slot; later inclusion has a decayed reward. To give validators time to prepare, they are assigned to committees one epoch in advance. Proposers are only assigned to slots once the epoch starts. Nonetheless, [secret leader election](https://ethresear.ch/t/low-overhead-secret-single-leader-election/5994) research aims to mitigate attacks or bribing of proposers.
+验证者每 epoch 提交一个证明，其中包含 LMD GHOST 和 FFG 投票。这些证明每个 epoch 有 32 次纳入链上的机会，较早的纳入获得更高的奖励。这意味着一个验证者可能有两个证明包含在链上的单个 epoch 中。当证明被包含在链上指定的时隙时，验证者获得最多奖励；后来的包容性奖励会衰减。为了给验证者有时间准备，他们被提前分配到第一个委员会 epoch。 提议者仅在 epoch 启动后分配给时隙。尽管如此，[秘密领导人选举](https://ethresear.ch/t/low-overhead-secret-single-leader-election/5994) 研究旨在减轻对提议者的攻击或贿赂。
 
-Consider a block proposed at Slot 64 containing attestations for the Epoch 2 checkpoint. This scenario can finalize the checkpoint at Slot 32. The finality of the Slot 32 checkpoint, once achieved, propagates backward, securing all preceding blocks.
+考虑在时隙 64 处提出的区块，其中包含用于 epoch 2 检查点的 证明。此场景可以在时隙 32 处最终确定检查点。时隙 32 检查点的 最终确定性一旦实现，就会向后传播，从而保护所有前面的区块。
 
-In essence, Committees allow for the technical optimization of combining signatures from each attester into a single aggregate signature.  When validators in the same committee make the same LMD GHOST and FFG votes, their signatures can be aggregated.
+本质上，委员会允许将每个证明者中的签名组合成单个聚合签名的技术优化。 当同一个委员会中的验证者投出相同的 LMD、GHOST 和 FFG 票时，它们的签名可以被聚合。
 
-### Staking Rewards and Penalties
+### 质押奖励和惩罚
 
-Ethereum’s PoS system employs a comprehensive set of rewards and penalties to incentivize validator behavior and maintain network security. This section covers six key aspects of these incentives:
+Ethereum 的 PoS 系统采用一套全面的奖励和惩罚措施来激励验证者的行为并维护网络安全。本节涵盖这些激励措施的六个关键方面：
 
-**1. Attester Rewards:**
-Validators earn rewards for making attestations (LMD GHOST and FFG votes) that align with the majority of other validators. Attestations included in finalized blocks are more valuable.
+**1. 证明者奖励：**
+验证者因 证明 (LMD GHOST 和 FFG 投票) 与大多数其他验证者一致而获得奖励。 证明包含在最终确定的区块中更有价值。
 
-**2. Attester Penalties:**
-Validators are penalized for failing to attest or for attesting to blocks that do not get finalized. These penalties ensure validators remain active and aligned with the network’s consensus.
+**2. 证明者处罚：**
+验证者因未能证明或证明区块未最终确定而受到处罚。这些惩罚确保验证者保持活跃并与网络共识保持一致。
 
-**3. Typical Downside Risk for Stakers:**
-Stakers can estimate their downside risk by comparing potential earnings and penalties. An honest validator earning 10% in a year could lose up to 7.5% for poor performance. Minor penalties apply for short-term inactivity, while prolonged offline periods incur larger penalties.
+**3. 质押者的典型下行风险：**
+质押者可以通过比较潜在收益和处罚来估计其下行风险。一个诚实的验证者年收入 10% 可能会因为表现不佳而损失高达 7.5%。短期不活动会受到轻微处罚，而长时间离线则会受到较大处罚。
 
-**4. Slashings and Whistleblower Rewards:**
-Slashing penalizes validators for serious protocol violations. Penalties range from over 0.5 ETH up to the entire stake. For example, a validator committing a slashable offense loses at least 1/32 of their balance and is deactivated. Additional penalties are proportional to the number of validators slashed simultaneously. A whistleblower who reports a slashable offense receives a reward, which currently goes to the block proposer.
+**4. 削减和举报奖励：**
+削减会对验证者严重违反协议的行为进行惩罚。处罚范围从超过 0.5 ETH 直至全部赌注。例如，验证者犯下可削减的罪行会损失至少 1/32 的余额并被停用。额外惩罚与同时被削减的验证者数量成正比。举报可削减违规行为的举报人将获得奖励，该奖励目前转到区块提议者。
 
-**5. Proposer Rewards:**
-Block proposers receive substantial rewards for proposing blocks that get finalized. Consistently performing validators gain approximately a 1/8 boost to their total rewards. Additionally, proposers receive small rewards for including slashing evidence in their blocks.
+**5. 提议者奖励：**
+区块提议者提出并最​​终确定的区块可获得丰厚奖励。持续执行验证者的总奖励大约增加 1/8。此外，提议者因在其区块中包含削减证据而获得小额奖励。
 
-**6. Inactivity Leak Penalty:**
-The inactivity leak is a severe penalty designed to ensure the network’s finality. If finality is delayed for more than four epochs, validators suffer increasing penalties until a checkpoint is finalized. This mechanism drains the balances of inactive validators, leading to their forced exit, thus allowing active validators to form a ⅔ majority to resume finality. During an inactivity leak, only proposer and whistleblower rewards are earned, while attester rewards are zero.
+**6。不活动泄漏惩罚：**
+不活动泄漏是一种严厉的惩罚，旨在确保网络的最终确定性。如果最终确定性延迟超过 4 个 epoch，则验证者会受到越来越大的处罚，直到检查点最终确定为止。此机制会耗尽不活跃的验证者的余额，导致其强制退出，从而允许活跃的验证者形成 ⅔ 多数来恢复最终确定性。在不活动泄漏期间，仅获得提议者和举报人奖励，而证明者奖励为零。
 
 <!-- Can be expanded more in future-->
-### **Slashable Offenses:**
-There are four conditions under which a validator can be slashed:
-- **Double Proposal:** Proposing more than one block for their assigned slot.
-- **LMD GHOST Double Vote:** Attesting to different Beacon Chain heads for the same slot.
-- **FFG Surround Vote:** Casting an FFG vote that surrounds or is surrounded by a previous FFG vote by the same validator.
-- **FFG Double Vote:** Casting two FFG votes for different targets in the same epoch.
+### **可削减的罪行：**
+验证者可以被削减的条件有四种：
+- **双重提案：** 为其分配的时隙提案多个区块。
+- **LMD GHOST 双重投票：** 证明不同的 Beacon Chain 头指向相同的时隙。
+- **FFG 环绕投票：** 进行 FFG 投票，该投票围绕或被同一验证者的先前 FFG 投票包围。
+- **FFG 双重投票：** 对同一 epoch 中的不同目标投两票 FFG 票。
 
-## Beacon Chain Validator Activation and Lifecycle:
+## Beacon Chain 验证者激活和生命周期：
 
-A validator requires 32 ETH to be activated. Validators are deactivated if their balance falls to 16 ETH, with any remaining balance withdrawable. Validators can also voluntarily exit after serving 2,048 epochs (approximately nine days). 
+验证者需要至少 32 个 ETH 才能激活。如果验证者的余额降至 16 ETH，则验证者将被停用，任何剩余余额均可提取。 验证者也可以在服务 2,048 epoch (大约九天) 后自动退出。 
 
-Upon exit, there is a delay of four epochs before withdrawal, during which validators can still be slashed. 
+退出时，提现前有四个 epoch 的延迟，在此期间验证者仍然可以被削减。 
 
-Honest validators can withdraw their balance in about 27 hours, whereas slashed validators face a delay of approximately 36 days (8,192 epochs).
+诚实的验证者可以在大约 27 小时内提取余额，而削减的验证者则面临大约 36 天的延迟 (8,192 epoch)。
 
 <a id="img_randao"></a>
 <figure class="diagram" style="text-align:center">
@@ -332,25 +331,26 @@ Honest validators can withdraw their balance in about 27 hours, whereas slashed 
 
 </figure>
 
-To prevent rapid changes in the validator set, mechanisms limit how many validators can be activated or exited per epoch. The Beacon Chain also employs effective balances for technical optimization, which change less frequently than actual validator balances.
+为了防止验证者集的快速更改，机制限制了每个 epoch 可以激活或退出的验证者数量。 Beacon Chain 还采用有效余额进行技术优化，其变化频率低于实际验证者余额。
 
-#### Overall Effects
-At every epoch, validators are evenly divided across slots and then subdivided into committees of appropriate size. Validators can only be in one slot, and in one committee. Collectively:
+#### 整体效果
+在每个 epoch 上，验证者均等地分布在时隙上，然后再细分为适当规模的委员会。 验证者只能属于一个时隙且属于一个委员会。集体：
 
-- All validators in an epoch attempt to finalize the same checkpoint: FFG vote
-- All validators assigned to a slot attempt to vote on the same Beacon Chain head: LMD GHOST vote
-Optimal behavior rewards validators the most.
+- epoch 中的所有验证者都尝试完成相同的检查点：FFG 投票
+- 所有验证者分配给时隙尝试对同一个 Beacon Chain 头进行投票： LMD GHOST 投票
+最优行为对验证者的奖励最多。
 
-The Beacon Chain's introduction on December 1, 2020, began with 21,063 validators. The number of validators can decrease with slashings or voluntary exits, or more stakers can join and be activated. Fast forward to today(15th May, 2024) there are more than 1,000,000 validators that are active on Ethereum Network. The world has never seen a scalable platform for decentralized systems and applications like Ethereum.
+Beacon Chain 于 2020 年 12 月 1 日推出，编号为 21,063 验证者。 验证者的数量可能会随着削减或自愿退出而减少，或者更多的质押者可以加入并被激活。快进到今天 (2024 年 5 月 15 日)，Ethereum 网络上有超过 1,000,000 个验证者活跃。世界上从未见过像 Ethereum 这样的去中心化系统和应用程序的可扩展平台。
 
 <!-- #### TODO in future-->
-<!-- Can add a section on Evolution of Ethereum PoS that covers
-Historical context and early proposal
-Research and developmental phases for future -->
+<!-- 可以添加有关 Ethereum PoS 演进的部分，其中涵盖
+历史背景和早期提案
+未来的研究和开发阶段 -->
 
-### References
+### 参考文献
 
-- [Beacon Chain Explainer from ethos.dev](https://ethos.dev/beacon-chain)
-- [Evolution of Ethereum Proof-of-Stake](https://github.com/ethereum/pos-evolution/blob/master/pos-evolution.md)
-- Alt Explainer, [Ethereum's Proof-of-Stake consensus explained](https://www.youtube.com/watch?v=5gfNUVmX3Es)
-- [Eth2 Handbook by Ben Edgington](https://eth2book.info/capella/part2/consensus/)
+- [来自 ethos.dev 的 Beacon Chain 解释器](https://ethos.dev/beacon-chain)
+- [Ethereum Proof-of-Stake 的演变](https://github.com/ethereum/pos-evolution/blob/master/pos-evolution.md)
+- Alt 解释者，[Ethereum 的 Proof-of-Stake 共识解释](https://www.youtube.com/watch?v=5gfNUVmX3Es)
+- [Ben Edgington 的 Eth2 手册](https://eth2book.info/capella/part2/consensus/)
+- [最大 EB](https://eips.ethereum.org/EIPS/eip-7251)

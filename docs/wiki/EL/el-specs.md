@@ -1,84 +1,84 @@
-# Execution Layer Specification
+# Execution Layer 规范
 
-The execution layer was originally specified in the yellow paper as it encompassed the whole Ethereum. The most up to date specification is [EELS python spec](https://ethereum.github.io/execution-specs/). 
+Execution Layer 最初是在黄皮书中指定的，因为它包含整个 Ethereum。最新的规范是 [EELS python 规范](https://ethereum.github.io/execution-specs/)。
 
-> - [Yellow Paper, paris version 705168a – 2024-03-04](https://ethereum.github.io/yellowpaper/paper.pdf) (note: This is outdated does not take into account post merge updates)
-> - [Python Execution Layer specification](https://ethereum.github.io/execution-specs/)
-> - EIPs [Look at Readme of the repo](https://github.com/ethereum/execution-specs)
+> - [黄皮书，巴黎版本 705168a – 2024-03-04](https://ethereum.github.io/yellowpaper/paper.pdf)(注意：这已过时，未考虑合并后更新)
+> - [Python Execution Layer 规范](https://ethereum.github.io/execution-specs/)
+> - EIP [查看仓库的自述文件](https://github.com/ethereum/execution-specs)
 
-This page provides an overview of EL specification, its architecture and context for the pyspec.
+本页面概述了 EL 规范、其架构和 pyspec 的上下文。
 
-## State transition function 
+## 状态转换函数
 
-The Execution Layer, from the EELS perspective, focuses exclusively on executing the state transition function (STF). This role addresses two primary questions[¹]:
+Execution Layer，从 EELS 的角度来看，专门专注于执行状态转换函数(STF)。该角色解决两个主要问题[1]：
 
-- Is it possible to append the block to the end of the blockchain?
-- How does the state change as a result?
+- 是否可以将区块附加到区块链的末尾？
+- 结果状态如何变化？
 
-Simplified Overview:
+简化概述：
 <img src="images/el-specs/stf_eels.png" width="800"/>
 
-The image above represents the block level state transition function in the yellow-paper.
+上图代表黄皮书中的区块级别状态转换函数。
 
 $$
 \begin{equation}
 \sigma_{t+1} \equiv \Pi(\sigma_t, B)
-\qquad (2)  \nonumber
+\qquad (2) \nonumber
 \end{equation}
 $$
 
-In the equation, each symbol represents a specific concept related to the blockchain state transition:
+等式中，每个符号代表与区块链状态转换相关的特定概念：
 
-- $\sigma_{t+1}$ represents the **state of the blockchain** after applying the current block, often referred to as the "new state."
-- $\Pi$ denotes the [block level state transition function](https://github.com/ethereum/execution-specs/blob/0f9e4345b60d36c23fffaa69f70cf9cdb975f4ba/src/ethereum/shanghai/fork.py#L145), which is responsible for transitioning the blockchain from one state to the next by applying the transactions contained in the current block.
-- $\sigma_t$ represents the state of the **[blockchain](https://github.com/ethereum/execution-specs/blob/0f9e4345b60d36c23fffaa69f70cf9cdb975f4ba/src/ethereum/shanghai/fork.py#L73)** before adding the current block, also known as the "previous state."
+- $\sigma_{t+1}$ 表示应用当前区块后 区块链的**状态，通常称为“新状态”。
+- $\Pi$ 表示 [区块 level 状态转换函数](https://github.com/ethereum/execution-specs/blob/0f9e4345b60d36c23fffaa69f70cf9cdb975f4ba/src/ethereum/shanghai/fork.py#L145)，它负责通过应用当前区块中包含的交易将 区块链从一个状态转换到下一个状态。
+- $\sigma_t$ 表示添加当前区块之前的 **[区块链](https://github.com/ethereum/execution-specs/blob/0f9e4345b60d36c23fffaa69f70cf9cdb975f4ba/src/ethereum/shanghai/fork.py#L73)** 的状态，也称为“先前状态”。
 
-- $B$ symbolizes the **[current block](https://github.com/ethereum/execution-specs/blob/0f9e4345b60d36c23fffaa69f70cf9cdb975f4ba/src/ethereum/shanghai/fork_types.py#L217)** that is being sent to the execution layer for processing.
+- $B$ 表示 **[当前区块](https://github.com/ethereum/execution-specs/blob/0f9e4345b60d36c23fffaa69f70cf9cdb975f4ba/src/ethereum/shanghai/fork_types.py#L217)** 正在发送到 Execution Layer 进行处理。
 
-Furthermore, it's crucial to understand that $\sigma$ should not be confused with the `State` class defined in the Python specification. Rather than being stored in a specific location, the system's state is dynamically derived through the application of the state collapse function. This highlights the conceptual separation between the mathematical model of blockchain state transitions and the practical implementation details within software specifications.
+此外，重要的是要理解 $\sigma$ 不应与 Python 规范中定义的 `State` 类混淆。系统的状态不是存储在特定位置，而是通过应用状态崩溃函数动态导出。这突出了区块链状态转换的数学模型与软件规范中的实际实现细节之间的概念分离。
 
 <img src="images/el-specs/state.png" width="800"/>
 
-The id's in the above image as represented in the yellow paper (paris version) :
+上图中的 id 如黄皮书(巴黎版)所示：
 
-| Id.   | equation no. | yellow paper                                                    | comments                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ID。 |等式编号|黄纸|评论 |
 | ----- | ------------ | --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1     | 7            | $$TRIE(L_I^*(\sigma[a]_s)) \equiv \sigma[a]_s $$           | This gives the root of the account storage Trie ,$\sigma[a]_s $ on the right, after mapping each node with the function $L_I((k,v)) \equiv (KEC(k), RLP(v))$ . The equation on the left is referring to mapping over underlying key and values of the account storage $\sigma[a]_s $ these are two different objects the left $\sigma[a]_s $ and the right $\sigma[a]_s $ which represents the root hash |
-| 2     |              | page 4 paragraph 2                                              | The account state $\sigma[a] $ is described in the yellow paper                                                                                                                                                                                                                                                                                                                                                                         |
-| 3     | 10           | $$L_s(\sigma) \equiv \{p(a) : \sigma[a] \neq \empty \} $$ | This is the world state collapse function , applied to all accounts considered not empty:                                                                                                                                                                                                                                                                                                                                                       |
-| 4 & 5 | 36           | $$TRIE(L_s(\sigma)) = P(B_H)_{H_{stateRoot}} $$           | The equation defines the Parent block's state root header as the root given by the TRIE function where $P(B_H)$ is the Parent Block                                                                                                                                                                                                                                                                                                      |
-| 6.    | 33b          | $$H_{stateRoot} \equiv TRIE(L_s(\Pi(\sigma, B))) $$       | this gives us the state root of the current block                                                                                                                                                                                                                                                                                                                                                                                               |
+| 1 | [7](https://ethereum.github.io/yellowpaper/paper.pdf#page=4) | $$TRIE(L_I^*(\sigma[a]_s)) \equiv \sigma[a]_s $$ |在使用函数 $L_I((k,v)) \equiv (KEC(k), RLP(v))$ 映射每个节点后，这给出了帐户存储 Trie、$\sigma[a]_s $ 的根。左边的等式指的是帐户存储 $\sigma[a]_s $ 的基础键和值的映射，这是两个不同的对象，左边的 $\sigma[a]_s $ 和右边的 $\sigma[a]_s $ 代表根哈希 |
+| 2 | | [第 4 页](https://ethereum.github.io/yellowpaper/paper.pdf#page=4)，第 2 段 |黄皮书描述账户状态$\sigma[a] $ |
+| 3 | [10](https://ethereum.github.io/yellowpaper/paper.pdf#page=4) | $$L_s(\sigma) \equiv \{p(a) : \sigma[a] \neq \empty \} $$ |这是世界状态折叠函数，应用于所有被认为不为空的帐户： |
+| 4 & 5 | [39](https://ethereum.github.io/yellowpaper/paper.pdf#page=7) | $$TRIE(L_s(\sigma)) = P(B_H)_{H_{stateRoot}} $$ |该方程将 Parent 区块的 状态根标头定义为 TRIE 函数给出的根，其中 $P(B_H)$ 是 Parent 区块 |
+| 6.| [35b](https://ethereum.github.io/yellowpaper/paper.pdf#page=7) | $$H_{stateRoot} \equiv TRIE(L_s(\Pi(\sigma, B))) $$ |这给了我们当前区块的 状态根 |
 
-The specified procedure for the state transition function in the code documentation includes the following steps:
+代码文档中对状态转换函数的指定过程包括以下步骤：
 
-1. **Retrieve the Header**: Obtain the header of the most recent block added to the chain, referred to as the parent block.
-2. **Excess Blob Gas Validation**: Calculate excess blob gas from the parent header and ensure it matches the current blocks header parameter excess_blob_gas
-3. **Header Validation**: Compare and validate the current block's header against that of the parent block.
-4. **Ommers Field Check**: Verify that the ommers field in the current block is empty. Note: "ommers" is the gender-neutral term that replaces the previously used term "uncles."
-5. **Block Execution**: Execute the transactions within the block, which yields the following outputs:
-   - **Gas Used**: The total gas consumed by executing all transactions in the block.
-   - **Trie Roots**: The roots of the tries for all transactions and receipts contained in the block.
-   - **Logs Bloom**: A bloom filter of logs from all transactions within the block.
-   - **State**: The state, as specified in the python execution specs, after executing all transactions.
-6. **Header Parameters Verification**: Confirm that the parameters returned from executing the block are present in the block header. This includes comparing the state's root with the `state_root` field in the block header.
-7. **Block Addition**: If all checks are successful, append the block to the blockchain.
-8. **Pruning Old Blocks**: Remove blocks that are older than the most recent 255 blocks from the blockchain.
-9. **Error Handling**: If any validation checks fail, raise an "Invalid Block" error. Otherwise, return None.
+1. **检索 Header**：获取最近添加到链上的区块的 header，称为父级区块。
+2. **多余的 blob gas 验证**：从父头中计算多余的 blob gas 并确保其与当前的区块头参数 excess_blob_gas 匹配
+3. **标头验证**：将当前区块的标头与父区块的标头进行比较和验证。
+4. **Ommers 字段检查**：验证当前区块中的 ommers 字段是否为空。注意：“ommers”是中性术语，取代了之前使用的术语“uncles”。
+5. **区块执行**：在区块中执行交易，产生以下输出：
+   - **gas 使用**：执行区块中的所有交易消耗的总 gas。
+   - **Trie 根**：所有交易和 区块中包含的收据的 Trie 的根。
+   - **Logs Bloom**：来自区块内所有交易的日志的布隆过滤器。
+   - **状态**：执行完所有交易后的状态，如 python 执行规范中所指定。
+6. **标头参数验证**：确认执行区块返回的参数存在于区块标头中。这包括将状态的根与区块标头中的 `state_root` 字段进行比较。
+7. **区块添加**：如果所有检查都成功，则将区块附加到区块链。
+8. **修剪旧的区块**：从区块链中删除早于最新 255 区块的 区块。
+9. **错误处理**：如果任何验证检查失败，则会引发“无效区块”错误。否则，返回 None。
 
-## Block Header Validation
+## 区块标头验证
 
-The process of block header validation, rigorously defined within the yellow paper and the python spec, verifies the block integrity based on Ethereum protocol rules, e.g. hash verification, gas usage, timestamp accuracy, etc. This validation ensures every block complies with Ethereum protocol defined in the specification and implemented in the client. During sync and appending blocks, validation is an integral function of a blockchain by independently verifying current and historical data.
+区块标头验证过程在黄皮书和 python 规范中严格定义，基于 Ethereum 协议规则验证区块完整性，例如哈希验证、gas 用法、时间戳准确性等。此验证确保每个区块符合规范中定义的 Ethereum 协议并在客户端中实现。在同步和附加区块期间，通过独立验证当前和历史数据，验证是区块链的一个完整功能。
 
-The [validity](https://github.com/ethereum/execution-specs/blob/0f9e4345b60d36c23fffaa69f70cf9cdb975f4ba/src/ethereum/shanghai/fork.py#L269) of a block header, as specified in the Yellow Paper, employs a series of criteria to ensure each block adheres to Ethereum's protocol requirements. The parent block, denoted as $P(H)$, is necessary to validate the current block header $H$ . The key conditions for validity include:
+根据黄皮书的规定，区块标头的[有效性](https://github.com/ethereum/execution-specs/blob/0f9e4345b60d36c23fffaa69f70cf9cdb975f4ba/src/ethereum/shanghai/fork.py#L269) 采用一系列标准来确保每个区块都遵守 Ethereum 的协议要求。父区块 (表示为 $P(H)$)是验证当前区块标头 $H$ 所必需的。有效性的关键条件包括：
 
 $$V(H) \equiv H_{gasUsed} \leq H_{gasLimit} \qquad (57a)$$
 $$\land$$
-$$H_{gasLimit} < P(H)_{H_{gasLimit'}} + floor(\frac{P(H)_{H_{gasLimit'}}}{1024} ) \qquad (57b)$$
+$$H_{gasLimit} < P(H)_{H_{gasLimit'}} + floor(\frac{P(H)_{H_{gasLimit'}}}{1024}) \qquad (57b)$$
 $$\land $$
-$$H_{gasLimit} > P(H)_{H_{gasLimit'}} - floor(\frac{P(H)_{H_{gasLimit'}}}{1024} ) \qquad (57c)$$
+$$H_{gasLimit} > P(H)_{H_{gasLimit'}} - floor(\frac{P(H)_{H_{gasLimit'}}}{1024}) \qquad (57c)$$
 $$\land$$
 $$H_{gasLimit} > 5000\qquad (57d)$$
-$$\land  $$
+$$\land $$
 $$H_{timeStamp} > P(H)_{H_{timeStamp'}} \qquad (57e)$$
 $$\land$$
 $$H_{numberOfAncestors} = P(H)_{H_{numberOfAncestors'}} + 1 \qquad (57f)$$
@@ -87,7 +87,7 @@ $$length(H_{extraData}) \leq 32_{bytes} \qquad (57g)$$
 $$\land$$
 $$H_{baseFeePerGas} = F(H) \qquad (57h)$$
 $$\land$$
-$$H_{parentHash} = KEC(RLP( P(H)_H )) \qquad (57i) $$
+$$H_{parentHash} = KEC(RLP(P(H)_H)) \qquad (57i) $$
 $$\land$$
 $$H_{ommersHash} = KEC(RLP(())) \qquad (57j)$$
 $$\land$$
@@ -99,9 +99,9 @@ $$H_{withdrawalHash} \neq nil \qquad (57n)$$
 $$\land$$
 $$H_{blobGasUsed} \neq nil \qquad (57o)$$
 $$\land$$
-$$H_{blobGasUsed} \leq  MaxBlobGasPerBlock_{=786432}  \qquad (57p)$$
+$$H_{blobGasUsed} \leq MaxBlobGasPerBlock_{=786432} \qquad (57p)$$
 $$\land $$
-$$H_{blobGasUsed} \% GasPerBlob_{=2^{17}} = 0  \qquad (57q)$$
+$$H_{blobGasUsed} \% GasPerBlob_{=2^{17}} = 0 \qquad (57q)$$
 $$\land $$
 $$H_{excessBlobGas} = CalcExcessBlobGas(P(H)_H) \qquad (57r)$$
 $$\land $$
@@ -109,7 +109,7 @@ $$
 CalcExcessBlobGas(P(H)_H) \equiv \nonumber \\
 \begin{aligned}
 &\begin{cases}
-0,  \qquad \text{if} \space P(H)_{blobGasUsed} < TargetBlobGasPerBlock \\
+0, \qquad \text{if} \space P(H)_{blobGasUsed} < TargetBlobGasPerBlock \\
 P(H)_{blobGasUsed} - TargetBlobGasPerBlock
 \end{cases}
 \quad (57s)
@@ -118,36 +118,36 @@ $$
 $$\land $$
 $$
 \begin{aligned}
-P(H)_{blobGasUsed} \equiv  P(H)_{H_{excessBlobGas}} + P(H)_{H_{blobGasUsed}} \\
-TargetBlobGasPerBlock =  393216
+P(H)_{blobGasUsed} \equiv P(H)_{H_{excessBlobGas}} + P(H)_{H_{blobGasUsed}} \\
+TargetBlobGasPerBlock = 393216
 \end{aligned}
 \quad (57t)
 $$
 
-- **Gas Usage**: The gas used by a block $H_{gasUsed}$ must not exceed the gas limit $H_{gasLimit'}$, ensuring transactions fit within the block's capacity (57a).
-- **Gas Limit Constraints**: The gas limit of a block must remain within specified bounds relative to the parent block's gas limit ${P(H)_{H_{gasLimit'}}}$ , allowing for gradual changes rather than abrupt adjustments (57b, 57c).
-- **Minimum Gas Limit**: A minimum gas limit of 5000 ensures a basic level of transaction processing capacity (57d).
-- **Timestamp Verification**: Each block's timestamp $H_{timeStamp}$ must be greater than that of its parent $P(H)_{H_{timeStamp'}}$, ensuring chronological order (57e).
-- **Ancestry and Extra Data**: The block maintains a lineage through the $H_{numberOfAncestors'}$ field and limits the $H_{extraData}$ size to 32 bytes (57f, 57g).
-- **Economic Model Compliance**: The base fee per gas $H_{baseFeePerGas}$ is calculated according to the rules established in EIP-1559, reflecting the network's current demand for transaction processing (57h). This along with a,b,c,d & h defines part of the Economic model
+- **gas 用法**：区块 $H_{gasUsed}$ 使用的 gas 不得超过 gas 限制 $H_{gasLimit'}$，确保交易适合区块的容量(57a)。
+- **gas 限制约束**： 区块的 gas 限制必须保持在相对于父区块的 gas 限制 ${P(H)_{H_{gasLimit'}}}$ 的指定范围内，允许逐渐变化而不是突然调整(57b， 57c)。
+- **最小 gas 限制**：最小 gas 限制为 5000，可确保交易处理能力的基本水平 (57d)。
+- **时间戳验证**：每个区块的时间戳 $H_{timeStamp}$ 必须大于其父 $P(H)_{H_{timeStamp'}}$ 的时间戳，确保时间顺序(57e)。
+- **祖先和额外数据**：区块通过 $H_{numberOfAncestors'}$ 字段维护沿袭，并将 $H_{extraData}$ 大小限制为 32 字节(57f、57g)。
+- **经济模型合规性**：每个 gas $H_{baseFeePerGas}$ 的基本费用是根据 EIP-1559 中建立的规则计算的，反映了网络当前对交易处理(57h)的需求。这与 a、b、c、d 和 h 一起定义了经济模型的一部分
 
-### Header validation and the Ethereum economic model
+### 标头验证和 Ethereum 经济模型
 
-The Ethereum economic model, as outlined in [EIP-1559](https://eips.ethereum.org/EIPS/eip-1559), introduces a series of mechanisms aimed at enhancing network efficiency and stability:
+Ethereum 经济模型，如[EIP-1559](https://eips.ethereum.org/EIPS/eip-1559)所述，引入了一系列旨在提高网络效率和稳定性的机制：
 
-- **Targeted Gas Limit for Reduced Volatility**: By setting the gas target at half the maximum gas limit, Ethereum aims to diminish the volatility that full blocks can cause, ensuring a more predictable transaction processing environment.
-- **Prevention of Unnecessary Delays**: This model seeks to eliminate undue delays for users by optimizing transaction processing times, thus improving the overall user experience on the network.
-- **Stabilizing Block Reward Issuance**: The issuance of block rewards contributes to the system's enhanced stability, providing a more predictable economic landscape for participants.
-- **Predictable Base Fee Adjustments**: EIP-1559 introduces a mechanism for predictable base fee changes, a feature particularly beneficial for wallets. This predictability aids in accurately estimating transaction costs ahead of time, streamlining the transaction creation process.
-- **Base Fee Burn and Priority Fee**: Under this model, miners are entitled to keep the priority fee as an incentive, while the base fee is burned, effectively removing it from circulation. This approach serves as a countermeasure to Ethereum's inflation, promoting a healthier economic environment by reducing the overall supply over time.
+- **降低波动性的目标 gas 限制**：通过将 gas 目标设置为最大 gas 限制的一半，Ethereum 旨在减少完整区块可能导致的波动性，确保更可预测的交易处理环境。
+- **防止不必要的延迟**：该模型旨在通过优化交易处理时间来消除用户的不当延迟，从而改善网络上的整体用户体验。
+- **稳定区块奖励发放**：区块奖励的发放有助于增强系统的稳定性，为参与者提供更可预测的经济格局。
+- **可预测的基本费用调整**：EIP-1559 引入了可预测的基本费用变化的机制，这一功能对钱包特别有利。这种可预测性有助于提前准确估计交易成本，从而简化交易创建过程。
+- **基本费用销毁和优先费用**：在这种模式下，矿工有权保留优先费用作为激励，而基本费用则被销毁，从而有效地将其从流通中去除。这种方法可以作为 Ethereum 通货膨胀的对策，通过随着时间的推移减少总体供应来促进更健康的经济环境。
 
-Additional checks ensure legacy compatibility and security, such as the ommer (uncle block) hash and difficulty fields being set to predefined values, reflecting the transition from Proof of Work to Proof of Stake (57j-57l).
+其他检查可确保旧版本的兼容性和安全性，例如将 ommer (uncle 区块) 哈希和难度字段设置为预定义值，反映从 Proof-of-Work 到 Proof-of-Stake (57j-57l) 的过渡。
 
-These criteria form part of the Ethereum economic model, particularly influenced by EIP-1559, which introduces a dynamic base fee mechanism. This mechanism aims to optimize network usage and fee predictability, enhancing user experience and economic stability. Additionally, [EIP-4844](https://eips.ethereum.org/EIPS/eip-4844) introduced a new type of transaction, blob transactions, that augments the economic model from EIP-1559. 
+这些标准构成了 Ethereum 经济模型的一部分，特别受到 EIP-1559 的影响，该模型引入了动态基本费用机制。该机制旨在优化网络使用和费用可预测性，增强用户体验和经济稳定性。此外，[EIP-4844](https://eips.ethereum.org/EIPS/eip-4844)引入了一种新型交易，blob 交易，它增强了 EIP-1559 的经济模型。
 
-Lets explore this in more depth and try to gain a better understanding on whats going on with these equations that's not easily visible in either the python spec or the yellow paper.
+让我们更深入地探讨这个问题，并尝试更好地理解这些方程的情况，这些方程在 Python 规范或黄皮书中都不容易看到。
 
-Lets start with expanding 57h, specified in the yellow paper as:
+让我们从扩展 57h 开始，黄皮书中指定为：
 
 $$
 \begin{equation}
@@ -163,7 +163,7 @@ P(H)_{H_{baseFeePerGas}} + \nu & \text{if } P(H)_{H_{gasUsed}} > \tau
 $$
 
 $$
-\tau \equiv \frac {P(H)_{H_{gasLimit}}}  {\rho} \qquad (46)
+\tau \equiv \frac {P(H)_{H_{gasLimit}}} {\rho} \qquad (46)
 $$
 
 $$
@@ -190,144 +190,144 @@ $$
 \xi \equiv 8 \qquad (50)
 $$
 
-| Symbol          | What it represents                         | value                                              | comments                                                                                                                   |
+|符号|它代表什么|价值|评论 |
 | --------------- | ------------------------------------------ | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| $F(H) $ | Base Fee per Gas                           |                                                    | Paid be the sender as part of the Total Fee , The Base Fee is finally burnt by Execution Layer and taken out of the system |
-| $\nu $  | Magnitude increase or decrease in base fee |                                                    | Proportional to the difference between Parent block's gas consumption and gas target                                       |
-| $\tau $ | Gas target                                 | $\frac {P(H)_{H_{gasLimit}}}  {\rho}_{= 2}$ | Aimed at reducing volatility, the gas target is set at half the gas limit to moderate transaction throughput per block.    |
-| $\rho $ | Elasticity multiplier                      | 2                                                  | aids in adjusting the gas target to maintain network responsiveness, capacity and price predictability.                    |
-| $\xi $  | Base fee max denominator                   | 8                                                  | it controls the maximum rate of change in the base fee, ensuring gradual adjustments.                                      |
+| $F(H) $ |每 gas 的基本费用 | |作为总费用的一部分支付给发送者，基本费用最终被 Execution Layer 销毁并从系统中取出 |
+| $\nu $ |基本费用的幅度增加或减少| |与 Parent 区块的 gas 消耗和 gas 目标之间的差异成正比|
+| $\tau $ | gas 目标 | $\frac {P(H)_{H_{gasLimit}}} {\rho}_{= 2}$ |为了减少波动性，gas 目标设置为 gas 限制的一半，以中等每个区块的 交易吞吐量。 |
+| $\rho $ |弹性乘数| 2 |有助于调整 gas 目标，以保持网络响应能力、容量和价格可预测性。 |
+| $\xi $ |基本费用最大分母 | 8 |它控制基本费用的最大变化率，确保逐步调整。 |
 
-Furthermore the yellow paper has some crucial definitions on the types of these objects that will be used in reasoning about these equations :
+此外，黄皮书对这些对象的类型有一些重要的定义，这些定义将用于推理这些方程：
 
-First it provides us with unbounded block limits, i.e. These limits can be extended infinitely
+首先它为我们提供了无界的区块限制，即这些限制可以无限扩展
 
 $$
 H_{\text{gasUsed}} , H_{\text{gasLimit}}, H_{\text{baseFeePerGas}} \in \mathbb{N} \qquad (41)
 $$
 
-Then it provides us with the types for the transaction parameter , These are bounded by a max value of 2^256 or approx 10^77, that's the max these numbers can go to
+然后它为我们提供了交易参数的类型，它们的最大值为 2^256 或大约 10^77，这是这些数字可以达到的最大值
 
 $$T_{\text{maxPriorityFeePerGas}} , T_{\text{maxFeePerGas}}, T_{\text{gasLimit}}, T_{\text{gasPrice}} \in\mathbb{N}_{256}$$
 
-#### Additional Insights: The Significance of Natural Numbers
+#### 其他见解：自然数的意义
 
-The Ethereum protocol designates block-level parameters—such as gas used ($H_{gasUsed}$), gas limit ($H_{gasLimit}$), and base fee per gas ($H_{baseFeePerGas}$)—as natural numbers $\mathbb{N}$ This decision is far from arbitrary; it embeds a layer of intuitive logic into the blockchain's foundational economics.
+Ethereum 协议指定区块级参数，例如使用的 gas ($H_{gasUsed}$)、gas 限制 ($H_{gasLimit}$) 以及每个 gas 的基本费用($H_{baseFeePerGas}$)—作为自然数 $\mathbb{N}$ 这个决定远非任意；它将一层直观的逻辑嵌入到区块链的基础经济学中。
 
-- Natural Numbers and Blockchain Logic
+- 自然数和区块链逻辑
 
-Natural numbers, starting from 0 and extending infinitely, offer a straightforward framework for understanding and manipulating these parameters. Unlike real numbers, which include an uncountable infinity between any two points, natural numbers allow for exact, discrete steps—making them ideal for blockchain transactions where precision is paramount. This property simplifies the reasoning about functions that manipulate these parameters, facilitating precise calculations and predictions about transaction costs and network capacity.
+从 0 开始并无限延伸的自然数为理解和操作这些参数提供了一个简单的框架。与实数不同，实数在任意两点之间包含不可数的无穷大，而自然数允许精确、离散的步骤，这使得它们非常适合精度至关重要的区块链交易。此属性简化了有关操纵这些参数的函数的推理，有助于精确计算和预测交易成本和网络容量。
 
-- Simplicity and Precision
+- 简单而精确
 
-Consider the simplicity of incrementing: each natural number can be thought of as a sum of (0 + 1 + 1 + ... + 1), providing a clear path for incrementation or decrementation within smart contracts or transaction processing. This atomic nature of natural numbers, with 0 and Successor(+ 1) foundational building blocks, enables the construction of robust and provable logic within the Ethereum blockchain, in other words natural numbers lead to easier proofs.
+考虑递增的简单性：每个自然数可以被视为 (0 + 1 + 1 + ... + 1) 的总和，为智能合约或 交易处理中的递增或递减提供清晰的路径。自然数的这种原子性质，以及 0 和后继(+ 1)基础构建区块，使得能够在 Ethereum 区块链内构造健壮且可证明的逻辑，换句话说，自然数导致更容易的证明。
 
-- Contrasting with Real Numbers (decimals)
+- 与实数(小数)对比
 
-In contrast to the infinite divisibility of real numbers, the discrete nature of natural numbers within Ethereum's economic model ensures that operations remain within computable bounds. This distinction is crucial for maintaining network efficiency and security, avoiding the computational complexity and potential vulnerabilities associated with handling real numbers.
+与实数的无限可分性相反，Ethereum 经济模型中自然数的离散性质确保了运算保持在可计算的范围内。这种区别对于维护网络效率和安全性、避免与处理实数相关的计算复杂性和潜在漏洞至关重要。
 
-**Transaction Parameters and Bounded Natural Numbers**
+**交易参数和有界自然数**
 
-Furthermore, Ethereum specifies transaction parameters, such as the maximum priority fee per gas and maximum fee per gas , within a bounded subset of natural numbers $\mathbb{N}_{256}$. This bounding, capped at $2^{256}$ or approximately $10^{77}$, strikes a balance between allowing a vast range of values for transaction processing and ensuring that these values remain within secure, manageable limits.
+此外， Ethereum 指定交易参数，例如在自然数 $\mathbb{N}_{256}$ 的有界子集中每个 gas 的最大优先级费用和每个 gas 的最大费用。此边界上限为 $2^{256}$ 或大约 $10^{77}$，在允许交易处理的大范围值与确保这些值保持在安全、可管理的限制内之间取得平衡。
 
-#### Dynamics of Gas Price Block to Block
+#### gas 价格区块至 区块动态
 
-Let's delve into the dynamics of the gas price calculation function by exploring its impact across a spectrum of gas usage scenarios, ranging from the minimum possible (5,000 units) to the set gas limit. Our focus is to understand how this function performs within the scope of a single block.
+让我们深入了解 gas 价格计算函数的动态，探索其对一系列 gas 使用场景的影响，范围从最小可能(5,000 个单位)到设置的 gas 限制。我们的重点是了解该函数在单个区块范围内的执行情况。
 
-We aim to analyze the 'calculate base fee per gas' function, which is integral to understanding Ethereum's gas pricing mechanism. The following R code snippet illustrates the implementation of this function:
+我们的目标是分析“计算每个 gas 的基本费用”函数，这对于理解 Ethereum 的 gas 定价机制至关重要。下面的 R 代码片段说明了该函数的实现：
 
 <img src="images/el-specs/gasused-basefee.png" width="800"/>
 
-Observations from the plot:
+从情节中观察：
 
-- The function exhibits a step-like linear progression, with the widest variance at the midpoint. This reflects the gas target, set at half the gas limit (15,000 units in this case).
-- The maximum upward change in the base fee is approximately 12.5%, observed at the extreme right of the plot. This represents the maximum possible increase when the base fee starts at a hundred.
-- The maximum downward change in the base fee is approximately 10%, observed at the extreme left of the plot. This represents the maximum possible decrease when the base fee starts at a hundred.
-- A precise hit on the gas target results in a 1% increase in the base fee. Exceeding the target slightly (e.g., between 15,000 and 17,000 units of gas used) still results in only a 1% increase, illustrating the function's designed elasticity around the target.
+- 该函数呈现阶梯状线性级数，在中点处方差最大。这反映了 gas 目标，设置为 gas 限制的一半(在本例中为 15,000 个单位)。
+- 基本费用的最大向上变化约为 12.5%，在图的最右侧观察到。这代表基本费用从 100 起时可能增加的最大金额。
+- 基本费用的最大向下变化约为 10%，在图的最左侧观察到。这代表当基本费用从 100 开始时可能的最大减少量。
+- 精确命中 gas 目标会导致基本费用增加 1%。稍微超过目标(例如，使用 15,000 到 17,000 个单位的 gas)仍然只会导致 1% 的增长，这说明了该函数围绕目标设计的弹性。
 
-#### Extended Simulation: Long-term Effects on Gas Limit and Fee
+#### 扩展模拟：对 gas 限额和费用的长期影响
 
-Having visualized the immediate impact of the gas price calculation function over a range of gas usage scenarios, let's to consider its effect over an extended period. Specifically, how does this dynamic influence the Ethereum network over tens of thousands of blocks, especially under conditions of maximum demand where each block reaches its gas limit?
+可视化了 gas 价格计算函数对一系列 gas 使用场景的直接影响后，让我们考虑一下它在较长一段时间内的影响。具体来说，这种动态如何影响数以万计的区块上的 Ethereum 网络，特别是在每个区块达到其 gas 限制的最大需求条件下？
 
-The following plot simulates this scenario over 100,000 blocks, assuming a constant maximum demand, to project the evolution of the gas limit and base fee:
+下图模拟了超过 100,000 区块的情况，假设最大需求恒定，以预测 gas 限制和基本费用的演变：
 
 <img src="images/el-specs/gas-limit-max.png" width="800"/>
 
-Observations from the simulation reveal several critical insights:
+模拟观察揭示了几个重要的见解：
 
-- Base Fee Sensitivity: The base fee, measured in wei, escalates rapidly, potentially reaching one ether within a mere 200 blocks under continuous maximum demand.
-- Potential to Hit Upper Limits: Under sustained high demand, the base fee could approach its theoretical maximum in under 2,000 blocks.
-- Unbounded Gas Limit Growth: Unlike the base fee, the gas limit itself is not capped, allowing for continuous growth to accommodate increasing network demand.
-- Market Dynamics and Equilibrium: Real-world demand increases, initially reflected in blocks exceeding their gas targets, lead to rising base fees. However, as the gas limit gradually increases, the gas target (half the gas limit) also rises, eventually stabilizing demand against the higher base fee, reaching a new equilibrium.
+- 基本费用敏感性：以 wei 为单位的基本费用迅速上升，在持续最大需求下，可能在 200 区块内达到 1 个以太币。
+- 达到上限的潜力：在持续高需求的情况下，基本费用可能会在 2,000 区块以内接近其理论最大值。
+- 无限制的 gas 限制增长：与基本费用不同，gas 限制本身没有上限，允许持续增长以适应不断增长的网络需求。
+- 市场动态和均衡：现实世界的需求增加(最初反映在区块超过了 gas 目标)导致基本费用上涨。然而，随着 gas 限额逐渐提高，gas 目标(gas 限额的一半)也随之上升，最终稳定了较高基础费用的需求，达到新的平衡。
 
-To future-proof our analysis by examining the model's underpinnings at a more granular level. Specifically, we focus on the effects of altering the constants central to the model, notably the elasticity multiplier ($\rho$) and the base fee max change denominator ($\xi$). These constants are not expected to change within a fork but can be re-specified in future protocol upgrades:
+通过更精细地检查模型的基础来确保我们的分析面向未来。具体来说，我们关注改变模型核心常数的影响，特别是弹性乘数 ($\rho$) 和基本费用最大变化分母 ($\xi$)。这些常量预计不会在分叉内改变，但可以在未来的协议升级中重新指定：
 
-let's start with $\xi$ :
+让我们从 $\xi$ 开始：
 
 <img src="images/el-specs/xi.png" width="800"/>
 
-This is a snapshot between blocks, like our first plot, it represents smallest slice of the potential of the economic model additionally parameterized by $\xi$ across protocol upgrades
+这是区块之间的快照，就像我们的第一个图一样，它代表了跨协议升级由 $\xi$ 额外参数化的经济模型潜力的最小部分
 
-Impact of $\xi$ on base fee:
+$\xi$ 对基本费用的影响：
 
-- Inflection point & step width variability: The "kink" or point of inflection becomes particularly pronounced with variations to $\xi$, becoming broader as $\xi$ increases. Thus increasing $\xi$ results in broader step widths, indicating more gradual fee adjustments. Conversely, decreasing $\xi$ leads to narrower steps and more volatile fee changes.
-- Sensitivity: The slope of the base fee adjustment curve changes significantly beyond the inflection point. As $\xi$ values decrease, we observe a sharp increase in the rate of fee adjustments, indicating heightened sensitivity.
-- Linear Trend within Target Range: The central portion of the curve, particularly highlighted by the light green line for the current $\xi$ value of the Ethereum protocol, showcases a mostly linear trend in fee adjustments as transactions approach or exceed the gas target.
+- 拐点和步宽变化：随着 $\xi$ 的变化，“扭结”或拐点变得特别明显，随着 $\xi$ 的增加而变得更宽。因此，增加 $\xi$ 会导致更宽的步长，表明费用调整更加渐进。相反，减少 $\xi$ 会导致步幅更窄，费用变化更不稳定。
+- 敏感性：基本费用调整曲线的斜率在拐点之后发生显着变化。随着 $\xi$ 值的下降，我们观察到费用调整率急剧增加，表明敏感性提高。
+- 目标范
 
-Next, we turn our attention to the elasticity multiplier ($\rho$), another pivotal constant in Ethereum's economic model that directly influences the flexibility and responsiveness of gas limit adjustments. To understand its impact, we explore a range of values for $\rho$ from 1 to 6 in conjunction with variations in the base fee max change denominator ($\xi$).
+接下来，我们将注意力转向弹性乘数($\rho$)，它是 Ethereum 经济模型中的另一个关键常数，直接影响 gas 限额调整的灵活性和响应能力。为了了解其影响，我们结合基本费用最大变化分母 ($\xi$) 的变化，探索了从 1 到 6 的 $\rho$ 值范围。
 
 <img src="images/el-specs/rho-xi.png" width="800"/>
 
-Impact of $\rho$ and $\xi$ on Base Fee :
+$\rho$ 和 $\xi$ 对基本费用的影响：
 
-- Moment-to-Moment Analysis: Similar to our initial observations, this plot offers a granular view into how adjustments in $\rho$ and $\xi$ shape the economic model's behavior on a per-block basis, especially in the context of protocol upgrades.
-- Distinct Influence of $\rho$: Each subplot represents effect of varying $\rho$ values. As the elasticity multiplier, $\rho$ notably shifts the inflection point in the base fee adjustment curve, highlighting its role in tuning the network's responsiveness to transaction volume fluctuations.
-- Interplay Between $\rho$ and $\xi$: The elasticity multiplier ($\rho$) not only moves the inflection point but also modulates the sensitivity of adjustments attributable to changes in the base fee max change denominator ($\xi$). This interaction underscores the delicate balance Ethereum maintains to ensure network efficiency and stability amidst varying demands.
+- 即时分析：与我们最初的观察类似，该图提供了 $\rho$ 和 $\xi$ 的调整如何在每个区块的基础上塑造经济模型的行为的精细视图，特别是在协议升级的背景下。
+- $\rho$ 的独特影响：每个子图代表不同 $\rho$ 值的影响。作为弹性乘数，$\rho$ 显着地改变了基本费用调整曲线的拐点，突出了其在调整网络对交易交易量波动的响应能力方面的作用。
+- $\rho$ 和 $\xi$ 之间的相互作用：弹性乘数 ($\rho$) 不仅会移动拐点，还会调节由于基本费用最大变化分母 ($\xi$) 变化而导致的调整敏感性。这种互动强调了 Ethereum 保持的微妙平衡，以确保在不同需求下的网络效率和稳定性。
 
 <img src="images/el-specs/gas-header.png" width="800"/>
 
-#### Dynamics of Blob Gas Price
+#### blob gas 价格动态
 
-The dynamics of the Blob Gas Price are modeled in the following scenarios, starting from zero and increasing the gas used per block by a constant factor of 1000 from one block to the next.
+blob gas 价格的动态在以下场景中建模，从零开始，然后将每个区块使用的 gas 按常数因子 1000 从一个区块增加到下一个。
 
-- Figure E: Illustrates the relationship between blob gas and its price. Code to all the figures is in the appendix
+- 图 E：说明了 blob gas 与其价格之间的关系。所有数字的代码在附录中
 
 <img src="images/el-specs/blob-gas-and-price.png" width="800"/>
 
-- Figure F: Normalizes the data to highlight the price dynamics relative to gas usage.
+- 图 F：标准化数据以突出显示与 gas 使用相关的价格动态。
   <img src="images/el-specs/blob-gas-and-price-norm.png" width="800"/>
 
-- The blob gas price remains at 1 when the parent block's gas usage is below the target (~400K, corresponding to approximately 400KB or 3 blobs per block). A maximum of about 800K maps to roughly 800KB or 6 blobs per block.
-- Surpassing the target does not immediately affect the gas price, but excess gas begins to accumulate.
-- Persistent demand increases, causing the accumulated excess gas to surpass a threshold, triggering an exponential increase in the gas price as a regulatory measure.
-- Accumulated excess gas can be cleared in one block if the gas usage of the preceding block falls below the target, resetting the adjustment mechanism.
+- 当父 gas 的 gas 使用率低于目标(~400K，相当于每个区块大约 400KB 或 3 个 blob)时，blob gas 价格保持在 1。最大大约 800K 映射到大约 800KB 或每个区块 6 个 blob。
+- 超过目标不会立即影响 gas 价格，但超出的 gas 开始累积。
+- 持续的需求增加，导致累积的过剩 gas 超过阈值，引发 gas 价格指数级上涨作为监管措施。
+- 如果前一个区块的 gas 使用率低于目标，则可以在一个区块中清除累积的多余 gas，从而重置调整机制。
 
-## Block Execution Process
+## 区块执行流程
 
-After initial header verification, the block advances to the execution phase([apply_body](https://github.com/ethereum/execution-specs/blob/804a529b4b493a61e586329b440abdaaddef9034/src/ethereum/cancun/fork.py#L437)). Performing header checks early allows the State Transition Function (STF) to potentially return an "Invalid Payload" message to the Consensus Layer (CL) without proceeding to the computationally intensive stage of block/transaction execution.
+初始标头验证后，区块进入执行阶段([apply_body](https://github.com/ethereum/execution-specs/blob/804a529b4b493a61e586329b440abdaaddef9034/src/ethereum/cancun/fork.py#L437))。尽早执行标头检查允许状态转换函数 (STF) 有可能向 Consensus Layer (CL) 返回“无效载荷”消息，而无需继续进行计算密集型阶段区块/交易执行。
 
-1. **Initialize `blobGasUsed` to 0.** This sets the starting point for gas used by transactions in the block to zero.
-2. **Set `gasAvailable` to $H_{gasLimit}$.** This initializes the gas available for the block's execution to the block's gas limit.
-3. **Initialize additional execution components:** This includes setting up the receipt's trie, withdrawal's trie, and a block logs tuple (which behaves like an immutable list), ensuring the gas available aligns with the block's gas limit.
-4. **Access Beacon Block Roots Contract Code** via the EL constant that specifies the **BEACON ROOTS ADDRESS**:
-   - This feature, introduced in Duncan and detailed in [EIP 4788](https://eips.ethereum.org/EIPS/eip-4788), enables the use of beacon chain block roots as cryptographic accumulators for constructing proofs of the Consensus Layer State. This provides a trust-minimized way for the EVM to access consensus layer data, supporting applications such as staking pools, restaking operations, smart contract bridges, and MEV mitigations. [Learn More](https://www.youtube.com/watch?v=GriLSj37RdI) from the spec's creator.
-5. **Construct a System Transaction Message:** With the **System Address** as the caller and **BEACON ROOTS ADDRESS** as the target, include $H_{parentBeaconBlockRoot}$ and the retrieved contract code. This introduces a "system contract" in Duncan, a stateful smart contract unlike stateless precompiles, where only the system address can insert data.
-6. **Set up the VM environment and process the message call,** storing $H_{parentBeaconBlockRoot}$ in the contract's storage for later retrieval by transactions providing the slot's timestamp.
-7. **Delete empty accounts** touched in the previous steps to clean up the state.
-8. **Process transactions within the block:**
-   - Transactions are decoded and added to the transaction trie for execution.
-   - **Execute the [Transaction](/wiki/EL/transaction):** Critical to the block execution process, this involves:
-     1. Recovering the transaction sender's address using the signature components $T_v, T_r, T_s$.
-     2. Verifying intrinsic transaction validity.
-     3. Calculating the effective gas price.
-     4. Initializing the execution environment.
-     5. **Executing the decoded transaction** within the virtual machine, including validation against the current state, gas calculations, and applying state changes upon success.
-9. **Process validator withdrawals** validated by the beacon chain ([EIP-4895](https://eips.ethereum.org/EIPS/eip-4895)):
-   - Iterate over each [Withdrawal](https://github.com/ethereum/execution-specs/blob/119208cf1a13d5002074bcee3b8ea4ef096eeb0d/src/ethereum/shanghai/fork_types.py#L178), adding them to the trie.
-   - Convert withdrawals from Gwei to Wei and credit the specified addresses.
-   - Destroy empty withdrawal accounts to maintain a clean state.
+1. **将 `blobGasUsed` 初始化为 0。** 这会将区块中的交易使用的 gas 的起点设置为零。
+2. **将 `gasAvailable` 设置为 $H_{gasLimit}$。** 这会将可用于区块执行的 gas 初始化为区块的 gas 限制。
+3. **初始化其他执行组件：** 这包括设置收据的 Trie、提款的 Trie 和区块日志元组(其行为类似于不可变列表)，确保可用的 gas 与区块的一致 gas 限制。
+4. **通过指定 **BEACON ROOTS ADDRESS** 的 EL 常量访问 Beacon 区块根合约代码**：
+   - 此功能在 Cancun 中介绍，并在 [EIP 4788](https://eips.ethereum.org/EIPS/eip-4788) 中详细介绍，允许使用 Beacon Chain 区块根作为加密累加器来构造 Consensus Layer 状态的证明。这为 EVM 提供了一种信任最小化的方式来访问 Consensus Layer 数据，支持质押池、重新质押操作、智能合约桥接和 MEV 缓解等应用程序。 [了解更多](https://www.youtube.com/watch?v=GriLSj37RdI) 来自规范创建者。
+5. **构建系统交易消息：**以**系统地址**为调用方，**BEACON ROOTS ADDRESS**为目标，包含$H_{parentBeaconBlockRoot}$和检索到的合约代码。这在 Cancun 中引入了一个“系统契约”，一个有状态的智能合约，与无状态预编译不同，无状态预编译只有系统地址才能插入数据。
+6. **设置 VM 环境并处理消息调用，**将 $H_{parentBeaconBlockRoot}$ 存储在合约的存储中，以便稍后通过提供时隙时间戳的交易进行检索。
+7. **删除前面步骤中触及的空帐户**以清理状态。
+8. **在区块中处理交易：**
+   - 交易被解码并添加到交易 Trie 中执行。
+   - **执行[交易](/wiki/EL/transaction)：**对于区块执行过程至关重要，这涉及到：
+     1. 使用签名组件 $T_v, T_r, T_s$ 恢复交易发件人地址。
+     2. 验证内在交易有效性。
+     3. 计算有效 gas 价格。
+     4. 初始化执行环境。
+     5. **在虚拟机内执行解码后的交易**，包括针对当前状态进行验证、gas 计算以及成功后应用状态更改。
+9. **处理验证者提款**由 Beacon Chain ([EIP-4895](https://eips.ethereum.org/EIPS/eip-4895)) 验证：
+   - 迭代每个 [Withdrawal](https://github.com/ethereum/execution-specs/blob/119208cf1a13d5002074bcee3b8ea4ef096eeb0d/src/ethereum/shanghai/fork_types.py#L178)，将它们添加到 Trie。
+   - 将 Gwei 提款转换为 Wei 并存入指定地址。
+   - 销毁空的提款账户以保持干净的状态。
 
-### Environment initialization
+### 环境初始化
 
 $$
 I_{caller} = T_{Sender_{address}}, \nonumber \\
@@ -347,31 +347,31 @@ I_{excessBlobGas} = excessBlobGas, \nonumber \\
 I_{blobVersionedHashes} = T_{blobVersionedHashes}, \nonumber \\
 $$
 
-| Variable                         | Description                                                                                                              |
+|变量|描述 |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| $I_{caller}$              | The address initiating the code execution; typically the sender of the transaction.                                      |
-| $I_{origin}$              | The original sender address of the transaction initiating this execution context.                                        |
-| $I_{blockHashes}$         | A collection of the hashes from the last 255 blocks.                                                                     |
-| $I_{coinbase}$            | The beneficiary address for block rewards and transaction fees.                                                          |
-| $I_{number}$              | The sequential number of the current block within the blockchain.                                                        |
-| $I_{gasLimit}$            | The maximum amount of gas available for executing the transaction, accounting for gas already used in the current block. |
-| $I_{baseFeePerGas}$       | The base fee per gas unit, a dynamic parameter that adjusts with block space demand.                                     |
-| $I_{gasPrice}$            | The effective gas price, influenced by current network conditions and transaction urgency.                               |
-| $I_{time}$                | The timestamp marking when the block was produced, measured in seconds since the Unix epoch.                             |
-| $I_{prevRandao}$          | The previous RANDAO (randomness) value, contributing to the entropy in block production from the Beacon chain.           |
-| $I_{state}$               | The current state, encompassing all account balances, storage, and contract code.                                        |
-| $I_{chainId}$             | Identifier for the blockchain, ensuring transactions are signed for a specific chain.                                    |
-| $I_{traces}$              | A placeholder for execution traces, intended for future use or debugging purposes.                                       |
-| $I_{excessBlobGas}$       | Calculated from the parent block, it represents surplus gas allocated for blob transactions.                             |
-| $I_{blobVersionedHashes}$ |                                                                                                                          |
+| $I_{caller}$ |启动代码执行的地址；通常是交易的发送者。 |
+| $I_{origin}$ |发起此执行上下文的交易的原始发送者地址。 |
+| $I_{blockHashes}$ |最后 255 个区块中的哈希的集合。 |
+| $I_{coinbase}$ | 区块奖励和交易费用的收款人地址。 |
+| $I_{number}$ | 区块链中当前区块的序号。 |
+| $I_{gasLimit}$ |可用于执行交易的 gas 的最大数量，占当前区块中已使用的 gas。 |
+| $I_{baseFeePerGas}$ |每个 gas 单位的基本费用，是一个根据区块空间需求进行调整的动态参数。 |
+| $I_{gasPrice}$ | gas 的有效价格，受当前网络状况和交易紧急程度的影响。 |
+| $I_{time}$ |生成区块时的时间戳标记，自 Unix epoch 开始以秒为单位测量。 |
+| $I_{prevRandao}$ |先前的 RANDAO(随机性)值，有助于从 Beacon Chain 生成区块中的熵。 |
+| $I_{state}$ |当前状态，包括所有账户余额、存储和合约代码。 |
+| $I_{chainId}$ | 区块链的标识符，确保交易为特定链签名。 |
+| $I_{traces}$ |执行跟踪的占位符，用于将来使用或调试目的。 |
+| $I_{excessBlobGas}$ |从父区块计算，它代表为 blob 交易分配的剩余 gas。 |
+| $I_{blobVersionedHashes}$ | 附加到当前交易的 blob 的版本化哈希的有序列表。 |
 
-## Gas Accounting
+## gas 会计
 
-### Intrinsic Gas Calculation
+### 内在 gas 计算
 
-Intrinsic gas represents the minimum gas required for a transaction to begin execution. This cost encompasses the computational resources needed by the EVM and the costs associated with data transfer. The intrinsic gas is subtracted from the transaction's $T_{gasLimit}$ to set up the execution context within the EVM.
+内在 gas 表示交易开始执行所需的最小 gas。该成本包括 EVM 所需的计算资源以及与数据传输相关的成本。从交易的 $T_{gasLimit}$ 中减去内在 gas，以在 EVM 内设置执行上下文。
 
-Updated to align with the Shanghai Specification, the intrinsic gas formula, where $T$ stands for Transaction and $G$ for Gas Cost, is as follows:
+更新以与上海规范保持一致，内在 gas 公式如下：
 
 $$
 g_0 \equiv
@@ -420,84 +420,84 @@ $$
 
 $$+$$
 
-$$ 
-\sum_{j=0}^{ length(T_{accessList}) - 1} \left( G_{\text{accesslistaddress}} + length(T_{accessList}[j]_s) *  G_{\text{accessliststorage}} \right)
+$$
+\sum_{j=0}^{ length(T_{accessList}) - 1} \left(G_{\text{accesslistaddress}} + length(T_{accessList}[j]_s) * G_{\text{accessliststorage}} \right)
 $$
 
-#### Intrinsic Gas Components:
+#### 内在 gas 组件：
 
-| Component                                                           | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+|组件|描述 |
 | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| $g_0$                                                        | Represents the total intrinsic gas cost of a transaction, covering initial code execution and data transfer.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| $G_{\text{transaction}}$                                     | The base cost for every transaction, set at 21000 gas.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| $T_{\text{initializationCode}}$                              | When $T_{to} = 0_{\text{Bytes}}$, CALLDATA is considered as $T_{\text{initializationCode}}$. Costs are normalized to 32-byte intervals.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| $T_{inputData}$ and $T_{initializationCode}$          | Collectively, $T_{inputData}$ and $T_{initializationCode}$ represent the CallData parameter of the transaction. If $T_{to} \neq 0_{Bytes}$, CALLDATA is treated as the input to the contract's entry point. The gas cost for processing CALLDATA is defined as 16 gas per non-zero byte and 4 gas per zero byte, impacting block size and potentially network delay due to increased processing. This gas cost model was based on a balance of block creation rate, chain growth rate, and network latency, initially optimized for Proof of Work systems. Adapting this model for Proof of Stake remains a research opportunity and area for future optimization. These parameters are defined as an unlimited size byte array, with the initialization cost set at 16 gas for each non-zero byte and 4 gas for each zero byte. More |
-| $G_{\text{txCreate}}$                                        | An additional 32000 gas is required for contract creation transactions.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| $G_{\text{accesslistaddress}}, G_{\text{accessliststorage}}$ | Additional gas costs for each address and storage key specified in the access list, facilitating optimized state access.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| $g_0$ |表示交易的总内在 gas 成本，涵盖初始代码执行和数据传输。 |
+| $G_{\text{transaction}}$ |每个交易的基本成本设置为 21000 gas。 |
+| $T_{\text{initializationCode}}$ |当 $T_{to} = 0_{\text{Bytes}}$ 时，CALLDATA 被视为 $T_{\text{initializationCode}}$。成本标准化为 32 字节间隔。 |
+| $T_{inputData}$ 和 $T_{initializationCode}$ | $T_{inputData}$ 和 $T_{initializationCode}$ 共同表示交易的 CallData 参数。如果 $T_{to} \neq 0_{Bytes}$，则 CALLDATA 被视为合约入口点的输入。处理 CALLDATA 的 gas 成本被定义为每个非零字节 16 个 gas 和每个零字节 4 个 gas，影响区块大小，并由于处理增加而可能产生网络延迟。这个 gas 成本模型基于区块创建率、链增长率和网络延迟的平衡，最初针对 Proof-of-Work 系统进行了优化。将该模型应用于 Proof-of-Stake 仍然是一个研究机会和未来优化的领域。这些参数被定义为无限大小的字节数组，每个非零字节的初始化成本设置为 16 gas，每个零字节的初始化成本设置为 4 gas。更多 |
+| $G_{\text{txCreate}}$ |创建合约交易需要额外 32000 gas。 |
+| $G_{\text{accesslistaddress}}, G_{\text{accessliststorage}}$ |访问列表中指定的每个地址和存储密钥的额外 gas 成本，有利于优化状态访问。 |
 
-### Effective Gas Price & Priority Fee
+### 有效 gas 价格及优先费
 
-The equations below were modified to include blob transactions ( $T_{type} = 3$ )
+下面的等式已修改为包括 blob 交易 ($T_{type} = 3$)
 
 $$ p \equiv effectiveGasPrice \equiv
-\begin{aligned}
-&\begin{cases}
+\开始{对齐}
+&\开始{案例}
 T_{gasPrice}, & \text{if} \space T_{type} = 0 \lor 1\\
-priorityFee + H_{baseFeePerGas} , & \text{if} \space T_{type} = 2 \lor 3
-\end{cases}\\
-\end{aligned} \qquad (62)
+优先费 + H_{baseFeePerGas} , & \text{if} \space T_{type} = 2 \lor 3
+\end{案例}\\
+\end{对齐} \qquad (62)
 $$
 
 $$ f \equiv priorityFee \equiv
 \begin{aligned}
 &\begin{cases}
 T_{gasPrice} - H_{baseFeePerGas}, & \text{if} \space T_{type} = 0 \lor 1\\
-min(T_{maxPriorityFeePerGas} , T_{maxFeePerGas} -  H_{baseFeePerGas}) , & \text{if} \space T_{type} = 2 \lor 3
+min(T_{maxPriorityFeePerGas} , T_{maxFeePerGas} - H_{baseFeePerGas}) , & \text{if} \space T_{type} = 2 \lor 3
 \end{cases}\\
 \end{aligned}
 $$
 
-|                   |                                                                                                                             |
+| | |
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| effectiveGasPrice | The amount of wei the Transaction signer will pay per unit Gas consumed during the execution of the transaction             |
-| priorityFee       | The amount of wei the Transaction's beneficiary will receive per unit Gas consumed during the execution of the transaction |
+|有效汽油价格 | 交易签名者在执行交易期间将为消耗的每单位 gas 支付的 wei 金额 |
+|优先费| 交易的受益人在执行交易期间消耗的每单位 gas 将收到的 wei 金额 |
 
-### Effective Gas Fee
+### 有效 gas 费用
 
 $$effectiveGasFee \equiv effectiveGasPrice \times T_{gasLimit} $$
-Deducted as part of the upfront cost
+作为前期成本的一部分扣除
 
-### Total Blob Gas
+### 总计 blob gas
 
-$$totalBlobGas  \equiv  (G_{gasPerBlob = 2^{17}} \times length(T_{blobVersionedHashes}) ) $$
+$$totalBlobGas \equiv (G_{gasPerBlob = 2^{17}} \times length(T_{blobVersionedHashes})) $$
 
-### Blob Gas Price
+### blob gas 价格
 
-The Blob Gas Price is determined through a formula that adjusts based on the excess blob gas generated in the network. The formula is as follows:
+blob gas 价格是通过根据网络中产生的多余 blob gas 进行调整的公式确定的。公式如下：
 
 $$
-blobGasPrice  \\  \approx  \\ 
+blobGasPrice \\ \approx \\
 factor_{minBlobBaseFee = 1} \times e^{numerator_{excessBlobGas} / denominator_{blobGaspriceUpdateFraction = 3338477}}
 $$
 
-- The formula returns 1 for any input under the current maximum blob gas per block (set at 786432) , if excess gas has not accumulated.
-- However it starts increasing when the target is breached over blocks , which causes the Excess Blob Gas Parameter to start accumulating , this triggers the Blob Gas Price to exponentially increase
-- With the target set at approximately half of the maximum blob gas per block (393216), the function starts to show an increase to a value of 2 at ten times the target, after which it rises exponentially.
+- 对于每区块(设置为 786432)当前最大 blob gas 下的任何输入，如果尚未累积超出的 gas，则该公式返回 1。
+- 然而，当目标超过区块时，它开始增加，这导致超出 blob gas 参数开始累积，这会触发 blob gas 价格呈指数级增长
+- 将目标设置为每个区块 (393216) 的最大值 blob gas 的大约一半时，该函数开始显示在目标的 10 倍处增加到值 2，之后呈指数增长。
 
 
-### Blob Gas Fee
+### blob gas 费用
 
 $$blobGasFee \equiv totalBlobGas \times blobGasPrice $$
 
-### Max Gas Fee
+### 最大 gas 费用
 
 $$
  maxGasFee \equiv
 \begin{aligned}
 &\begin{cases}
-T_{gasLimit} \times  T_{gasPrice}    , & \text{if} \space T_{type} = 0 \lor 1\\
-T_{gasLimit} \times  T_{maxFeePerGas}   , & \text{if} \space T_{type} = 2 \\
-(T_{gasLimit} \times  T_{maxFeePerGas}) +  maxBlobFee  , & \text{if} \space T_{type} =  3
+T_{gasLimit} \times T_{gasPrice} , & \text{if} \space T_{type} = 0 \lor 1\\
+T_{gasLimit} \times T_{maxFeePerGas} , & \text{if} \space T_{type} = 2 \\
+(T_{gasLimit} \times T_{maxFeePerGas}) + maxBlobFee , & \text{if} \space T_{type} = 3
 \end{cases}\\
 \end{aligned}
 $$
@@ -507,23 +507,23 @@ maxBlobFee \equiv
 T_{maxFeePerBlobGas} \times totalBlobGas
 $$
 
-### Up-Front Cost
+### 前期成本
 
 $$
-v_0 \equiv upfrontCost \equiv  effectiveGasFee + blobGasFee
+v_0 \equiv upfrontCost \equiv effectiveGasFee + blobGasFee
 $$
 
-## Transaction Execution
+## 交易执行
 
-The process of executing a transaction within the Ethereum network is governed by the transaction-level state transition function:
+在 Ethereum 网络中执行交易的过程由交易级别状态转换函数控制：
 
 $$\Upsilon(\sigma_t, T_{index}) \qquad (4)$$
 
-Upon invocation of $\Upsilon$, the system first verifies the intrinsic validity of the transaction. Once validated, the [Ethereum Virtual Machine](/wiki/EL/evm) (EVM) initiates state modifications based on the transaction's directives.
+在调用$\Upsilon$时，系统首先验证交易的内在有效性。验证后，[Ethereum 虚拟机](/wiki/EL/evm) (EVM) 将根据交易的指令启动状态修改。
 
-### Transaction Intrinsic Validity
+### 交易内在有效性
 
-The intrinsic validity of a transaction is determined through a series of checks:
+交易的内在有效性是通过一系列检查确定的：
 
 $$
 \begin{align}
@@ -536,42 +536,42 @@ intrinsicGas &\leq T_{gasLimit}\\ \land \nonumber \\
 maxGasFee + T_{value} &\leq \sigma[Sender(T)]_{balance}\\ \land \nonumber \\
 m &\geq H_{baseFeePerGas}\\ \land \nonumber \\
 \text{if} \space T_{type} = 2 \lor 3 : T_{maxFeePerGas} &\geq T_{maxPriorityFeePerGas} \\ \land \nonumber \\
-T_{gasLimit} \leq Header_{gasLimit} \nonumber \\ &− last( \left[ Block_{reciept} \right] )_{cumulativeGasUsed} \\
+T_{gasLimit} \leq Header_{gasLimit} \nonumber \\ &− last(\left[ Block_{receipt} \right])_{cumulativeGasUsed} \\
 \end{align}
 $$
 
-$$ \text{Where, }m \equiv
-\begin{aligned} \\
-&\begin{cases}
+$$ \text{哪里，}m \equiv
+\开始{对齐} \\
+&\开始{案例}
 T_{gasPrice}, & \text{if} \space T_{type} = 0 \lor 1\\
 T_{maxFeePerGas} , & \text{if} \space T_{type} = 2 \lor 3
-\end{cases}\\
-\end{aligned}
+\end{案例}\\
+\结束{对齐}
 $$
 
 And $EMPTY(\sigma, account)$ is defined as an account with no code, zero nonce, and zero balance:
 
 $$
-\begin{align}
-EMPTY(\sigma, account) \nonumber \\ \equiv \nonumber \\
-\sigma[account]_{code} = \text{KEC}(\emptyset) \nonumber \\ \land  \nonumber \\
-\sigma[account]_{nonce} = 0 \nonumber \\ \land  \nonumber \\
-\sigma[account]_{balance} = 0 \nonumber \\
-\end{align}
+\开始{对齐}
+EMPTY(\sigma, 帐户) \nonumber \\ \equiv \nonumber \\
+\sigma[account]_{code} = \text{KEC}(\emptyset) \nonumber \\ \land \nonumber \\
+\sigma[account]_{nonce} = 0 \nonumber \\ \land \nonumber \\
+\sigma[账户]_{余额} = 0 \nonumber \\
+\结束{对齐}
 $$
 
-|     |                                                                                                                  |
+| | |
 | --- | ---------------------------------------------------------------------------------------------------------------- |
-| 1   | The transaction sender must exist and cannot be an uninitialized account                                         |
-| 2   | The sender cannot be a contract                                                                                  |
-| 3   | Transactions from an account are capped, ensuring a nonce less than $2^{64} - 1$.                         |
-| 4   | The size of input data or CALLDATA must not exceed twice the maximum code size (24576 bytes).                    |
-| 5   | The transaction's nonce must match the current nonce of the sender in the state                                  |
-| 6   | The intrinsic gas calculation must not exceed the transaction's gas limit.                                       |
-| 7   | The sender must have sufficient balance to cover the maximum gas fee plus the value being sent.                  |
-| 8   | Ensures the transaction meets the minimum base fee per gas of the block                                          |
-| 9   | For EIP-1559 transactions, the max fee per gas must be at least as high as the max priority fee per gas          |
-| 10  | The transaction's gas limit, plus the gas used by previous transactions in the block, must not exceed the block' |
+| 1 | The transaction sender must exist and cannot be an uninitialized account |
+| 2 | The sender cannot be a contract |
+| 3 | Transactions from an account are capped, ensuring a nonce less than $2^{64} - 1$. |
+| 4 | The size of input data or CALLDATA must not exceed twice the maximum code size (24576 bytes). |
+| 5 | The transaction's nonce must match the current nonce of the sender in the state |
+| 6 | The intrinsic gas calculation must not exceed the transaction's gas limit. |
+| 7 | The sender must have sufficient balance to cover the maximum gas fee plus the value being sent. |
+| 8 | Ensures the transaction meets the minimum base fee per gas of the block |
+| 9 | For EIP-1559 transactions, the max fee per gas must be at least as high as the max priority fee per gas |
+| 10 | The transaction's gas limit, plus the gas used by previous transactions in the block, must not exceed the block' |
 
 ### $T$ Execution stage 1 : checkpoint state $\sigma_0$
 
@@ -598,25 +598,25 @@ EVM executions fundamentally require just an environment and a message. Therefor
 This maps to the internal Message type in EELS as :
 
 $$
-message(caller, target, gas, value,\\  data, code, depth, current Target ,\\ codeAddress,  shouldTransferValue, isStatic,\\ preAccessedAddresses, preAccesedStorageKeys,\\ parentEVM)
+消息(调用者，目标，gas，值，\\数据，代码，深度，当前目标，\\ codeAddress，shouldTransferValue，isStatic，\\ preAccessedAddresses，preAccesedStorageKeys，\\parentEVM)
 $$
 
-| Message Field parameter | Initial Call Value                                                                                                      | Initial Creation Value                                                                                                  | Execution Environment Forward Mapping                                         |
+| Message Field parameter | Initial Call Value | Initial Creation Value | Execution Environment Forward Mapping |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| caller                  | Recovered Sender Address                                                                                                | Recovered Sender Address                                                                                                | $I_origin$ or $I_{sender}$                                      |
-| target                  | $T_{to}$ is a valid Address                                                                                      | $T_{to} = 0_{bytes}$                                                                                             |                                                                               |
-| gas                     | $T_{gasLimit} - intrinsicCost$                                                                                   | $T_{gasLimit} - intrinsicCost$                                                                                   |
-| value                   | $T_{value}$                                                                                                      | $T_{value}$                                                                                                      | yellow paper: $I_v$ or $I_{value}$                                        |
-| data                    | $T_{data}$                                                                                                       | $0_{bytes}$                                                                                                      | yellow paper: $I_d$ or $I_{data}$                                         |
-| code                    | $(T_{to})_{code}$                                                                                                | $T_{data}$                                                                                                       | yellow paper: $I_b$ or $I_{[byteCode]}$                                   |
-| depth                   | $0$                                                                                                              | $0$                                                                                                              | yellow paper: $I_e$ or $I_{depth}$                                        |
-| currentTarget           | $T_{to}$                                                                                                         | We compute the contract address by taking the last 20 bytes of $KEC(RLP([Sender_{address}, Sender_{nonce} -1]))$ |
-| codeAddress             | $T_{to}$ default except when an alternative accounts code needs execution . e.g. 'CALLCODE' calling a precompile |                                                                                                                         | yellow paper: $I_a$ or $I_{codeOwnerAddress}$                             |
-| shouldTransferValue     | default is True, indicates if ETH should be transferred during executing this message                                   | default is True                                                                                                         |
-| isStatic                | default is False, indicates is State Modifications are allowed (false means state modifications are allowed)            | default is False                                                                                                        | inversely related to yellow paper: $I_w$ or $I_{permissionToModifyState}$ |
-| accesslistAddress       | See below                                                                                                               | -                                                                                                                       |
-| accesslistStorageKeys   | -                                                                                                                       | -                                                                                                                       |
-| parentEvm               | initially None                                                                                                          | initially None                                                                                                          |
+| caller | Recovered Sender Address | Recovered Sender Address | $I_origin$ or $I_{sender}$ |
+| target | $T_{to}$ is a valid Address | $T_{to} = 0_{bytes}$ | |
+| gas | $T_{gasLimit} - intrinsicCost$ | $T_{gasLimit} - intrinsicCost$ |
+| value | $T_{value}$ | $T_{value}$ | yellow paper: $I_v$ or $I_{value}$ |
+| data | $T_{data}$ | $0_{bytes}$ | yellow paper: $I_d$ or $I_{data}$ |
+| code | $(T_{to})_{code}$ | $T_{data}$ | yellow paper: $I_b$ or $I_{[byteCode]}$ |
+| depth | $0$ | $0$ | yellow paper: $I_e$ or $I_{depth}$ |
+| currentTarget | $T_{to}$ | We compute the contract address by taking the last 20 bytes of $KEC(RLP([Sender_{address}, Sender_{nonce} -1]))$ |
+| codeAddress | $T_{to}$ default except when an alternative accounts code needs execution . e.g. 'CALLCODE' calling a precompile | | yellow paper: $I_a$ or $I_{codeOwnerAddress}$ |
+| shouldTransferValue | default is True, indicates if ETH should be transferred during executing this message | default is True |
+| isStatic | default is False, indicates is State Modifications are allowed (false means state modifications are allowed) | default is False | inversely related to yellow paper: $I_w$ or $I_{permissionToModifyState}$ |
+| accesslistAddress | See below | - |
+| accesslistStorageKeys | - | - |
+| parentEvm | initially None | initially None |
 
 #### Substate initialization
 
@@ -632,22 +632,22 @@ Depending on the transaction type, accessed addresses are initialized differentl
 - For $T_{type} = 0$, the coinbase address, the caller , the current target and all the pre-compile contract addressees are added to the accessed account substate
 - For $T_{type} = 1, 2, or \space 3$, the coinbase address , the caller , the current target, all the pre-compiles and those in the access list are added
 
-$$A^*  \equiv (A^{*}_{selfDestructSet} = \empty, $$
+$$A^* \equiv (A^{*}_{selfDestructSet} = \empty, $$
 $$A^{*}_{logSeries} = (), $$
 $$A^{*}_{touchedAccounts} = \empty, $$
 $$A^{*}_{refundBalance} = 0 , $$
 if $T_{type} = 0$:
-$$A^{*}_{accesedAccountAddresses} =  \{ H_{coinBase},$$
-$$Message_{caller}, Message_{current_target}  $$
+$$A^{*}_{accesedAccountAddresses} = \{ H_{coinBase},$$
+$$Message_{caller}, Message_{current_target} $$
 $$allPrecompiledContract_{addresses}\}$$
 $$A^{*}_{accesedStorageKeys} = \empty $$
 if $T_{type} = 1 \lor 2 \lor 3$:
-$$A^{*}_{accesedAccountAddresses} =  \{ H_{coinBase},$$
-$${ \bigcup_{Entry \in T_{accessList}} \{ Entry_{address}  \}},$$
-$$Message_{caller}, Message_{current_target}  $$
+$$A^{*}_{accesedAccountAddresses} = \{ H_{coinBase},$$
+$${ \bigcup_{Entry \in T_{accessList}} \{ Entry_{address} \}},$$
+$$Message_{caller}, Message_{current_target} $$
 $$allPrecompiledContract_{addresses}\}$$
 $$A^{*}_{accesedStorageKeys}= $$
-$${ \bigcup_{Entry \in T_{accessList}} \{ \forall i < length(Entry_{storageKeys}), i \in \mathbb{N} : (Entry_{address_{20byte}}, Entry_{storageKeys}[i]_{32byte}  \}}$$
+$${ \bigcup_{Entry \in T_{accessList}} \{ \forall i < length(Entry_{storageKeys}), i \in \mathbb{N} : (Entry_{address_{20byte}}, Entry_{storageKeys}[i]_{32byte} \}}$$
 
 `A_{accessedAccountAddresses}` and `A_{accessedStorageKeys}` leverage the mechanism introduced by [Ethereum Access Lists (EIP-2930)](https://eips.ethereum.org/EIPS/eip-2930), detailed further in [this EIP-2930 overview](https://www.rareskills.io/post/eip-2930-optional-access-list-ethereum). This approach creates a distinction in gas costing between addresses and storage keys declared within the transaction's access list (incurring a "warm" cost) and those not included (incurring a "cold" cost). For comprehensive details on the gas costs associated with cold and warm accesses, please refer to [EIP-2929: Gas cost increases for state access opcodes](https://eips.ethereum.org/EIPS/eip-2929), which adjusts the costs to account for state access operations within the EVM.
 
@@ -658,23 +658,23 @@ $A_{accesedAccountAddresses}$ and $A_{accesedStorageKeys}$ belong to [Ethereum A
 In the context of the Ethereum Yellow Paper, contract creation is represented by the function:
 
 $$
-\Lambda(\sigma, A, s, o, g, p, v, i, e, \zeta, w) \\ or \\
-\Lambda(state_{\sigma}, AccruedSubState_{A} , sender_s , originalTransactor_o ,\\  availableGas_g , effectiveGasPrice_p , \\ endowment_v, []evmInitCodeByteArray_i , stackDepth_e , \\  saltForNewAccountAddress_{\zeta}, stateModificationPermission_w)
+\Lambda(\sigma, A, s, o, g, p, v, i, e, \zeta, w) \\ 或 \\
+\Lambda(state_{\sigma}, AccruedSubState_{A} , sender_s , originalTransactor_o ,\\ availableGas_g , effectiveGasPrice_p , \\ endowment_v, []evmInitCodeByteArray_i , stackDepth_e , \\ saltForNewAccountAddress_{\zeta}, stateModificationPermission_w)
 $$
 
-| $\Lambda$ Call Parameter           | Mapping                                                                                            | Notes                                                                                               |
+| $\Lambda$ Call Parameter | Mapping | Notes |
 | ----------------------------------------- | -------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| $state_{\sigma}$                   | $I_{state}$                                                                                 | The current state before contract creation begins.                                                  |
-| $AccruedSubState_{A}$              | $A^0$                                                                                       | Represents the initial substate.                                                                    |
-| $sender_s$                         | $I_{origin}$                                                                                | The origin address of the transaction, initiating the contract creation.                            |
-| $originalTransactor_o$             | $I_{origin}$                                                                                | The original transactor, identical to the sender in direct transactions.                            |
-| $availableGas_g$                   | $T_{gasLimit} - intrinsicCost$                                                              | The gas available for the contract creation, after deducting the intrinsic cost of the transaction. |
-| $effectiveGasPrice_p$              | $I_{gasPrice}$                                                                              | The gas price set for the transaction.                                                              |
-| $endowment_v$                      | $T_{value}$                                                                                 | The value transferred to the new contract.                                                          |
-| $[]evmInitCodeByteArray_i$         | $T_{CALLDATA}$                                                                              | The initialization bytecode for the new contract.                                                   |
-| $stackDepth_e$                     | 0                                                                                                  | The depth of the call stack at the point of contract creation; initially 0.                         |
-| $saltForNewAccountAddress_{\zeta}$ | $\emptyset$                                                                                 | Salt used for generating the new contract's address, non empty for create2 operations.              |
-| $stateModificationPermission_w$    | True, inversely referred by the `is_static` parameter in the Message object, which is set to false | Indicates if the contract creation can modify the state.                                            |
+| $state_{\sigma}$ | $I_{state}$ | The current state before contract creation begins. |
+| $AccruedSubState_{A}$ | $A^0$ | Represents the initial substate. |
+| $sender_s$ | $I_{origin}$ | The origin address of the transaction, initiating the contract creation. |
+| $originalTransactor_o$ | $I_{origin}$ | The original transactor, identical to the sender in direct transactions. |
+| $availableGas_g$ | $T_{gasLimit} - intrinsicCost$ | The gas available for the contract creation, after deducting the intrinsic cost of the transaction. |
+| $effectiveGasPrice_p$ | $I_{gasPrice}$ | The gas price set for the transaction. |
+| $endowment_v$ | $T_{value}$ | The value transferred to the new contract. |
+| $[]evmInitCodeByteArray_i$ | $T_{CALLDATA}$ | The initialization bytecode for the new contract. |
+| $stackDepth_e$ | 0 | The depth of the call stack at the point of contract creation; initially 0. |
+| $saltForNewAccountAddress_{\zeta}$ | $\emptyset$ | Salt used for generating the new contract's address, non empty for create2 operations. |
+| $stateModificationPermission_w$ | True, inversely referred by the `is_static` parameter in the Message object, which is set to false | Indicates if the contract creation can modify the state. |
 
 Note: $originalTransactor_o$ can differ from $sender_s$ when the message is not directly triggered by a transaction but rather comes from the execution of EVM code, indicating the versatility of message origination within the EVM execution context.
 
@@ -689,7 +689,7 @@ The process of creating a contract begins with determining the contract's addres
 2. **Initialize the New Account:**
 
 $$
-\sigma^*[newAccount] \equiv ( Nonce_{=1}, Balance_{=preexistingValue + T_{value} }, Storage_{=TRIE(\empty)}, CodeHash_{=KEC(())})
+\sigma^*[newAccount] \equiv (Nonce_{=1}, Balance_{=preexistingValue + T_{value} }, Storage_{=TRIE(\empty)}, CodeHash_{=KEC(())})
 $$
 
 The state of the new account is established with:
@@ -703,7 +703,7 @@ The state of the new account is established with:
    The sender's balance is adjusted by subtracting the transaction value:
 
 $$
-\sigma^*[sender]_{balance} \equiv \sigma[sender]_{balance} - T_{value}
+\sigma^*[发件人]_{余额} \equiv \sigma[发件人]_{余额} - T_{值}
 $$
 
 4. **Account Initialization:**
@@ -711,17 +711,78 @@ $$
 
 #### Message Type: Call
 
-TODO
+In the context of the Ethereum Yellow Paper, a message call is represented by the function:
 
-### $T$ Execution Stage 3 : Main Execution ($\Xi)  $
+$$
+\Theta(\sigma, A, s, o, r, c, g, p, v, \tilde{v}, d, e, w) \\ 或 \\
+\Theta(state_{\sigma}, AccruedSubState_{A}, sender_s, originalTransactor_o, recipient_r, \\ codeAddress_c, availableGas_g, effectiveGasPrice_p, value_v, \\ 表观值_{\tilde{v}}, callData_d, stackDepth_e, stateModificationPermission_w)
+$$
+
+| $\Theta$ Call Parameter | Mapping | Notes |
+| ----------------------- | ------- | ----- |
+| $state_{\sigma}$ | $I_{state}$ | The current global state before message call execution begins. |
+| $AccruedSubState_{A}$ | $A$ | Represents the accumulated substate prior to the message call, including logs and refunds. |
+| $sender_s$ | $I_{sender}$ | The immediate caller of the message call, which may be an externally owned account or contract. |
+| $originalTransactor_o$ | $I_{origin}$ | The original external account that initiated the transaction and remains constant across calls. |
+| $recipient_r$ | $I_{recipient}$ | The address whose balance is adjusted and whose storage may be modified by the call. |
+| $codeAddress_c$ | $I_{code}$ | The address whose code is executed, typically equal to the recipient. |
+| $availableGas_g$ | $I_{gas}$ | The amount of gas available for execution of the message call. |
+| $effectiveGasPrice_p$ | $I_{gasPrice}$ | The gas price used for gas accounting during execution. |
+| $value_v$ | $I_{value}$ | The amount of ether transferred from the sender to the recipient. |
+| $apparentValue_{\tilde{v}}$ | $I_{apparentValue}$ | The value visible to the executing code, differing in DELEGATECALL. |
+| $callData_d$ | $I_{callData}$ | Arbitrary-length byte array supplied as input data to the call. |
+| $stackDepth_e$ | $I_{depth}$ | The depth of the message call stack at the point of execution. |
+| $stateModificationPermission_w$ | $I_{isStatic}$ | Indicates whether state modification is permitted; false for STATICCALL. |
+
+---
+
+### Execution Result
+
+The evaluation of a message call produces a 5-tuple: $(σ′, g′, A′, z, o)$. After execution begins, the EVM evaluates the call using the following logic:
+
+1. **Execution of Account Code**
+   If the recipient account $r$ exists and contains code, the EVM executes the bytecode $\sigma[r]_c$ using the execution function $\Xi$. If no code exists, it is treated as a no-op (only value transfer occurs).
+
+2. **Exceptional Halting and State Reversion**
+   If execution halts due to an exception (e.g., OOG), the state reverts to the point before the transfer:
+   $$\sigma' = \sigma \text{ if } \sigma'' = \emptyset, \text{ else } \sigma''$$
+
+3. **Gas and Substate Commitment**
+   - **Gas:** If failed, all gas is consumed ($g'=0$). If successful, remaining gas $g''$ is returned.
+   - **Substate:** Logs and refunds ($A'$) are only committed if execution is successful ($\sigma'' \neq \emptyset$).
+
+4. **Execution Status Code ($z$)**
+   - $z = 0$ if execution failed ($\sigma'' = \emptyset$).
+   - $z = 1$ if execution succeeded.
+
+5. **Precompiled Contracts**
+   If the recipient $r$ is within the set $\pi = \{1, 2, 3, 4, 5, 6, 7, 8, 9\}$, execution is redirected to native functions:
+
+| Address | Function |
+| ------- | -------- |
+| 1 | ECDSA public key recovery |
+| 2 | SHA-256 hashing |
+| 3 | RIPEMD-160 hashing |
+| 4 | Identity function |
+| 5–8 | Elliptic curve operations (alt_bn128) |
+| 9 | BLAKE2 compression function |
+
+---
+
+**Implementation Reference:**
+The semantics described above are implemented in the [Ethereum Execution Layer Specification (EELS)](https://github.com/ethereum/execution-specs). Relevant modules include:
+- `ethereum/execution/message.py`
+- `ethereum/execution/call.py`
+- `ethereum/execution/evm.py`
+### $T$ Execution Stage 3 : Main Execution ($\Xi) $
 
 #### [Machine](/wiki/EL/evm?id=evm) State $\mu$
 
-$$\mu \equiv (\mu_{gasAvailable}, \mu_{programCounter},\\ \mu_{memoryContents}, \mu_{activeWordsInMemory},\\ \mu_{stackContents} ) $$
+$$\mu \equiv (\mu_{gasAvailable}, \mu_{programCounter},\\ \mu_{memoryContents}, \mu_{activeWordsInMemory},\\ \mu_{stackContents}) $$
 | | initial Value | notes |
 |-|-|-|
 |$$\mu$$ | | Initial Machine State |
-|$$\mu'$$ | | Resultant Machine State after an operation where $\mu' \equiv \mu \space \text{except :} \\  \mu'_{gas} \equiv \mu_{gas} - C_{generalGasCost}(\sigma, \mu, A, I) $ |
+|$$\mu'$$ | | Resultant Machine State after an operation where $\mu' \equiv \mu \space \text{except :} \\ \mu'_{gas} \equiv \mu_{gas} - C_{generalGasCost}(\sigma, \mu, A, I) $ |
 |$$\mu_{gasAvailable}$$ | | total [gas available](/wiki/EL/evm?id=gas) for the transaction |
 |$$\mu_{programCounter}$$ | 0 | [Natural number counter](/wiki/EL/evm?id=program-counter) to track the code position we are in , max number size is 256 bits |
 |$$\mu_{memoryContents}$$ | $$[0_{256Bit}, ..., 0_{256Bit}]$$ | [word(256bit) Addressed byte array](/wiki/EL/evm?id=memory) |
@@ -735,26 +796,26 @@ The `currentOperation` is determined based on the position of the `programCounte
 
 $$ currentOperation \equiv \ w \equiv
 \begin{cases}
-I_{[byteCode]}[\mu_{programCounter} ] & \text{if} \space  \mu_{programCounter} < length(I_{[byteCode]}) \\
+I_{[byteCode]}[\mu_{programCounter} ] & \text{if} \space \mu_{programCounter} < length(I_{[byteCode]}) \\
 STOP & \text{otherwise}
 \end{cases}
 $$
 
-This logic fetches the current operation by accessing the byte at the programCounter's position within the bytecode array. If the programCounter exceeds the length of the bytecode, a STOP operation is issued to halt execution.
+该逻辑通过访问字节码数组中 programCounter 位置处的字节来获取当前操作。如果 programCounter 超过字节码的长度，则发出 STOP 操作来停止执行。
 
-Consider the Yellow Paper's definition of the add operator as an illustrative example:
+考虑黄皮书对加法运算符的定义作为说明性示例：
 $$\mu'_{stackContents}[0] \equiv \mu_{stackContents}[0] + \mu_{stackContents}[1]$$
 
-This representation implies a left-sided addition and removal in the stack, akin to queue operations. However, traditional stack operations add and remove items from the right. Translating this to stack-based operations:
+这种表示意味着堆栈中的左侧添加和删除，类似于队列操作。然而，传统的堆栈操作从右侧添加和删除项目。将其转换为基于堆栈的操作：
 
 $$
 Add \Rightarrow
 $$
 
 $$
-x =  Pop(\mu_{stackContents}) \\
-y =  Pop(\mu_{stackContents_{itemsRemoved=1}}) \\
-result = x + y  \\
+x = Pop(\mu_{stackContents}) \\
+y = Pop(\mu_{stackContents_{itemsRemoved=1}}) \\
+result = x + y \\
 Push(\mu_{stackContents_{itemsRemoved=2}}, result)
 $$
 
@@ -762,9 +823,9 @@ $$
 \Rightarrow \mu_{stackContents^{itemsAdded_{\alpha}=1}_{itemsRemoved_{\delta}=2}}
 $$
 
-When converting to code, the notation $\mu_{s}[number]$ translates to $\mu_{stackContents}[stackLength - 1 - number]$, aligning with the conventional understanding of stack operations.
+转换为代码时，符号 $\mu_{s}[number]$ 转换为 $\mu_{stackContents}[stackLength - 1 - number]$，与堆栈操作的传统理解一致。
 
-The Yellow Paper elegantly notates stack-based operations and provides a framework for interpreting these operations within the execution cycle. It specifies that stack items are manipulated from the left-most, lower-indexed part of the array, with unaffected items remaining constant:
+黄皮书优雅地注释了基于堆栈的操作，并提供了一个在执行周期内解释这些操作的框架。它指定从数组最左边、索引较低的部分操作堆栈项，不受影响的项保持不变：
 
 $$
 \begin{align}
@@ -776,25 +837,25 @@ $$
 \end{align}
 $$
 
-Equation 162 demonstrates that for each x within the specified range, the modified stack mirrors the original stack at position $x - \Delta$, effectively tracking the original position of stack items post-operation. For example, adding an item [2] to an existing stack [10] results in [2,10], where the original item's new position aligns with $x=Delta$, maintaining the integrity of stack order post-operation.
+公式 162 表明，对于指定范围内的每个 x，修改后的堆栈在位置 $x - \Delta$ 处镜像原始堆栈，从而有效跟踪操作后堆栈项的原始位置。例如，将项目 [2] 添加到现有堆栈 [10] 会产生 [2,10]，其中原始项目的新位置与 $x=Delta$ 对齐，从而保持操作后堆栈顺序的完整性。
 
-#### Single Execution Cycle
+#### 单个执行周期
 
 $$
 O((\sigma, \mu, A, I)) \equiv (\sigma', \mu', A', I) \quad (159)\\
 $$
 
-Where $O$ represents the Execution Cycle, encapsulating the outcome of a single cycle within the state machine. This cycle can modify all components of $\mu$, with explicit specifications for changes to $\mu_{gas}$ and $\mu_{programCounter}$:
+其中 $O$ 表示执行周期，将单个周期的结果封装在状态机内。该循环可以修改$\mu$的所有组件，对$\mu_{gas}$和$\mu_{programCounter}$的更改有明确的规范：
 
-##### Resultant Program Counter of a Single Execution Cycle
+##### 单个执行周期的结果程序计数器
 
-The following equation outlines how the execution cycle processes one instruction at a time:
+下面的等式概述了执行周期如何一次处理一条指令：
 
 $$
 \mu'_{programCounter} \equiv
 \begin{cases}
-J_{JUMP}(\mu) \space \text{if }  currentOperation = JUMP \\
-J_{JUMP1}(\mu) \space \text{if }  currentOperation = JUMP1 \\
+J_{JUMP}(\mu) \space \text{if } currentOperation = JUMP \\
+J_{JUMP1}(\mu) \space \text{if } currentOperation = JUMP1 \\
 N(\mu_{programCounter}, currentOperation) \space \text{otherwise}
 \end{cases}
 $$
@@ -805,63 +866,63 @@ NextValidInstruction_N(i_{=programCounter}, w_{=currentOperation}) \equiv \\
 \begin{cases}
 &\\
 programCounter + NumberOfBytes(currentOperation + Data_{currentOperation}) - NumberOfBytes(Operation_{PUSH1}) + 2 \\
-\qquad  \text{if } currentOperation \in [PUSH1,PUSH32] \\
+\qquad \text{if } currentOperation \in [PUSH1,PUSH32] \\
 &\\
 programCounter + 1 \space \text{otherwise}
 \end{cases}
 $$
 
-- Here if the Operation is $JUMP$, the $J_{JUMP}$ function will set the program counter to the value at the top of the stack.
-- For $JUMP1$ operations, the $J_{JUMP1}$ function sets the program counter to the value at the top of the stack only if the adjacent value in the stack is not 0. Otherwise, it increases the program counter by 1. If the current operation is neither $JUMP$ nor $JUMP1$, the program counter will be incremented by the NextValidInstruction function.
+- 这里，如果操作是 $JUMP$，则 $J_{JUMP}$ 函数会将程序计数器设置为堆栈顶部的值。
+- 对于 $JUMP1$ 操作，仅当堆栈中的相邻值不为 0 时，$J_{JUMP1}$ 函数才将程序计数器设置为堆栈顶部的值。否则，程序计数器加 1。如果当前操作既不是 $JUMP$ 也不是 $JUMP1$，则程序计数器将由 NextValidInstruction 函数递增。
 
-The NextValidInstruction function determines that if the current operation is within the range of all PUSH operations, we increment the program counter to the byte immediately following the current operation byte, accounting for the data associated with the operation. This data can range from 1 to 32 bytes, depending on the specific PUSH operation. If the operation is not a PUSH operation, we simply increment the program counter by 1, advancing to the next byte of the code. This process highlights that PUSH instructions are responsible for loading data onto the stack from the code.
+NextValidInstruction 函数确定当前操作是否在所有 PUSH 操作的范围内，我们将程序计数器递增到紧随当前操作字节之后的字节，以考虑与该操作相关的数据。该数据的范围可以是 1 到 32 个字节，具体取决于具体的 PUSH 操作。如果该操作不是 PUSH 操作，我们只需将程序计数器加 1，前进到代码的下一个字节。此过程强调 PUSH 指令负责将数据从代码加载到堆栈上。
 
-When the program counter executes a jump operation, it must target a valid jump destination. The $ValidJumpDestinations_{D}$ function specifies the set of all valid jump destinations.
+当程序计数器执行跳转操作时，它必须瞄准有效的跳转目的地。 $ValidJumpDestinations_{D}$ 函数指定所有有效跳转目标的集合。
 
 $$
 ValidJumpDestinations_{D}(byteCode) \equiv \\
 ValidJumpDestinations_{D_J}(byteCode,index) \equiv \\
 \begin{cases}
-\{\}  \quad \text{  if } index \geq Length(byteCode) \\
+\{\} \quad \text{ if } index \geq Length(byteCode) \\
 &\\
 \{i\} \cup ValidJumpDestinations_{D_J}(byteCode,NextValidInstruction(index, byteCode[index])) \\
-\space \qquad \text{if }  byteCode[index] = JUMPDEST \\
+\space \qquad \text{if } byteCode[index] = JUMPDEST \\
 &\\
 ValidJumpDestinations_{D_J}(byteCode,NextValidInstruction(index, byteCode[index])) \space \text{otherwise}
 \end{cases}
 $$
 
-This indicates that we include the index in the set if the bytecode at that index corresponds to a JUMPDEST operation. We continue adding these indices by recursively calling the $ValidValidJumpDestinations_{D_J}(byteCode, index)$ function with the index determined by the $NextValidInstruction$ function.
+这表明如果该索引处的字节码对应于 JUMPDEST 操作，则我们将该索引包含在集合中。我们通过递归调用 $ValidValidJumpDestinations_{D_J}(byteCode, index)$ 函数以及由 $NextValidInstruction$ 函数确定的索引来继续添加这些索引。
 
-##### Resultant Gas Consumption in a Single Execution Cycle
+##### 单个执行周期中的结果 gas 消耗
 
 $$
 \mu'_{gas} \equiv \mu_{gas} - C_{gasCost}(\sigma, \mu, AccruedSubState, Environment_I)
 $$
 
-The gas cost function, while not overly complex, includes various cases for different operations. It is succinctly defined in Appendix H of the Yellow Paper. In essence, it calculates the total cost of the current cycle by adding the cost of the current operation to the difference between the cost of active words in memory before and after the cycle (memory expansion cost).
+gas 成本函数虽然不太复杂，但包含不同操作的各种情况。黄皮书附录 H 对其进行了简洁的定义。本质上，它通过将当前操作的成本加上该周期前后内存中活动字的成本之差(内存扩展成本)来计算当前周期的总成本。
 
-Different clients handle gas costs differently. In PySpec, various types of cost processing are integrated into the operations, while in Geth, gas costs are handled before the operation executes. Moreover, Geth distinguishes between [dynamic](https://github.com/ethereum/go-ethereum/blob/7bb3fb1481acbffd91afe19f802c29b1ae6ea60c/core/vm/interpreter.go#L257) costs used for memory expansion and [constant](https://github.com/ethereum/go-ethereum/blob/7bb3fb1481acbffd91afe19f802c29b1ae6ea60c/core/vm/interpreter.go#L224) gas associated with the base cost of the operation. Both types of costs are deducted using the [UseGas](https://github.com/ethereum/go-ethereum/blob/7bb3fb1481acbffd91afe19f802c29b1ae6ea60c/core/vm/contract.go#L161) function
+不同的客户端处理 gas 的成本不同。在 PySpec 中，各种类型的成本处理被集成到操作中，而在 Geth 中，gas 成本在操作执行之前处理。此外，Geth 区分用于内存扩展的 [dynamic](https://github.com/ethereum/go-ethereum/blob/7bb3fb1481acbffd91afe19f802c29b1ae6ea60c/core/vm/interpreter.go#L257) 成本和与操作的基本成本相关的 [constant](https://github.com/ethereum/go-ethereum/blob/7bb3fb1481acbffd91afe19f802c29b1ae6ea60c/core/vm/interpreter.go#L224) gas。两种类型的成本均使用 [UseGas](https://github.com/ethereum/go-ethereum/blob/7bb3fb1481acbffd91afe19f802c29b1ae6ea60c/core/vm/contract.go#L161) 函数扣除
 
-#### Program Execution $\Xi$ :
+#### 程序执行$\Xi$：
 
 $$(\sigma^{'}_{resultantState}, gas_{remaining}, A^{resultantAccruedSubState}, \omicron^{Output})$$ $$\equiv \Xi(\sigma,gas,A^{accruedSubState}, Environment_I)$$
 
-The Program Execution function is defined formally by the function X, the only difference is $\Xi$ calls X and returns the output of X removing the $Environment_I$ from the output tuple.
+程序执行函数由函数 X 正式定义，唯一的区别是 $\Xi$ 调用 X 并返回 X 的输出，从输出元组中删除 $Environment_I$。
 
-##### Recursive Execution Function X
+##### 递归执行函数 X
 
-X orchestrates the execution of the entire code. This is typically implemented by clients as a main loop iterating over the code. However, its definition is recursive:
+X 协调整个代码的执行。这通常由客户端实现作为迭代代码的主循环。然而，它的定义是递归的：
 
 $$
-X((\sigma,\mu,AccruedSubState,Environment_I)) \equiv  \nonumber \\
+X((\sigma,\mu,AccruedSubState,Environment_I)) \equiv \nonumber \\
 \begin{cases}
 &\\
 (\empty, \mu, AccruedSubState, Environment_I) \\ \qquad \text{if } Z_{exceptionalHalting}(\sigma, \mu, AccruedSubState, Environment_I) \\
 &\\
-(\empty, \mu', AccruedSubState, Environment_I, output ) \\ \qquad \text{if }  currentOperation_w = REVERT \\
+(\empty, \mu', AccruedSubState, Environment_I, output) \\ \qquad \text{if } currentOperation_w = REVERT \\
 &\\
-O(\sigma, \mu', AccruedSubState, Environment_I) . output  \\ \qquad \text{if }  output  \neq \empty \\
+O(\sigma, \mu', AccruedSubState, Environment_I) . output \\ \qquad \text{if } output \neq \empty \\
 &\\
 X(O(\sigma, \mu', AccruedSubState, Environment_I)) \\ \qquad \text{otherwise}
 &\\
@@ -883,17 +944,17 @@ $$
 \mu'_{activeWordsInMemory} \equiv 32 * M_{memoryExpansionForRangeFunction}(\mu_{activeWordsInMemory}, \mu_{stackContents}[0], \mu_{stackContents}[1])
 $$
 
-1. If the conditions for Exceptional Halting are met, return a tuple consisting of an empty state, the machine state, accrued sub state, environment, and an empty output.
-2. If the current Operation is $REVERT$, return a tuple consisting of an empty state, the machine state after deducting gas, accrued sub state, environment, and the machine output.
-3. If the machine output is not empty, the execution iterator function $O$ consumes the output.
+1. 如果满足异常停止的条件，则返回一个由空状态、机器状态、应计子状态、环境和空输出组成的元组。
+2. 如果当前 Operation 为$REVERT$，则返回一个由空状态、扣除 gas 后的机器状态、累积的子状态、环境和机器输出组成的元组。
+3. 如果机器输出不为空，则执行迭代器函数 $O$ 会消耗输出。
 
-- For instance, if the current operation is a system operation such as CALL, CALLCODE, [DELEGATECALL](https://github.com/ethereum/execution-specs/blob/9c24cd78e49ce6cb9637d1dabb679a5099a58169/src/ethereum/cancun/vm/instructions/system.py#L542), or STATICCALL, these calls invoke the [generic call function](https://github.com/ethereum/execution-specs/blob/9c24cd78e49ce6cb9637d1dabb679a5099a58169/src/ethereum/cancun/vm/instructions/system.py#L267), setting up a new message and a child EVM process. The output of this process is then [written back into the memory](https://github.com/ethereum/execution-specs/blob/9c24cd78e49ce6cb9637d1dabb679a5099a58169/src/ethereum/cancun/vm/instructions/system.py#L325) of the parent EVM process, effectively consuming the output in one iteration of $O$, which may be utilized in the next iteration.
+- 例如，如果当前操作是 CALL、CALLCODE、[DELEGATECALL](https://github.com/ethereum/execution-specs/blob/9c24cd78e49ce6cb9637d1dabb679a5099a58169/src/ethereum/cancun/vm/instructions/system.py#L542) 或 STATICCALL 等系统操作，则这些调用将调用 [通用调用函数](https://github.com/ethereum/execution-specs/blob/9c24cd78e49ce6cb9637d1dabb679a5099a58169/src/ethereum/cancun/vm/instructions/system.py#L267)，设置一条新消息和一个子消息 EVM 进程。然后，该进程的输出被[写回父 EVM 进程的内存](https://github.com/ethereum/execution-specs/blob/9c24cd78e49ce6cb9637d1dabb679a5099a58169/src/ethereum/cancun/vm/instructions/system.py#L325)，有效地消耗 $O$ 的一次迭代中的输出，该输出可以在下一次迭代中使用。
 
-4. In all other scenarios, we simply continue recursively calling the iterator function. In simpler terms, this means we proceed with the main interpreter loop
+4. 在所有其他场景中，我们只需继续递归调用迭代器函数即可。简单来说，这意味着我们继续主解释器循环
 
-##### Normal Halting H
+##### 正常停止 H
 
-The $H_{normalHaltingFunction}$ defines the halting behavior of the EVM under normal circumstances:
+$H_{normalHaltingFunction}$ 定义了 EVM 在正常情况下的停止行为：
 
 $$
 H_{normalHaltingFunction}(\mu, Environment_I) \equiv
@@ -907,28 +968,28 @@ H_{RETURN}(\mu) & \text{if } \text{currentOperation} \in \{ \text{RETURN}, \text
 \end{cases}
 $$
 
-Where:
+其中：
 
 - $H_{RETURN}(\mu) \equiv \mu'$
 
-- $\Delta_{expansion}$ is calculated as:
+- $\Delta_{expansion}$ 计算如下：
 
   - $\Delta_{expansion} \equiv 32 \times M_{memoryExpansionForRangeFunction}(length(\mu_{memoryContents}), startPos, memorySize)$
   - $\Delta_{expansion} \in \mathbb{N}$
 
-- $\mu'$ is defined as:
-  - $\mu' \equiv \mu$ except:
+- $\mu'$ 定义为：
+  - $\mu' \equiv \mu$ 除外：
     - $\mu'_{memoryContents} \equiv \mu_{memoryContents} + [0_{\text{word}_{256\text{bit}}} ... 0_{\text{word}_{256\text{bit}}}]_{\text{length}=\Delta_{expansion}}$
     - $\mu'_{output} \equiv \mu'_{memoryContents}[startPos : startPos + memorySize]$
     - $\mu'_{gas} \equiv \mu_{gas} - \text{memoryExpansionCost}$
     - $\mu'_{running} \equiv false$
 
-Where:
+其中：
 
-- $startPos \equiv  \mu_{stackContents}[0]$
-- $memorySize \equiv  \mu_{stackContents}[1]$
+- $startPos \equiv \mu_{stackContents}[0]$
+- $memorySize \equiv \mu_{stackContents}[1]$
 
-The function $M_{memoryExpansionForRangeFunction}(s,f,l)$ determines the memory expansion required to accommodate the range specified:
+函数 $M_{memoryExpansionForRangeFunction}(s,f,l)$ 确定容纳指定范围所需的内存扩展：
 
 $$
 M_{memoryExpansionForRangeFunction}(s,f,l) \equiv
@@ -941,29 +1002,175 @@ S & \text{if } l = 0 \\
 \end{cases}
 $$
 
-In essence, the $H_{normalHaltingFunction}$ first sets the start index and length of the output based on the top two stack items. If memory expansion is needed to accommodate the output, it expands the memory accordingly, incurring memory expansion costs if necessary. Finally, it sets the EVM's output to the specified memory range.
+本质上，$H_{normalHaltingFunction}$ 首先根据顶部两个堆栈项设置输出的起始索引和长度。如果需要扩展内存来容纳输出，则相应地扩展内存，必要时会产生内存扩展成本。最后，它将 EVM 的输出设置为指定的内存范围。
 
-##### Exception Halting Z
+##### 异常停止 Z
 
-### $T$ Execution stage 4 : Provisional State $\sigma_p$
-
-TODO
-
-### $T$ Execution stage 5 : Pre-Final State $\sigma^*$
+### $T$ 执行阶段 4：临时状态 $\sigma_p$
 
 TODO
 
-### $T$ Execution stage 6 : Final State $\sigma'$
+### $T$ 执行阶段 5：预最终状态 $\sigma^*$
 
 TODO
 
-## Block holistic Validity
+### $T$ 执行阶段 6：最终状态 $\sigma'$
 
 TODO
 
-## Appendix
+## 区块整体有效性
 
-### Code A
+区块整体有效性是指区块作为单个原子状态转换的正确性，通过组合所有交易的有序执行并验证其聚合效果与区块标头中声明的承诺一致来获得。
+
+尽管黄皮书通过不同的函数指定了交易的执行和区块的有效性，但区块的整体有效性来自于它们的组合，并通过区块级别的执行结果的重构和验证来形式化。
+
+---
+
+### 状态初始化
+
+区块的执行从源自父区块的初始状态开始。函数 $\Gamma$ 将区块映射到其初始执行状态：
+
+$$
+\Gamma(B) \equiv 
+\begin{cases} 
+\sigma_0 & \text{if } P(B_H) = \emptyset \\
+\sigma_i \text{ such that } \text{TRIE}(LS(\sigma_i)) = P(B_H)_H & \text{otherwise}
+\end{cases}
+$$
+
+|符号|描述 |
+| ------ | ----------- |
+| $\sigma_0$ |创世状态。 |
+| $P(B_H)_H$ |父级区块的 状态根。 |
+| $LS$ |状态映射函数 (世界状态)。 |
+
+这可确保所有节点从相同的加密提交状态开始执行。
+
+---
+
+### 区块转换函数
+
+令$B_T$表示区块中交易的有序列表。 交易按顺序执行，其中每个交易都对其前一个生成的状态进行操作。该顺序执行由区块转换函数 $\Pi$ 捕获：
+
+$$\Pi(\sigma, B) \equiv \sigma'$$
+
+其中 $\sigma'$ 是通过按顺序应用所有交易获得的最终交易后状态，包括在区块级别定义的任何执行后状态转换。因此，交易的有效性依赖于上下文，并且对排序和累积效应敏感。
+
+### gas Accumulation and Receipts
+
+每次交易执行都会生成一个收据，其中包含执行状态、日志和累计 gas 使用情况。令$R[n]$表示执行第$n$次交易后使用的累积 gas。 gas 累加是递归定义的：
+
+$$
+R[n] \equiv 
+\begin{cases} 
+0 & \text{if } n < 0 \\
+\Upsilon^g(\sigma[n-1], B_T[n]) + R[n-1] & \text{otherwise}
+\end{cases}
+$$
+
+其中 $\Upsilon^g$ 提取在状态 $\sigma[n-1]$ 下执行交易 $B_T[n]$ 所消耗的 gas。
+
+---
+
+### 承诺验证
+
+交易收据的有序序列和最终的世界状态使用 Merkle–Patricia Trie 提交。仅当这些计算出的根与区块标头匹配时，区块才有效：
+
+1.  **收据根：** $B_{H_r} = \text{TRIE}(LS(R))$
+2.  **状态根:**$B_{H_s} = \text{TRIE}(LS(\sigma'))$
+
+**Validity Requirements:**
+* Computed receipts root must match the header.
+* Final 状态根 must match the header.
+* gas 的累积使用量必须遵守区块 gas 限制 ($R[n] \le B_{H_l}$)。
+
+区块有效性是**原子**。 区块级转换函数 $\Phi$ 将初始状态和区块映射到完整的区块结果。当且仅当所有重建、执行、累积和承诺检查成功时，区块才被接受。在区块中不存在部分接受交易的概念。
+
+---
+
+**Implementation Reference:**
+上述语义基于[Ethereum 黄皮书](https://ethereum.github.io/yellowpaper/paper.pdf)：
+- **第 12 节：** 区块最终确定
+- **Section 12.1:** Executing Withdrawals
+- **第 12.2 节：** 交易验证
+- **Section 12.3:** State Validation
+
+### gas Accounting Examples
+到目前为止，我们已经讨论了各种场景中的 EL 合并后 gas 机制。 Let's tie it all together with some examples.
+
+注意：每个交易类型都有不同的参数和费用处理行为。
+
+### 示例 1：简单 ETH 转账
+####  支持的交易类型
+- **类型 0**：旧版交易  
+- **类型 1**：旧版 + 访问列表 ([EIP-2930](https://eips.ethereum.org/EIPS/eip-2930))  
+- **类型 2**：EIP-1559 交易 ([EIP-1559](https://eips.ethereum.org/EIPS/eip-1559))
+
+#### 交易参数(由发送方定义)
+
+|发送类型 |参数|描述 |
+|--------------|-------------------------|-------------------------------------------------------------------|
+|类型 0 / 1 / 2 | `gasLimit` | 交易可以消耗的最大 gas |
+|类型 0 / 1 | `gasPrice` |支付给提议者的完整 gas 价格 |
+|类型 2 | `maxFeePerGas` |每 gas 单位的最高总费用(包括基本费用 + 小费)|
+|类型 2 | `maxPriorityFeePerGas` |激励区块纳入的可选提示 |
+
+#### 区块参数(协议定义)
+
+|发送类型 |参数|描述 |
+|------------|-------------|------------------------------------------------------|
+|类型 2 | `baseFee` |动态基础 gas 每单位价格(由协议烧毁)|
+
+#### 提前预订
+此时，交易已准备好在区块内进行处理。 最初，预付金额会被保留，这意味着它会从发件人处扣除。
+|发送类型 |公式|
+|------------|----------------------------------|
+|类型 0 / 1 | `gasLimit × gasPrice` |
+|类型 2 | `gasLimit × maxFeePerGas` |
+
+#### 执行阶段
+在初始扣除之后，确定交易的执行成本，并且 gas 要么被烧毁，要么奖励给提议者，要么返回给发送者。
+
+|发送类型 |有效 gas 价格|实际成本|
+|------------|------------------------------------------------------|--------------------------------|
+|类型 0 / 1 | `gasPrice` | `gasUsed × gasPrice` |
+|类型 2 | `baseFee + min(maxPriorityFeePerGas, maxFeePerGas − baseFee)` | `gasUsed × effectiveGasPrice` |
+
+注意：  
+- 对于类型 0/1，全额直接支付至提议者。  
+对于类型 2，基本费用被销毁，小费 `min(maxPriorityFeePerGas, maxFeePerGas - baseFee)` 进入提议者。 effectiveGasPrice 确保 gas 总成本保持在 maxFeePerGas 范围内，如果基本费用较高，则可能会减少小费。
+
+退款金额通过 `reserved − actualCost` 计算并返回给发件人。
+
+### 示例 2：blob 交易
+
+携带交易的 blob 既支付通常的 EVM gas 费用，又支付大数据 blob 的单独 blob gas 费用。请注意，EIP-1559 交易之前的类型没有 blob。 在此示例中，我们将仅讨论与 blob 相关的费用。
+
+####  blob 交易类型
+- **类型 3**：EIP-4844 交易 ([EIP-4844](https://eips.ethereum.org/EIPS/eip-4844))
+
+#### 交易参数
+- `blobVersionedHashes` – 标识每个数据 blob。  
+- `totalBlobGas` – 计算为 `GasPerBlob × numberOfBlobs`。  
+- `maxFeePerBlobGas` – 发件人将支付的每个 blob gas 单位的最大 gwei。
+
+#### 区块参数
+- `blobGasPrice` – 每个区块 blob gas 动态单价。
+
+最初，预付金额会被保留，这意味着它会从发件人处扣除。
+- `reserved_blob = totalBlobGas × maxFeePerBlobGas`
+
+#### 执行成本
+- `blobFee = totalBlobGas × blobGasPrice` 并已被协议完全烧录。
+
+#### 退款给发件人计算
+- `refund_blob = reserved_blob − blobFee` 并返回给发件人。
+
+这些示例应有助于将 gas 在交易生命周期中的处理方式联系起来。
+
+## 附录
+
+### 代码 A
 
 ```R
 ##imports
@@ -1003,7 +1210,7 @@ calculate_base_fee_per_gas <- function(parent_gas_limit, parent_gas_used, parent
 }
 ```
 
-After defining the model in R, we proceed by simulating the function across a range of gasused scenarios:
+在 R 中定义模型后，我们继续在一系列使用 gas 的场景中模拟该函数：
 
 ````R
 parent_gas_limit <- 30000  # Fixed for simplification
@@ -1025,7 +1232,7 @@ data <- expand.grid(parent_gas_used = seq_parent_gas_used)
 data$expected_base_fee <- mapply(calculate_base_fee_per_gas, parent_gas_limit, data$parent_gas_used, parent_base_fee_per_gas)
 ````
 
-That's all for prep , now let's plot and observe by doing a scatter plot which will reveal any shape this function produces over a range; given the constraints.
+这就是 prep 的全部内容，现在让我们通过散点图进行绘制和观察，该散点图将显示该函数在一定范围内产生的任何形状；考虑到约束条件。
 
 ```R
 fig <- plot_ly(data, x = ~parent_gas_used, y = ~expected_base_fee, type = 'scatter', mode = 'markers')  # scatter plot
@@ -1039,7 +1246,7 @@ fig <- fig %>% layout(xaxis = list(title = "Parent Gas Used"),
 fig
 ```
 
-### Code B
+### 代码 B
 
 ````r
 
@@ -1138,7 +1345,7 @@ ggsave("plot_gas_limit.png", plot, width = 7, height = 5)
 
 ````
 
-### Code C
+### 代码 C
 
 ````r
 ## we are observing the effects of this parameter
@@ -1158,14 +1365,14 @@ $`
 That's all for data prep , now lets plot:
 
 ```r
-plot <- ggplot(data, aes(x = parent_gas_used, y = expected_base_fee, color = as.factor(base_fee_max_change_denominator))) +
+绘图 <- ggplot(数据, aes(x = parent_gas_used, y = expected_base_fee, 颜色 = as.factor(base_fee_max_change_denominator))) +
     geom_point() +
-    scale_color_brewer(palette = "Spectral") +
+    scale_color_brewer(调色板=“光谱”)+
     theme_minimal() +
-    labs(color = "Base Fee Max Change Denominator") +
+    labs(color = "基本费用最大变化分母") +
     theme_bw()
 
-plot
+情节
 ```
 
 ### Code D
@@ -1179,23 +1386,23 @@ seq_parent_gas_used <- seq(5000, parent_gas_limit, by = 500)
 
 parent_base_fee_per_gas <- 100
 
-data <- expand.grid( parent_gas_used = seq_parent_gas_used, base_fee_max_change_denominator = seq_max_change_denom, elasticity_multiplier = seq_elasticity_multiplier)
+数据 <- 展开.grid(parent_gas_used = seq_parent_gas_used, base_fee_max_change_denominator = seq_max_change_denom, elasticity_multiplier = seq_elasticity_multiplier)
 
-data```expected_base_fee <- mapply(calculate_base_fee_per_gas, parent_gas_limit, data$parent_gas_used, parent_base_fee_per_gas, data$base_fee_max_change_denominator, data$  elasticity_multiplier)
+data```expected_base_fee <- mapply(calculate_base_fee_per_gas, parent_gas_limit, data$parent_gas_used, parent_base_fee_per_gas, data$base_fee_max_change_deminator, 数据$ elasticity_multiplier)
 
-plot <- ggplot(data, aes(x = parent_gas_used, y = expected_base_fee, color = as.factor(base_fee_max_change_denominator))) +
+绘图 <- ggplot(数据, aes(x = parent_gas_used, y = expected_base_fee, 颜色 = as.factor(base_fee_max_change_denominator))) +
     geom_point() +
-    facet_wrap(~elasticity_multiplier) +  #  we break the plots out by the this facet
-    scale_color_brewer(palette = "Spectral") +
+    facet_wrap(~elasticity_multiplier) + # 我们通过这个方面分解图
+    scale_color_brewer(调色板=“光谱”)+
     theme_minimal() +
-    labs(color = "Base Fee Max Change Denominator") +
+    labs(color = "基本费用最大变化分母") +
     theme_bw()
 
-ggsave("rho-xi.png", plot, width = 14, height = 10)
+ggsave(“rho-xi.png”，情节，宽度= 14，高度= 10)
 
 $`
 
-### Code E
+### 代码 E
 
 ````r
 library(ggplot2)
@@ -1279,7 +1486,7 @@ ggplot(data_long, aes(x = BlockNumber, y = Value)) +
 
 ````
 
-### Code F
+### 代码 F
 
 ````r
 normalize <- function(x) {
@@ -1298,9 +1505,9 @@ ggplot(data_blob_price, aes(x = BlockNumber)) +
   labs(title = "Normalized Trends Over Blocks", x = "Block Number", y = "Normalized Value", color = "Parameter")
 ````
 
-### Code for formatting document
+### 格式化文档的代码
 
-Formatting are messing up the latex code in this document the below script formats katex documents correctly.
+格式化弄乱了本文档中的 Latex 代码，下面的脚本正确地格式化了 katex 文档。
 
 ````bash
 #!/bin/bash
@@ -1314,10 +1521,16 @@ sed -i -E ':a;N;$!ba;s/`code2([^`]*)`/\$\$\1\$\$/g' $1
 sed -i -E 's/(\$+)\s*([^$]+?)\s*(\$+)/\1\2\3/g' $1
 ````
 
-[¹]: https://archive.devcon.org/archive/watch/6/eels-the-future-of-execution-layer-specifications/?tab=YouTube
+### 资源
+- https://archive.devcon.org/archive/watch/6/eels-the-future-of-execution-layer-specifications/?tab=YouTube
+- [EIP-1559](https://eips.ethereum.org/EIPS/eip-1559) • [已存档](https://web.archive.org/web/20230101000000/https://eips.ethereum.org/EIPS/eip-1559)
+- [EIP-4844](https://eips.ethereum.org/EIPS/eip-4844) • [已存档](https://web.archive.org/web/20230701000000/https://eips.ethereum.org/EIPS/eip-4844)
+- [黄皮书](https://ethereum.github.io/yellowpaper/paper.pdf) • [已存档](https://web.archive.org/web/20240310000000/https://ethereum.github.io/yellowpaper/paper.pdf)
+- [EL 规范](https://github.com/ethereum/execution-specs) • [已存档](https://web.archive.org/web/20240501000000/https://github.com/ethereum/execution-specs)
+
 
 > [!NOTE]
-> All the topics in this PR are open for collaboration on a separate branch
+> PR 中的所有主题都开放用于在单独的分支上进行协作
 
 $$
 

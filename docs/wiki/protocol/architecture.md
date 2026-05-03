@@ -1,13 +1,13 @@
-# Protocol Architecture Overview
+# 协议架构概述
 
-> :warning: This article is a [stub](https://en.wikipedia.org/wiki/Wikipedia:Stub), help the wiki by [contributing](/contributing.md) and expanding it.
+> :warning: 本文是一个 [存根](https://en.wikipedia.org/wiki/Wikipedia:Stub)，通过 [贡献](/contributing.md) 和扩展它来帮助维基。
 
-The current protocol architecture is a result of years of evolution. The protocol consists of 2 main parts - execution and consensus layer. The execution layer (EL) handles the actual transactions and user interactions, it's where the global computer executes its programs. The consensus layer (CL) provides the proof-of-stake consensus mechanism - a cryptoeconomic security making sure all nodes follow the same tip and drives the canonical chain of execution layer. 
+当前的协议架构是多年演变的结果。该协议由两个主要部分组成 - Execution Layer 和 Consensus Layer。 Execution Layer (EL) 处理实际的交易和用户交互，它是全局计算机执行其程序的地方。 Consensus Layer (CL) 提供了 Proof-of-Stake 共识机制——一种加密经济安全机制，确保所有节点遵循相同的提示并驱动 Execution Layer 的规范链。 
 
-In practice, these layers are implemented in its own clients connected via API. Each have their own p2p network handling different kind of data. 
+实际上，这些层是在通过 API 连接的自己的客户端中实现的。每个都有自己的 p2p 网络处理不同类型的数据。 
 
 ![](./img/clients-overview.png)
 
-Looking under the hood of each client, they consists of many fundamental functions: 
+看看每个客户端的底层，它们包含许多基本功能： 
 
 ![](./img/protocol-overview.png)

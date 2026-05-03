@@ -1,117 +1,111 @@
-# Execution Client
+# 执行客户端
 
-> **Execution clients**, formerly known as *eth1 clients*, are implementing Ethereum [execution layer](https://github.com/ethereum/execution-specs) tasked with processing and broadcasting transactions and managing the state.
-They receive transactions via p2p, run the computations for each transaction using the [Ethereum Virtual Machine](https://ethereum.org/en/developers/docs/evm/) to update the state and ensure that the rules of the protocol are followed. 
-Execution clients can be configured as full nodes which holds the state, historical blockchain including receipts, or as an archive node which retains also all historical states. 
+> **执行客户端**，以前称为 *eth1 客户端*，正在实现 Ethereum [Execution Layer](https://github.com/ethereum/execution-specs)，其任务是处理和广播交易并管理状态。
+他们通过 p2p 接收交易，使用 [Ethereum Virtual Machine](https://ethereum.org/en/developers/docs/evm/) 运行每个交易的计算以更新状态并确保遵循协议规则。 
+执行客户端可以配置为保存状态的全节点、包括收据的历史区块链，或者配置为还保留所有历史状态的存档节点。 
 
-## Overview Table
+## 概览表
 
-Current execution clients used in production are:
+当前生产中使用的执行客户端是：
 
-| Client      | Language | Developer          | Status     |
+| 客户端 | 语言 | 开发商 | 状态 |
 |-------------|----------|-------------------|------------|
-| [Besu](https://github.com/hyperledger/besu) | Java | Hyperledger | Production |
-| [Erigon](https://github.com/ledgerwatch/erigon) | Go | Ledgerwatch | Production |
-| [Geth](https://github.com/ethereum/go-ethereum) | Go | Ethereum Foundation | Production |
-| [Nethermind](https://github.com/NethermindEth/nethermind) | C# | Nethermind | Production |
-| [Reth](https://github.com/paradigmxyz/reth) | Rust | Paradigm | Production |
+| [Besu](https://github.com/hyperledger/besu) | Java | Hyperledger | 生产 |
+| [Erigon](https://github.com/ledgerwatch/erigon) | Go | 分类账表 | 生产 |
+| [Geth](https://github.com/ethereum/go-ethereum) | Go | Ethereum Foundation | 生产 |
+| [Nethermind](https://github.com/NethermindEth/nethermind) | C# | Nethermind | 生产 |
+| [Reth](https://github.com/paradigmxyz/reth) | Rust | Paradigm | 生产 |
 
-There are more execution clients that are in active development and haven't reached maturity yet or has been used in the past:
+还有更多执行客户端正在积极开发中，尚未成熟或过去已经使用过：
 
-| Client                                                          | Language   | Developer           | Status      |
+| 客户端 | 语言 | 开发商 | 状态 |
 | --------------------------------------------------------------- | ---------- | ------------------- | ----------- |
-| [Nimbus](https://github.com/status-im/nimbus-eth1)              | Nim        | Nimbus              | Development |
-| [Silkworm](https://github.com/erigontech/silkworm)              | C++        | Erigon              | Development |
-| [JS Client](https://github.com/ethereumjs/ethereumjs-monorepo)  | Typescript | Ethereum Foundation            | Development |
-| [ethrex](https://github.com/lambdaclass/ethrex)                 | Rust       | LambdaClass         | Development |
-| [Akula](https://github.com/akula-bft/akula)                     | Rust       | Akula Developers    | Deprecated  |
-| [Aleth](https://github.com/ethereum/aleth)                      | C++        | Aleth Developers    | Deprecated  |
-| [Mana](https://github.com/mana-ethereum/mana)                   | Elixir     | Mana Developers     | Deprecated  |
-| [OpenEthereum](https://github.com/openethereum/parity-ethereum) | Rust       | Parity              | Deprecated  |
-| [Trinity](https://github.com/ethereum/trinity)                  | Python     | OpenEthereum        | Deprecated  |
+| [Nimbus](https://github.com/status-im/nimbus-eth1) | Nimbus | Nimbus | 开发 |
+| [蚕](https://github.com/erigontech/silkworm) | C++ | Erigon | 开发 |
+| [JS 客户端](https://github.com/ethereumjs/ethereumjs-monorepo) | TypeScript | Ethereum Foundation | 开发 |
+| [ethrex](https://github.com/lambdaclass/ethrex) | Rust | LambdaClass | 开发 |
+| [Akula](https://github.com/akula-bft/akula) | Rust | Akula 开发商 | 已弃用 |
+| [Aleth](https://github.com/ethereum/aleth) | C++ | Aleth 开发人员 | 已弃用 |
+| [法力](https://github.com/mana-ethereum/mana) | 长生不老药 | 法力开发者 | 已弃用 |
+| [OpenEthereum](https://github.com/openethereum/parity-ethereum) | Rust | Parity | 已弃用 |
+| [三位一体](https://github.com/ethereum/trinity) | 蟒蛇 | 开放 Ethereum | 已弃用 |
 
 
-## Distribution
+## 分布
 
-The overwhelming majority of node operators are currently using Geth as an Execution Client. 
-In the interest of supporting the health of the Execution Layer, [it is recommended to use different clients](https://clientdiversity.org/#why) when running nodes. 
+目前，绝大多数节点操作员都使用 Geth 作为执行客户端。 
+为了支持 Execution Layer 的健康，[建议在运行节点时使用不同的客户端](https://clientdiversity.org/#why)。 
 
-## Individual clients
+## 个人客户端
 
-Although clients implement the same specification, each client offers different set of features and benefits. They come in different programming languages enabling developers of different backgrounds to contribute. 
+尽管客户端实现相同的规范，但每个客户端提供不同的功能和优点。它们采用不同的编程语言，使不同背景的开发人员能够做出贡献。 
 
 ### Besu
 
-Developed by the Consensys/Hyperledger Foundation in Java, Besu (Hyperledger Besu) is distinguished for its enterprise-grade features and compatibility with various Hyperledger projects.
-It supports both public and private networks, offering robust command-line tools and a JSON-RPC API.
+Besu (Hyperledger Besu) 由 Consensys/Hyperledger 基金会用 Java 开发，以其企业级功能以及与各种 Hyperledger 项目的兼容性而著称。
+它支持公共和专用网络，提供强大的命令行工具和 JSON-RPC API。
 
-Noteworthy Features:
-- [Private Networks](https://besu.hyperledger.org/private-networks/)
-- [Pruning](https://besu.hyperledger.org/public-networks/how-to/bonsai-limit-trie-logs#prune-command-for-mainnet)
-- [Parallel Transaction Execution](https://besu.hyperledger.org/public-networks/concepts/parallel-transaction-execution)
+值得注意的特点：
+- [私网](https://besu.hyperledger.org/private-networks/)
+- [修剪](https://besu.hyperledger.org/public-networks/how-to/bonsai-limit-trie-logs#prune-command-for-mainnet)
+- [并行交易执行](https://besu.hyperledger.org/public-networks/concepts/parallel-transaction-execution)
 
 ### Erigon
 
-Initially a fork of Geth introduced as turbo-geth, Erigon focuses on optimizing performance, fast synchronization capabilities, and reducing disk space usage. Erigon introduced a new way of managing MPT database resulting in roughly a 5-times reduction in the archive node disk size.
-Erigon's architecture allows it to complete a full archive node sync in under three days with less than 3 TB of data storage, making it ideal for running this kind of node. It also includes its own embedded CL client, enabling it to run independently. 
+Erigon 最初是作为 Turbo-Geth 推出的 Geth 的一个分支，专注于优化性能、快速同步功能和减少磁盘空间使用。 Erigon 引入了一种管理 MPT 数据库的新方法，使存档节点磁盘大小大约减少了 5 倍。
+Erigon 的架构允许其在三天内完成完整存档节点同步，数据存储量少于 3 TB，使其成为运行此类节点的理想选择。它还包含自己的嵌入式 CL 客户端，使其能够独立运行。 
 
-Noteworthy Features:
-- [Supported Networks](https://erigon.gitbook.io/erigon/basic-usage/supported-networks)
-- [Pruning](https://erigon.gitbook.io/erigon/basic-usage/usage/type-of-node#full-node-or-pruned-node)
-- [Caplin CL client](https://erigon.gitbook.io/erigon/advanced-usage/consensus-layer/caplin)
+值得注意的特点：
+- [支持的网络](https://erigon.gitbook.io/erigon/basic-usage/supported-networks)
+- [修剪](https://erigon.gitbook.io/erigon/basic-usage/usage/type-of-node#full-node-or-pruned-node)
+- [Caplin CL 客户端](https://erigon.gitbook.io/erigon/advanced-usage/consensus-layer/caplin)
 
 ### Geth
 
-As the original Go implementation of Ethereum, the oldest actively maintained client, Geth (Go-Ethereum) enjoys widespread adoption among developers and users alike.
-It supports various node types (full, light, archive) and is renowned for its extensive toolset, stability and community support.
-Geth's flexibility in deployment—through package managers, Docker containers, or manual setup—ensures its versatility in diverse blockchain environments.
+作为 Ethereum 的原始 Go 实现，也是最早积极维护的客户端，Geth (Go-Ethereum) 在开发人员和用户中得到了广泛采用。
+它支持各种节点类型 (完整、轻型、存档)，并以其广泛的工具集、稳定性和社区支持而闻名。
+Geth 的部署灵活性 (通过包管理器、Docker 容器或手动设置) 确保了其在不同区块链环境中的多功能性。
 
-Noteworthy Features:
-- [Pruning](https://geth.ethereum.org/docs/fundamentals/pruning)
-- [Custom EVM Tracer](https://geth.ethereum.org/docs/developers/evm-tracing/custom-tracer)
-- [Monitoring Dashboards](https://geth.ethereum.org/docs/monitoring/dashboards)
+值得注意的特点：
+- [修剪](https://geth.ethereum.org/docs/fundamentals/pruning)
+- [自定义 EVM 跟踪器](https://geth.ethereum.org/docs/developers/evm-tracing/custom-tracer)
+- [监控仪表板](https://geth.ethereum.org/docs/monitoring/dashboards)
 
 ### Nethermind
-Written in C# .NET, Nethermind is designed for stability and integration with existing tech infrastructures.
-It offers optimized virtual machine performance, comprehensive analytics support and plugin system.
-Nethermind is suitable for both private Ethereum networks and decentralized application (dApp) development, emphasizing data integrity and performance scalability.
+Nethermind 采用 C#.NET 编写，旨在实现稳定性并与现有技术基础设施集成。
+它提供优化的虚拟机性能、全面的分析支持和插件系统。
+Nethermind 适用于私有 Ethereum 网络和去中心化应用程序 (dApp) 开发，强调数据完整性和性能可扩展性。
 
-Noteworthy Features:
-- [Private Networks](https://docs.nethermind.io/fundamentals/private-networks)
-- [Performance tuning](https://docs.nethermind.io/fundamentals/performance-tuning)
-- [Prometheus and Grafana](https://docs.nethermind.io/monitoring/metrics/grafana-and-prometheus)
+值得注意的特点：
+- [私网](https://docs.nethermind.io/fundamentals/private-networks)
+- [性能调整](https://docs.nethermind.io/fundamentals/performance-tuning)
+- [普罗米修斯与格拉法纳](https://docs.nethermind.io/monitoring/metrics/grafana-and-prometheus)
 
-### Reth
+### 雷斯
 
-Reth (Rust Ethereum) is a modular and efficient Ethereum client designed for user-friendliness and high performance. Inspired by Erigon design, it's built around novel archive node approach that enables fast sync with small disk footprint.
-It emphasizes community-driven development and is suitable for robust production environments.
+Reth (Rust Ethereum) 是一个模块化、高效的 Ethereum 客户端，专为用户友好性和高性能而设计。受 Erigon 设计的启发，它围绕新颖的存档节点方法构建，可在较小的磁盘占用空间内实现快速同步。
+它强调社区驱动的开发，适合强大的生产环境。
 
-Noteworthy Features:
-- [Revm](https://bluealloy.github.io/revm/)
-- [Monitoring](https://reth.rs/run/observability.html)
+值得注意的特点：
+- [修订](https://bluealloy.github.io/revm/)
+- [监控](https://reth.rs/run/observability.html)
 
 ### Nimbus
 
-Nimbus focuses on efficiency and security as an ultra-lightweight Ethereum execution layer client. Originally working on Nimbus CL client, a new team spin out to develop an execution client in Nim. 
-It minimizes resource consumption while supporting Ethereum's execution layer functionalities and integrating with Fluffy (a Portal Network light client).
-Nimbus offers enhanced memory savings and state synchronization mechanisms, ideal for resource-constrained environments.
+Nimbus 作为超轻量级 Ethereum Execution Layer 客户端专注于效率和安全性。最初致力于 Nimbus CL 客户端，一个新团队在 Nim 中开发了一个执行客户端。 
+它最大限度地减少了资源消耗，同时支持 Ethereum 的 Execution Layer 功能并与 Fluffy (Portal Network 轻客户端) 集成。
+Nimbus 提供增强的内存节省和状态同步机制，非常适合资源受限的环境。
 
-### Silkworm
-Silkworm is a C++ implementation of the Ethereum Execution Layer protocol, aiming to be the fastest Ethereum client.
-It integrates the libmdbx database engine and emphasizes scalability, modularity and performance optimizations within the Erigon project (known as Erigon++).
+### 蚕
+Silkworm 是 Ethereum Execution Layer 协议的 C++ 实现，旨在成为最快的 Ethereum 客户端。
+它集成了 libmdbx 数据库引擎，并强调 Erigon 项目 (称为 Erigon++) 内的可扩展性、模块化和性能优化。
 
-### JS Client
-The JavaScript client is developed by EF JS team as a part of the [EthereumJS monorepo](https://github.com/ethereumjs/ethereumjs-monorepo). It's experimental and serves mostly for testing but as it's designed to be JavaScript-centric, it's suitable for web and Node.js environments.
+### JS 客户端
+JavaScript 客户端由 EF JS 团队开发，作为 [EthereumJS monorepo](https://github.com/ethereumjs/ethereumjs-monorepo) 的一部分。它是实验性的，主要用于测试，但由于它被设计为以 JavaScript 为中心，因此它适用于 Web 和节点.js 环境。
 
-## Additional resources
+## 其他资源
 
 - [ETH Docker](https://eth-docker.net/)
-- [Ethernodes](https://ethernodes.org/)
-<<<<<<< HEAD
-- [Client Diversity](https://clientdiversity.org/)
-- [Run the majority client at your own peril!](https://dankradfeist.de/ethereum/2022/03/24/)
-=======
-- [Client Diversity](https://clientdiversity.org/)
-- [Run the majority client at your own peril!](https://dankradfeist.de/ethereum/2022/03/24/
-
->>>>>>> main
+- [以太节点](https://ethernodes.org/)
+- [客户端多样性](https://clientdiversity.org/)
+- [运行多数客户端，后果自负！](https://dankradfeist.de/ethereum/2022/03/24/)

@@ -1,127 +1,127 @@
-# [Protocol Design Philosophy](#protocol-design-philosophy)
+# [协议设计理念](#protocol-design-philosophy)
 
-These are the core tenets that sparked the work on Ethereum's architecture and implementation:
+这些是激发 Ethereum 架构和实现工作的核心原则：
 
-- **Simplicity**:
-Since its inception, the Ethereum protocol was designed with simplicity in mind and an ambitious roadmap to add features along the way. This stemmed from the idea that any average programmer should ideally be able to understand and implement the entire specification, primarily to minimize the influence on the protocol by an individual or an elite group of developers. While this narrative has slowly changed due to major modifications to the protocol, the simplicity is still upheld thanks to modularity and clear specification.
+- **简单**：
+自诞生以来，Ethereum 协议的设计就考虑到简单性和雄心勃勃的路线图，以一路添加功能。这源于这样的想法：理想情况下，任何普通程序员都应该能够理解和实现整个规范，主要是为了最大限度地减少个人或精英开发团队对协议的影响。虽然由于协议的重大修改，这种叙述已经慢慢改变，但由于模块化和清晰的规范，简单性仍然得到维持。
 
-- **Universality**:
-One of the fundamental doctrines of Ethereum's design philosophy is that Ethereum has no ***features***. Ethereum provides an internal Turing-complete virtual machine, called the [EVM](/wiki/EL/evm.md), which you can use to construct any smart contract or transaction type that can be mathematically defined. Ethereum aims to become a platform where new age developers can build decentralized and truly trustless applications without worrying about the underlying complexity.
+- **通用性**：
+Ethereum 设计理念的基本原则之一是 Ethereum 没有***功能***。 Ethereum 提供了一个内部图灵完备的虚拟机，称为 [EVM](/wiki/EL/evm.md)，您可以使用它来构造任何可以数学定义的智能合约或 交易类型。 Ethereum 旨在成为一个平台，让新时代的开发人员可以构建去中心化且真正无需信任的应用程序，而无需担心底层的复杂性。
 
-- **Modularity**:
-Making the Ethereum protocol modular is crucial to it being **future-proof**. While Ethereum is far from being perfect, there is a continuous and rigorous research and engineering effort that runs parallel to the existence of the protocol. Over the course of development, it should be easy to make a small protocol modification in one place and have the application stack continue to function without any further modification. Innovations such as Dagger, Patricia trees and SSZ have been implemented as separate libraries and made to be feature-complete even if Ethereum does not require certain features so as to make them usable in other protocols as well. With features such as [Proto-Danksharding](/wiki/research/scaling/core-changes/eip-4844.md), Ethereum provides building blocks for scaling of Layer 2 chains. Modularity derives itself from the idea of [encapsulated complexity](#https://vitalik.eth.limo/general/2022/02/28/complexity.html). Encapsulated complexity occurs when a system consists of sub-systems -- which are internally complex and are available to the outside by means of high level interfaces. Now, this engenders a lot of flexibility in terms of choice of sub-systems and better debugging of individual components.
+- **模块化**：
+使 Ethereum 协议模块化对于它**面向未来**至关重要。虽然 Ethereum 远非完美，但与该协议的存在并行的是持续而严格的研究和工程工作。在开发过程中，应该很容易在一个地方进行小的协议修改，并使应用程序堆栈继续运行而无需任何进一步的修改。 Dagger、Patricia trees 和 SSZ 等创新已作为单独的库实现，并且即使 Ethereum 不需要某些功能也可以实现功能完整，以便使它们也可在其他协议中使用。借助 [Proto-Danksharding](/wiki/research/scaling/core-changes/eip-4844.md) 等功能，Ethereum 提供了用于扩展第 2 层链的构建区块。模块化源自 [封装复杂性](#https://vitalik.eth.limo/general/2022/02/28/complexity.html) 的想法。当系统由子系统组成时，就会出现封装的复杂性——这些子系统内部复杂，并且可以通过高级接口向外部访问。现在，这在子系统的选择和单个组件的更好调试方面带来了很大的灵活性。
 
-- **Non-discriminant**:
-Ethereum was born out of the pillars set by various movements like [**FOSS**](https://www.fsf.org/about/what-is-free-software) and [**Cypherpunk**](https://en.wikipedia.org/wiki/Cypherpunk). Non-discrimination is foundational to the fabric of Ethereum's design philosophy. The protocol does not attempt to actively restrict or prevent specific categories of usage, and all regulatory mechanisms in the protocol are designed to directly regulate the harm to the protocol itself, not attempt to oppose specific undesirable applications. You can even run an infinite loop script on top of Ethereum for as long as you are willing to keep paying the per-computational-step transaction fee for it within the acceptable limits defined by the protocol.
+- **非歧视**：
+Ethereum 诞生于 [**FOSS**](https://www.fsf.org/about/what-is-free-software) 和 [**Cypherpunk**](https://en.wikipedia.org/wiki/Cypherpunk) 等各种运动所设定的支柱。非歧视是 Ethereum 设计理念的基础。协议并不试图主动限制或阻止特定类别的使用，并且协议中的所有监管机制旨在直接监管对协议本身的危害，而不是试图反对特定的不良应用。只要您愿意在协议定义的可接受的限制内继续支付每个计算步骤的交易费用，您甚至可以在 Ethereum 之上运行无限循环脚本。
 
-- **Agility**:
-Details of the Ethereum protocol are not set in stone. The Ethereum Improvement Process is an open standard to propose new changes to the protocol. It's crucial to be extremely judicious about making modifications to high-level constructs such as the EVM and the address system, computational tests later on in the development process may lead to the discovery that certain modifications to the algorithm or the EVM will substantially improve scalability or security. If any such opportunities are found, they will be utilized.
-
-
-# [Principles](#principles)
-
-The Ethereum protocol evolves and changes over time but it always follow certain principles. These principles reflect values of the whole community and are reflected in some of the main design decisions of Ethereum.
-
-- **Managing Complexity**: One of the main goals of Ethereum protocol design is to minimize complexity: make the protocol as simple as possible, while still making a blockchain that can do what an effective blockchain needs to do. The Ethereum protocol is far from perfect at this, especially since much of it was designed in 2014-16 when we understood much less, but we nevertheless make an active effort to reduce complexity whenever possible.
-One of the challenges of this goal, however, is that complexity is difficult to define, and sometimes, you have to trade off between two choices that introduce different kinds of complexity and have different cost
-    1. **Sandwich model complexity**:  The sandwich model focused on simplifying the bottom layer of the architecture of Ethereum and the interface to Ethereum should be as easy to understand as possible. Where complexity is inevitable, it should be pushed into the "middle layers" of the protocol, which are not part of the core consensus but are also not seen by end users - high-level-language compilers, argument serialization and deserialization scripts, storage data structure models, the `leveldb` storage interface and the wire protocol, etc.
-    2. **Encapsulated complexity**: This occurs when there is a system with sub-systems that are internally complex, but that present a simple "interface" to the outside. Systemic complexity occurs when the different parts of a system can't even be cleanly separated, and have complex interactions with each other. Often, the choice with less encapsulated complexity is also the choice with less systemic complexity, and so there is one choice that is obviously simpler. But at other times, you have to make a hard choice between one type of complexity and the other. What should be clear at this point is that complexity is less dangerous if it is encapsulated. The risks from complexity of a system are not a simple function of how long the specification is; a small 10-line piece of the specification that interacts with every other piece adds more complexity than a 100-line function that is otherwise treated as a black box. Here are few [examples](https://vitalik.eth.limo/general/2022/02/28/complexity.html)
-The preference order for where the complexity goes in: layer 2 > client implementation > protocol spec
-
-- **Freedom**: Users should not be restricted in what they use the Ethereum protocol for, and we should not attempt to preferentially favor or disfavor certain kinds of Ethereum contracts or transactions based on the nature of their purpose. This is similar to the guiding principle behind the concept of "net neutrality". One example of this principle not being followed is the situation in the Bitcoin transaction protocol where use of the blockchain for "off-label" purposes (eg. data storage, meta-protocols) is discouraged, and in some cases explicit quasi-protocol changes (eg. OP_RETURN restriction to 40 bytes) are made in an attempt to attack applications using the blockchain in "unauthorized" ways. In Ethereum, instead strongly favor the approach of setting up transaction fees in such a way as to be roughly incentive-compatible, such that users that use the blockchain in bloat-producing ways internalize the cost of their activities (i.e. [Pigovian taxation](https://en.wikipedia.org/wiki/Pigouvian_tax)).
-
-- **Generalization**: Protocol features and opcodes in Ethereum should embody maximally low-level concepts, so that they can be combined in arbitrary ways including ways that may not seem useful today but which may become useful later, and so that a bundle of low-level concepts can be made more efficient by stripping out some of its functionality when it is not necessary. An example of this principle being followed is our choice of a LOG opcode as a way of feeding information to (particularly light client) dapps, as opposed to simply logging all transactions and messages as was internally suggested earlier - the concept of "message" is really the agglomeration of multiple concepts, including "function call" and "event interesting to outside watchers", and it is worth separating the two.
-
-- **We have no features**:  As a corollary to generalization, we often refuse to build in even very common high-level use cases as intrinsic parts of the protocol, with the understanding that if people really want to do it they can always create a sub-protocol (eg. ether-backed subcurrency, bitcoin/litecoin/dogecoin sidechain, etc) inside of a contract. An example of this is the lack of a Bitcoin-like "locktime" feature in Ethereum, as such a feature can be simulated via a protocol where users send "signed data packets" and those data packets can be fed into a specialized contract that processes them and performs some corresponding function if the data packet is in some contract-specific sense valid.
+- **敏捷性**：
+Ethereum 协议的细节并不是一成不变的。 Ethereum 改进流程是一个开放标准，用于对协议提出新的更改。对 EVM 和地址系统等高级结构进行修改时要极其明智，开发过程中稍后的计算测试可能会发现对算法或 EVM 的某些修改将大大提高可扩展性或安全性。如果发现任何此类机会，我们将加以利用。
 
 
+# [原理](#principles)
+
+Ethereum 协议随着时间的推移而发展和变化，但它始终遵循某些原则。这些原则反映了整个社区的价值观，并反映在 Ethereum 的一些主要设计决策中。
+
+- **管理复杂性**：Ethereum 协议设计的主要目标之一是最小化复杂性：使协议尽可能简单，同时仍然使区块链能够完成有效区块链需要做的事情。 Ethereum 协议在这方面远非完美，特别是因为它的大部分是在 2014-16 年设计的，当时我们了解的还少，但我们仍然积极努力尽可能降低复杂性。
+然而，这个目标的挑战之一是复杂性很难定义，有时，您必须在引入不同类型复杂性和不同成本的两种选择之间进行权衡
+    1. **三明治模型复杂性**：三明治模型专注于简化 Ethereum 架构的底层，并且 Ethereum 的接口应尽可能易于理解。当复杂性不可避免时，应该将其推入协议的“中间层”，这些层不是核心共识的一部分，但最终用户也看不到——高级语言编译器、参数序列化和反序列化脚本、存储数据结构模型、`leveldb` 存储接口和有线协议等。
+    2. **封装的复杂性**：当系统的子系统内部复杂，但向外部提供简单的“接口”时，就会发生这种情况。当系统的不同部分甚至无法完全分离并且彼此之间存在复杂的相互作用时，就会出现系统复杂性。通常，封装复杂性较低的选择也是系统复杂性较低的选择，因此有一种选择显然更简单。但有时，您必须在一种复杂性和另一种复杂性之间做出艰难的选择。此时应该清楚的是，如果将复杂性封装起来，那么危险性就会降低。系统复杂性带来的风险并不是规范长度的简单函数；而是取决于规范的长度。规范中与​​其他所有部分交互的 10 行小部分比被视为黑匣子的 100 行函数增加了更多的复杂性。这里有一些 [例子](https://vitalik.eth.limo/general/2022/02/28/complexity.html)
+复杂性的优先顺序：第 2 层 > 客户端实现 > 协议规范
+
+- **自由**：用户使用 Ethereum 协议的用途不应受到限制，我们不应试图根据其用途的性质优先支持或不支持某些类型的 Ethereum 合约或交易。这类似于“网络中立”概念背后的指导原则。不遵循这一原则的一个例子是 Bitcoin 交易协议中的情况，其中不鼓励将区块链用于“标签外”目的 (例如数据存储、元协议)，并且在某些情况下进行显式准协议更改 (例如 OP_RETURN 限制为 40 字节) 以尝试使用区块链以“未经授权”的方式。在 Ethereum 中，强烈支持以大致激励兼容的方式设置交易费用的方法，以便以膨胀方式使用区块链的用户将其活动成本内部化 (即 [庇古税](https://en.wikipedia.org/wiki/Pigouvian_tax))。
+
+- **泛化**：协议特性和 Ethereum 中的操作码应该最大限度地体现低级概念，以便它们可以以任意方式组合，包括今天看起来没用但以后可能有用的方式，并且可以通过在不需要时剥离其某些功能来使一组低级概念变得更加高效。遵循这一原则的一个例子是我们选择 LOG 操作码作为向 (特别是轻客户端)dapp 提供信息的方式，而不是像之前内部建议的那样简单地记录所有交易和消息 - “消息”的概念实际上是多个概念的聚合，包括“函数调用”和“外部观察者感兴趣的事件”，值得将两者分开。
+
+- **我们没有特征**：作为泛化的必然结果，我们经常拒绝将非常常见的高级用例构建为协议的内在部分，因为我们知道，如果人们真的想这样做，他们总是可以在合约内部创建子协议 (例如，Ethereum 支持的子货币、Bitcoin/ 莱特币/狗狗币侧链等)。一个例子是 Ethereum 中缺乏类似 Bitcoin 的“锁定时间”功能，因为这样的功能可以通过用户发送“签名数据包”的协议来模拟，并且这些数据包可以被输入到专门的合约中，如果数据包在某种合约特定意义上有效，则该合约可以处理它们并执行一些相应的功能。
 
 
-# [Blockchain level protocol](#blockchain-level-protocol)
 
-### **Accounts over UTXOs**
-Earliest implementations of blockchain including bitcoin and it's derivatives, store user balance in a structure based on unspent transaction outputs (UTXOs). Ethereum on the other hand uses an account based model.
 
-> **UTXO**: an unspent transaction output (UTXO) is a distinctive element in a subset of digital currency models. A UTXO represents a certain amount of cryptocurrency that has been authorized by a sender and is available to be spent by a recipient.
+# [区块链级别协议](#blockchain-level-protocol)
 
-A user's "balance" in the system is thus the total value of the set of coins for which the user has a private key capable of producing a valid signature. The account based model is more flexible and allows for more complex transactions.
+### **UTXO 账户**
+区块链的最早实现 (包括 Bitcoin 及其衍生品) 将用户余额存储在基于未使用的交易输出 (UTXO) 的结构中。另一方面，Ethereum 使用基于帐户的模型。
 
-Ethereum follows an accounts based model over the UTXOs. While UTXOs provide a higher degree of privacy, they also introduce more complexity to a system like Ethereum. Accounts are also fungible, enabling greater flexibility of implementations such as decentralized exchanges, which aligns with Ethereum's original purpose.
+> **UTXO**：未使用的交易输出 (UTXO) 是数字货币模型子集中的一个独特元素。 UTXO 代表已由发送者授权并且可供接收者使用的一定数量的加密货币。
 
-#### Benefits of Accounts
-- **Space Saving**: for example, if an account has 5 UTXO, then switching from a UTXO model to an account model would reduce the space requirements from (20 + 32 + 8) * 5 = 300 bytes (20 for the address, 32 for the transactionId and 8 for the value) to 20 + 8 + 2 = 30 bytes (20 for the address, 8 for the value, 2 for a nonce(see below)). In reality savings are not nearly this massive because accounts need to be stored in a Patricia tree (see below) but they are nevertheless large. Additionally, transactions can be smaller (eg. 100 bytes in Ethereum vs. 200-250 bytes in Bitcoin) because every transaction need only make one reference and one signature and produces one output.
+因此，系统中用户的“余额”是用户拥有能够生成有效签名的私钥的一组硬币的总价值。基于帐户的模型更加灵活，并允许更复杂的交易。
 
-- **Great fungibility**: UTXOs are not perfectly fungible, as a UTXO can be tainted by being used in a transaction with a tainted UTXO, and there are some heuristics that can be used to track the history of a coin. Accounts are perfectly fungible, as any coin can be replaced by any other coin.
+Ethereum 在 UTXO 上遵循基于帐户的模型。虽然 UTXO 提供了更高程度的隐私，但它们也给 Ethereum 这样的系统带来了更多的复杂性。账户也是可替代的，使得去中心化交易所等实施具有更大的灵活性，这与 Ethereum 的最初目的是一致的。
 
-- **Simplicity**: Accounts are simpler to implement and reason about than UTXOs. UTXOs require a more complex transaction validation algorithm, and the UTXO model is less flexible and less powerful than the account model. For example, it is impossible to implement a decentralized exchange in the UTXO model because the UTXO model does not allow for the existence of a "sell" order that is not tied to a specific UTXO.
+#### 账户的好处
+- **节省空间**：例如，如果一个账户有 5 个 UTXO，那么从 UTXO 模型切换到账户模型会将空间需求从 (20 + 32 + 8) * 5 = 300 字节 (地址 20，transactionId 32，值 8) 减少到 20 + 8 + 2 = 30 字节 (地址 20， 8 代表值，2 代表随机数 (见下文))。实际上，储蓄并没有这么大，因为账户需要存储在 Patricia 树中 (见下文)，但它们仍然很大。此外，交易可以更小 (例如，Ethereum 中的 100 字节与 Bitcoin 中的 200-250 字节相比)，因为每个交易仅需要进行一个引用和一个签名并产生一个输出。
 
-One weakness of the account paradigm is that in order to prevent replay attacks, every transaction must have a [**nonce**](https://ethereum.stackexchange.com/questions/27432/what-is-nonce-in-ethereum-how-does-it-prevent-double-spending), such that the account keeps track of the nonces used and only accepts a transaction if its nonce is 1 after the last nonce used. This means that even no-longer-used accounts can never be pruned from the account state. A simple solution to this problem is to require transactions to contain a block number, making them un-replayable after some period of time, and reset nonces once every period.
+- **良好的可替代性**：UTXO 并不是完全可替代的，因为 UTXO 可能会因与受污染的 UTXO 一起在交易中使用而受到污染，并且有一些启发式方法可用于跟踪代币的历史。账户是完全可替代的，因为任何代币都可以被任何其他代币替代。
+
+- **简单性**：账户比 UTXO 更容易实现和推理。 UTXO 需要更复杂的交易验证算法，并且 UTXO 模型的灵活性和功能不如账户模型。例如，不可能在 UTXO 模型中实现去中心化交易，因为 UTXO 模型不允许存在不与特定 UTXO 绑定的“卖出”订单。
+
+帐户 Paradigm 的一个弱点是，为了防止重放攻击，每个交易必须有一个 [**nonce**](https://ethereum.stackexchange.com/questions/27432/what-is-nonce-in-ethereum-how-does-it-prevent-double-spending)，这样帐户就会跟踪所使用的 nonce，并且仅在最后一次使用后的 nonce 为 1 时才接受交易。这意味着即使不再使用的帐户也永远无法从帐户状态中删除。解决这个问题的一个简单方法是要求交易包含一个区块数字，使它们在一段时间后不可重放，并在每个周期重置一次随机数。
 
 ### **Merkle Patricia Trie (MPT)**
-Ethereum's data structure is a 'modified Merkle-Patricia Trie', named so because it borrows some features of PATRICIA (the Practical Algorithm To Retrieve Information Coded in Alphanumeric), and because it is designed for efficient data retrieval of items that comprise the Ethereum state.
+Ethereum 的数据结构是“修改后的 Merkle-Patricia Trie”，之所以如此命名，是因为它借用了 PATRICIA (检索以字母数字编码的信息的实用算法) 的一些功能，并且因为它设计用于对构成 Ethereum 状态的项目进行有效的数据检索。
 
-A Merkle-Patricia trie is deterministic and cryptographically verifiable: The only way to generate a state root is by computing it from each individual piece of the state, and two states that are identical can be easily proven so by comparing the root hash and the hashes that led to it (a Merkle proof). Conversely, there is no way to create two different states with the same root hash, and any attempt to modify state with different values will result in a different state root hash. Theoretically, this structure provides the 'holy grail' of O(log(n)) efficiency for inserts, lookups and deletes.
+Merkle-Patricia Trie 是确定性的且可通过密码学验证：生成状态根的唯一方法是从状态的每个单独部分计算它，并且通过比较根哈希和导致它的哈希 (Merkle 证明) 可以轻松证明两个相同的状态。相反，无法使用相同的根哈希创建两个不同的状态，并且任何使用不同值修改状态的尝试都将导致不同的状态根哈希。理论上，这种结构为插入、查找和删除提供了 O (log (n)) 效率的“圣杯”。
 
-There is an ongoing research of new data structures enabling better features and trade-offs. Merkle-Patricia trie is considered for deprecation to be replaced by a more efficient data structure called [**vector commitment merkle trees**](https://verkle.info/) or shortly verkle.
+人们正在对新的数据结构进行研究，以实现更好的功能和权衡。 Merkle-Patricia Trie 被考虑弃用，并被更有效的数据结构取代，称为 [**向量承诺 merkle trees**](https://verkle.info/) 或简称 verkle。
 
-### **Verkle trees**
+### **维尔克尔树**
 
-> :warning: Verkle trees are currently an active research area and this article may not be up to date with the latest developments. One can participate in the development and discussions on [Ethereum Research](https://ethresear.ch/t/portal-network-verkle/19339)
+> :warning: Verkle Tree 目前是一个活跃的研究领域，本文可能未及时更新最新进展。可以参与 [Ethereum 研究](https://ethresear.ch/t/portal-network-verkle/19339) 的开发和讨论
 
-MPTs are currently employed in a variety of application in which membership proofs are sent across a network, including protocols, public-key directories, cryptocurrencies such as Bitcoin, and Secure File Systems. A Merkle Tree with $n$ leaves has $O(log{_2}{n})$-sized proofs. Although, $O(log{n})$ complexity can be quite comforting, however, in large trees, sending proofs can dominate bandwidth consumption. Verkle tree with branching factor $k$ achieve $O(kn)$ construction time and $O(log{_k}{n})$ membership proof-size. This means that the branching factor $k$ offers a trade-off between computational power and bandwidth.
+MPT 目前用于通过网络发送成员证明的各种应用程序，包括协议、公钥目录、Bitcoin 等加密货币和安全文件系统。带有 $n$ 叶子的 Merkle 树具有 $O (log{_2}{n})$ 大小的证明。尽管 $O (log{n})$ 的复杂性相当令人欣慰，但是，在大型树中，发送证明可能会主导带宽消耗。 Verkle Tree 与分支因子 $k$ 实现 $O (kn)$ 构造时间和 $O (log{_k}{n})$ 成员证明大小。这意味着分支因子 $k$ 提供了计算能力和带宽之间的权衡。
 
 
-One of the pressing problems of Ethereum is the current state size. Estimate at around 1-2TB(at the time of writing this article). It is impractical for nodes to hold in working memory or even in slower permanent storage per se, thus, the need for statelessness becomes crucial to growth of the network. Verkle trees with it's vector commitments allow for much smaller proofs (**called witnesses**). Instead of needing to provide hashes of all "sibling nodes" at each level, Merkle Trees, the prover needs only to provide all parent nodes(plus an extra proof, called an optional) along the path from each each leaf to the root.
+Ethereum 的紧迫问题之一是当前状态大小。估计约为 1-2TB (在撰写本文时)。将节点保存在工作内存中甚至保存在较慢的永久存储本身中是不切实际的，因此，无状态性的需求对于网络的增长至关重要。 Verkle Tree 及其向量承诺允许更小的证明 (**称为证人**)。证明者不需要提供每个级别的所有“同级节点”的哈希，Merkle 树，证明者只需提供从每个叶子到根的路径上的所有父节点 (加上一个额外的证明，称为可选)。
 
-### **Recursive Length Prefix (RLP)**
-Complete implementation and details can be found on [RLP page](/wiki/EL/RLP.md)
+### **递归长度前缀 (RLP)**
+完整的实现和详细信息可以在 [RLP 页面](/wiki/EL/RLP.md) 上找到
 
-The rationale behind creating a new serialization scheme lies in the probabilistic nature of other schemes. RLP solves this problem by being simple yet deterministic serialization; and guarantees absolute byte-perfect consistency. RLP does not attempt to define any specific data type such as boolean, floats, doubles or even integers -- instead, it simply exists to store structure, in the form of nested arrays. Key/value maps are also not explicitly supported; the semi-official suggestion for supporting key/value maps is to represent such maps as``` [[k1, v1], [k2, v2], ...]``` where ```k1, k2...``` are sorted using the standard ordering for strings.
+创建新的序列化方案的基本原理在于其他方案的概率性质。 RLP 通过简单但确定性的方式解决了这个问题序列化；并保证绝对字节完美一致性。 RLP 并不尝试定义任何特定的数据类型，例如布尔值、浮点数、双精度数甚至整数——相反，它只是以嵌套数组的形式存储结构。键/值映射也没有明确支持；支持键/值映射的半官方建议是将此类映射表示为 ``` [[k1, v1], [k2, v2], ...]```，其中 ```k1, k2...``` 使用字符串的标准排序进行排序。
 
-The notion of complete anonymity of the data structure to the serialization algorithm over time has turned out to be inefficient for fixed-length data types like booleans and integers. SimpleSerialize (SSZ) was introduced in Ethereum 2.0, which supported both variable-sized and fixed-sized data types with additional features like Merkleization.
+随着时间的推移，序列化算法的数据结构完全匿名的概念对于布尔值和整数等固定长度数据类型来说效率很低。 SimpleSerialize (SSZ) 是在 Ethereum 2.0 中引入的，它支持可变大小和固定大小的数据类型，并具有 Merkleization 等附加功能。
 
-### **Simple serialize (SSZ)**
+### **简单序列化 (SSZ)**
 
-Serialization is the process of converting data structures into a format that can be transmitted and reconstructed later. SSZ is a serialization format used in Ethereum 2.0 Beacon chain. Designed to be serialization scheme that is not self-describing -- rather it relies on a schema that must be known in advance. SSZ has a bunch of advantages over RLP, like efficient re-hashing of objects and fast indexing, which RLP lacks resulting in $O(N)$ complexity.
+序列化是将数据结构转换为可以稍后传输和重建的格式的过程。 SSZ 是 Ethereum 2.0 Beacon Chain 中使用的序列化格式。设计为序列化方案，该方案不是自描述的 - 相反，它依赖于必须提前知道的模式。 SSZ 比 RLP 具有许多优势，例如有效的对象重新哈希和快速索引，而 RLP 缺乏这些优势，从而导致 $O (N)$ 复杂性。
 
-Based on [Vitalik's comment](https://ethresear.ch/t/replacing-ssz-with-rlp-zip-and-sha256/5706/12), one of the major problem SSZ tries to solve is RLP doesn't allow Merkleization, and this would mean disqualifying any possibility of succinct light client proofs of anything. Thus, leaving no scope of achieving statelessness -- while statelessness remains a crucial objective of current Ethereum's R&D.
+根据 [Vitalik 的评论](https://ethresear.ch/t/replacing-ssz-with-rlp-zip-and-sha256/5706/12)，SSZ Trie 要解决的主要问题之一是 RLP 不允许 Merkleization，这意味着取消简洁轻客户端证明的任何可能性任何东西。因此，没有留下实现无国籍的空间——而无国籍仍然是当前 Ethereum 研发的一个关键目标。
 
-Further implementation and details can be found on [Simple Serialize page](/wiki/CL/ssz.md)
+进一步的实现和细节可以在 [简单序列化页面](/wiki/CL/ssz.md) 上找到
 
-### **Hunt for Finality**
-In Ethereum's proof-of-stake based consensus mechanisms, finality refers to the guarantee that a block cannot be altered or removed from the blockchain without burning at least 33% of the total staked ETH. The underlying consensus protocol to achieve this is called **Casper Friendly Finality Gadget (FFG)**. More details on attacks related to finality can be found [here](https://blog.ethereum.org/2016/05/09/on-settlement-finality).
+### **寻找最终确定性**
+在 Ethereum 基于 Proof-of-Stake 的共识机制中，最终确定性是指保证在不燃烧总质押 ETH 的至少 33％的情况下，区块不能被更改或从区块链中删除。实现这一点的底层共识协议称为 **CasperFriendly 最终确定性 Gadget (FFG)**。有关与最终确定性相关的攻击的更多详细信息，请参阅 [此处](https://blog.ethereum.org/2016/05/09/on-settlement-finality)。
 
 - ***Casper FFG***
-The [Casper FFG](https://arxiv.org/abs/1710.09437v4) is an overlay atop a proposal mechanism, responsible for finalizing blocks by selecting a unique chain representing the canonical transaction ledger. It employs [slashing](https://blog.ethereum.org/2014/01/15/slasher-a-punitive-proof-of-stake-algorithm), first proposed in 2014, to achieve this. Casper follows a  Byzantine Fault Tolerance (BFT) tradition with modifications to achieve PoS.
-Simply put, each validator votes on the checkpoint, and after two rounds of voting, the checkpoint is **finalized**. All finalized checkpoints become part of the canonical chain (part of the blockchain history). While Casper guarantees **finality** through attestations to the latest block addition to the canonical chain, it requires a fork-choice rule where validators attest to blocks to signal support for those blocks.
+[Casper FFG](https://arxiv.org/abs/1710.09437v4) 是提案机制之上的一个覆盖层，负责通过选择代表规范交易账本的唯一链来最终确定区块。它采用 2014 年首次提出的 [slashing](https://blog.ethereum.org/2014/01/15/slasher-a-punitive-proof-of-stake-algorithm) 来实现这一目标。 Casper 遵循 Byzantine Fault Tolerance (BFT) 传统，并进行修改以实现 PoS。
+简单来说，就是每个验证者对检查点进行投票，经过两轮投票，检查点就**最终确定**。所有最终确定的检查点都成为规范链的一部分 (区块链历史的一部分)。虽然 Casper 保证 **最终确定性** 通过证明到最新的区块添加到规范链中，但它需要一个分叉选择规则，其中验证者证明区块以表示对这些区块的支持。
 
 - ***LMD GHOST***
-Latest Message Driven Greediest Heaviest Observed Sub-Tree (LMD-GHOST) is a *fork choice rule* where validators attests to blocks to signal support for those blocks. This similar in some ways to the fork choice rule used in Proof-of-work network, where the fork with the most work done is selected as the canonical chain.
+最新消息驱动的贪婪最重观察子树 (LMD-GHOST) 是 *分叉选择规则*，其中验证者证明区块以表示对这些区块的支持。这在某些方面类似于 Proof-of-Work 网络中使用的分叉选择规则，其中完成最多工作的分叉被选为规范链。
 
 ![LMD-GHOST-Algorithm](./img/lmt-ghost.png)
 
-Gasper is full Proof-of-stake protocol that serves as an idealized abstraction of the Ethereum implementation. It combines Casper FFG and LMD-GHOST to drive the consensus mechanism for the Eth2. 
+Gasper 是完整的 Proof-of-Stake 协议，作为 Ethereum 实现的理想化抽象。它结合了 Casper FFG 和 LMD-GHOST 来驱动 Eth2 的共识机制。 
 
-### Using a DHT
+### 使用 DHT
 
 ![P2P Networks Comparison](./img/p2p-nets-comp.png)
 
-The main benefit of DHTs is that lookups only generate logarithmic communication overhead in the network. This makes them suitable to find (query) content in a p2p network. But an immediate question arises, why do we need to *find* content in Ethereum if most nodes are interested in the same content, the latest block? The tip of the chain is always the same based on consensus slot which has only one block to be gossiped. A DHT is used in protocols like [bittorrent](https://www.bittorrent.org/beps/bep_0005.html) and IPFS which store a wide range of content and users try to *find* the content they are interested in. DHT is used in Ethereum networking to find to find different peers, not blocks.
+DHT 的主要好处是查找仅在网络中产生对数通信开销。这使得它们适合在 p2p 网络中查找 (查询) 内容。但一个直接的问题出现了，如果大多数节点对相同内容 (最新的区块) 感兴趣，为什么我们需要在 Ethereum 中*查找*内容？基于共识时隙，链的尖端始终相同，只有一个区块可以被闲聊。 DHT 用于像 [bittorrent](https://www.bittorrent.org/beps/bep_0005.html) 和 IPFS 这样的协议，这些协议存储广泛的内容，用户尝试“查找”他们感兴趣的内容。 DHT 在 Ethereum 网络中用于查找不同的对等节点，而不是区块。
 
-The discovery protocol in the networking layer of Ethereum uses, discv5, a [kademlia based DHT](https://github.com/ethereum/devp2p/blob/master/discv5/discv5.md) to store [ENR records](https://github.com/ethereum/devp2p/blob/master/enr.md). ENR records contain routing information (of the internet layer) to establish connections between peer. Peers joining the network use *bootstrap* nodes to relay lookup queries for its own `node_id` in the DHT. In the process they discover ENR records of other peers which help them populate their routing table. Routinely, peers also look up random `node_id`s to enumerate the network i.e. find all peers. 
+Ethereum 网​​络层的发现协议使用 discv5，一个 [基于 kademlia 的 DHT](https://github.com/ethereum/devp2p/blob/master/discv5/discv5.md) 来存储 [ENR 记录](https://github.com/ethereum/devp2p/blob/master/enr.md)。 ENR 记录包含 (互联网层的) 路由信息，用于在对等节点之间建立连接。 对等节点加入网络使用 *bootstrap* 节点到 中继查找查询在 DHT 中查找自己的 `node_id`。在此过程中，他们发现其他对等节点的 ENR 记录，这有助于他们填充路由表。通常，对等节点还会查找随机 `node_id`s 以枚举网络，即找到所有对等节点。 
 
-Blocks in Ethereum network are distributed using gossip protocol of the p2p stack. After discovering peers through an underlying DHT, peers use an overlay network ([gossipsub](https://github.com/libp2p/specs/blob/f25d0c22e5ef045c8c050bc91c297468de35f720/pubsub/gossipsub/gossipsub-v1.0.md)) to disseminate the block throughout the network. The overlay network creates its own routing table with routing information to establish connection AND overlay specific information(topics subscribed, fanout etc.) This overlay network is indeed an unstructured network.
+Ethereum 网络中的区块是使用 p2p 堆栈的 gossip 协议进行分发的。通过底层 DHT 发现对等节点后，对等节点使用覆盖网络 ([gossipsub](https://github.com/libp2p/specs/blob/f25d0c22e5ef045c8c050bc91c297468de35f720/pubsub/gossipsub/gossipsub-v1.0.md)) 在整个网络中传播区块。覆盖网络创建自己的路由表，其中包含路由信息以建立连接 AND 覆盖特定信息 (订阅的主题、扇出等)。该覆盖网络确实是一个非结构化网络。
 
-DHT goes the extra step to join an unstructured network over simply connecting to peers ([friends-to-friends model](https://en.wikipedia.org/wiki/Friend-to-friend) or PEX) and directly downloading/gossiping the required content directly. 
-Why go through an extra step of DHT to later join an unstructured network? From the perspective of bootstrapping, kademlia provides a global view whereas f2f networks, inherently, can only provide a local view of the network. Informally, a DHT provides public and non-localized (arguably, slightly more decentralized too) mechanism for nodes to join a network. This hybrid approach of using a structured network(DHT) to bootstrap into an unstructured network, is observed in bittorrent's [Peer Exchange(PEX)](https://www.bittorrent.org/beps/bep_0011.html) protocol as well. [Unstructured networks](https://en.wikipedia.org/wiki/Peer-to-peer#Unstructured_networks) are preferred as overlays because they are robust in high-churn networks.
+DHT 通过简单地连接到对等节点 ([朋友到朋友模型](https://en.wikipedia.org/wiki/Friend-to-friend) 或 PEX) 并直接下载/直接传播所需内容，加入了额外的步骤来加入非结构化网络。 
+为什么要经过 DHT 的额外步骤才能稍后加入非结构化网络？从引导的角度来看，kademlia 提供了全局视图，而 f2f 网络本质上只能提供网络的局部视图。非正式地，DHT 为节点提供公共和非本地化 (可以说，也稍微分散一些) 机制来加入网络。这种使用结构化网络 (DHT) 引导到非结构化网络的混合方法也在 bittorrent 的 [对等节点 Exchange (PEX)](https://www.bittorrent.org/beps/bep_0011.html) 协议中观察到。 [非结构化网络](https://en.wikipedia.org/wiki/Peer-to-peer#Unstructured_networks) 是首选的覆盖网络，因为它们在高流失率网络中具有鲁棒性。
 
-Over everything else, the biggest benefit of structured networks like kademlia DHT is their [simplicity](https://github.com/ethereum/devp2p/blob/master/discv5/discv5-rationale.md#why-kademlia) in design.
+最重要的是，像 kademlia DHT 这样的结构化网络的最大好处是它们的设计 [简单](https://github.com/ethereum/devp2p/blob/master/discv5/discv5-rationale.md#why-kademlia)。
 
-# References
+# 参考文献
 
-- Ethereum Builders, [Design Rationale](https://web.archive.org/web/20211121044757/https://ethereumbuilders.gitbooks.io/guide/content/en/design_rationale.html)
-- Vitalik B., [Complexity](https://vitalik.eth.limo/general/2022/02/28/complexity.html)
-- Dankrad F., [Why it's so important to go stateless](https://dankradfeist.de/ethereum/2021/02/14/why-stateless.html)
-- John K., [Verkle Trees](https://math.mit.edu/research/highschool/primes/materials/2018/Kuszmaul.pdf)
-- Vitalik B. et al., [Combining GHOST and Casper](https://arxiv.org/pdf/2003.03052)
-- Vitalik B., [Slasher: A Punitive Proof-of-Stake Algorithm](https://blog.ethereum.org/2014/01/15/slasher-a-punitive-proof-of-stake-algorithm)
+- Ethereum 构建者，[设计原理](https://web.archive.org/web/20211121044757/https://ethereumbuilders.gitbooks.io/guide/content/en/design_rationale.html)
+- Vitalik B.，[复杂性](https://vitalik.eth.limo/general/2022/02/28/complexity.html)
+- Dankrad F.，[为什么无国籍如此重要](https://dankradfeist.de/ethereum/2021/02/14/why-stateless.html)
+- 约翰·K.，[Verkle Trees](https://math.mit.edu/research/highschool/primes/materials/2018/Kuszmaul.pdf)
+- Vitalik B. 等人，[结合 GHOST 和 Casper](https://arxiv.org/pdf/2003.03052)
+- Vitalik B.，[Slasher：惩罚性 Proof-of-Stake 算法](https://blog.ethereum.org/2014/01/15/slasher-a-punitive-proof-of-stake-algorithm)

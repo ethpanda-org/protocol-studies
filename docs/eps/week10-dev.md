@@ -1,34 +1,34 @@
-# Study Group Day 10 | Precompiles 
+# 学习小组第 10 天 |预编译 
 
-Day 10 dev talk is diving into EVM precompiles and their integration in execution clients.
+第 10 天的开发谈话将深入探讨 EVM 预编译及其在执行客户端中的集成。
 
-Watch the presentation by [Danno Ferrin](https://twitter.com/shemnon), on [StreamEth](https://streameth.org/65cf97e702e803dbd57d823f/epf_study_group) and [Youtube](https://www.youtube.com/watch?v=daiMhkt0XTw)
+观看 [Danno Ferrin](https://twitter.com/shemnon) 在 [StreamEth](https://streameth.org/65cf97e702e803dbd57d823f/epf_study_group) 和 [Youtube](https://www.youtube.com/watch?v=daiMhkt0XTw) 上的演示
 
-- [Presentation from the talk.](https://hackmd.io/@shemnon/precompiles)
-- [Discussion thread on Discord: Week 10D: Precompiles](https://discord.com/channels/1205546645496795137/1231990093506678785).
+- [演讲内容](https://hackmd.io/@shemnon/precompiles)
+- [Discord 上的讨论主题：第 10D 周：预编译](https://discord.com/channels/1205546645496795137/1231990093506678785)。
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/daiMhkt0XTw?si=6c4EJRi-g1G5udJH" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-## Pre-reading
+## 预读
 
-Before starting with the week 10 development content, make yourself familiar with resources in previous weeks, especially Day 2 on EL and Day 7 on EL client. You should have understanding of the execution client architecture and EVM. 
+在开始第 10 周的开发内容之前，请先熟悉前几周的资源，尤其是 EL 上的第 2 天和 EL 客户端上的第 7 天。您应该了解客户端的执行架构和 EVM。 
 
-The talk will use examples from Besu, a Java implementation of execution client. At least basic understanding of Java syntax is recommended.
+本次演讲将使用 Besu 的示例，Besu 是执行客户端的 Java 实现。建议至少对 Java 语法有基本的了解。
 
-Additionally, you can get ready by studying the following resources:
-- [Exploring Precompiled Contracts on Ethereum: A Deep Dive](https://lucasmartincalderon.medium.com/exploring-precompiled-contracts-on-ethereum-a-deep-dive-4e9f9682e0aa)
-- [Precompiles documentation by evm.codes](https://www.evm.codes/precompiled)
+此外，您可以通过学习以下资源来做好准备：
+- [探索 Ethereum 上的 Precompiled Contracts：深入探究](https://lucasmartincalderon.medium.com/exploring-precompiled-contracts-on-ethereum-a-deep-dive-4e9f9682e0aa)
+- [evm.codes 预编译文档](https://www.evm.codes/precompiled)
 
-## Outline
+## 概要
 
-- EVM Precompiles
-- How they are integrated
-- Which precompiles exist 
-- How L2s and L1s use them
-- Challenges of creating precompiles
+- EVM 预编译
+- 它们是如何集成的
+- 存在哪些预编译 
+- L2 和 L1 如何使用它们
+- 创建预编译的挑战
 
-## Additional reading and exercises
+## 额外阅读和练习
 
-- [EVM Precompiled and System Contract Catalog](https://github.com/shemnon/precompiles/)
-- [RollCall breakout on precompiles](https://www.youtube.com/watch?v=tg01COfxi_M)
-- [Custom RPCs and Precompiles for Hyperledger Besu](https://www.youtube.com/watch?v=djL5nczlYFw)
+- [EVM 预编译及系统合约目录](https://github.com/shemnon/precompiles/)
+- [预编译上的 RollCall 突破](https://www.youtube.com/watch?v=tg01COfxi_M)
+- [Hyperledger Besu 的自定义 RPC 和预编译](https://www.youtube.com/watch?v=djL5nczlYFw)

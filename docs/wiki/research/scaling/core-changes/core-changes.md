@@ -1,19 +1,19 @@
-# Changes to Ethereum Core to Achieve Scalability
+# 更改 Ethereum 核心以实现可扩展性
 
-With the [Rollup-Centric Roadmap](https://ethereum-magicians.org/t/a-rollup-centric-ethereum-roadmap/4698) published by Vitalik Buterin in 2020, Ethereum has embarked on a path toward achieving scalability. The ultimate goals of Ethereum scalability can be summarized as follows:
+随着 Vitalik Buterin 在 2020 年发布的 [Rollup-Centric 路线图](https://ethereum-magicians.org/t/a-rollup-centric-ethereum-roadmap/4698)，Ethereum 已经走上了实现可扩展性的道路。 Ethereum 可扩展性的最终目标可以概括如下：
 
-- Transition the execution layer (dApps) entirely to Layer 2 (L2) rollups.
-- Optimize Ethereum, the Layer 1 (L1), to serve primarily as the settlement and data availability layer.
+- 将 Execution Layer (dApp) 完全过渡到第 2 层 (L2) Rollup。
+- 优化 Ethereum，第 1 层 (L1)，主要用作结算层和数据可用性层。
 
-Following the [Merge](https://github.com/ethereum/consensus-specs/tree/dev/specs/bellatrix), (see the [consensus spec](https://github.com/ethereum/consensus-specs), [annotated spec](https://github.com/ethereum/annotated-spec/blob/master/merge/beacon-chain.md), and [execution spec](https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/paris.md)), the Ethereum chain has been divided into two distinct chains: the [consensus layer (CL)](https://github.com/ethereum/consensus-specs) and the [execution layer (EL)](https://github.com/ethereum/execution-specs). The consensus layer is responsible for the security, decentralization, and censorship-resistant properties of Ethereum, while the execution layer is responsible for executing transactions within each new block proposed by the consensus layer. These transactions update the global state of the chain, which is securely stored on the CL.
+在 [合并](https://github.com/ethereum/consensus-specs/tree/dev/specs/bellatrix) 之后，(参见 [共识规范](https://github.com/ethereum/consensus-specs)、[注释规范](https://github.com/ethereum/annotated-spec/blob/master/merge/beacon-chain.md) 和 [执行规范](https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/paris.md))，Ethereum 链被分为两个不同的链： [Consensus Layer (CL)](https://github.com/ethereum/consensus-specs) 和 [Execution Layer (EL)](https://github.com/ethereum/execution-specs)。 Consensus Layer 负责 Ethereum 的安全性、去中心化和抗审查特性，而 Execution Layer 负责在 Consensus Layer 提出的每个新区块内执行交易。这些交易更新链的全局状态，该状态安全地存储在 CL 上。
 
-While the EL can be used for direct L1 dApp transactions, the goal, as mentioned earlier, is for dApp transactions to move entirely to L2 rollups. The EL will primarily be used by rollups to update the L2 state or as a backup if for some reasons the L2 is [stopping working](https://docs.arbitrum.io/sequencer#unhappyuncommon-case-sequencer-isnt-doing-its-job).
+虽然 EL 可用于直接 L1 dApp 交易，但如前所述，目标是让 dApp 交易完全迁移到 L2 Rollup。 EL 主要由 Rollup 用于更新 L2 状态，或者在 L2 由于某些原因 [停止工作](https://docs.arbitrum.io/sequencer#unhappyuncommon-case-sequencer-isnt-doing-its-job) 时用作备份。
 
-The CL will be used by rollups for Data Availability (DA) and to store proofs of validity, especially for ZK rollups. To achieve scalability and reduce gas costs, storing data on the CL blocks must be affordable in the long term. To accomplish this ambitious roadmap, the development of the CL can be outlined in the following phases:
+CL 将由 Rollup 用于数据可用性 (DA) 并存储有效性证明，特别是对于 ZK Rollup。为了实现可扩展性并降低 gas 成本，从长远来看，在 CL 区块上存储数据必须是负担得起的。为了实现这一雄心勃勃的路线图，CL 的开发可分为以下几个阶段：
 
-- Proto-danksharding ([EIP-4844](https://eips.ethereum.org/EIPS/eip-4844)), the upgrade introducing blobs (live on March 14th, 2024).
-- Increasing [blob count & gas modifications](https://ethresear.ch/t/on-increasing-the-block-gas-limit/18567) (planned for EOY 2024).
-- Addition of [PeerDAS](https://ethresear.ch/t/peerdas-a-simpler-das-approach-using-battle-tested-p2p-components/16541).
-- Full implementation of [Danksharding](https://ethresear.ch/t/from-4844-to-danksharding-a-path-to-scaling-ethereum-da/18046).
+- Proto-danksharding ([EIP-4844](https://eips.ethereum.org/EIPS/eip-4844))，引入 blob 的升级 (于 2024 年 3 月 14 日上线)。
+- 增加 [blob 计数和 gas 修改](https://ethresear.ch/t/on-increasing-the-block-gas-limit/18567)(计划于 2024 年 EOY)。
+- 添加 [PeerDAS](https://ethresear.ch/t/peerdas-a-simpler-das-approach-using-battle-tested-p2p-components/16541)。
+- 全面实施 [Danksharding](https://ethresear.ch/t/from-4844-to-danksharding-a-path-to-scaling-ethereum-da/18046)。
 
-In the following section, we discuss how EIP-4844 will impact the EL and CL.
+在下一节中，我们将讨论 EIP-4844 将如何影响 EL 和 CL。

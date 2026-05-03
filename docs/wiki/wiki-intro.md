@@ -1,15 +1,15 @@
 <!-- markdownlint-disable MD013 -->
 
-# Welcome to Protocol Wiki
+# 欢迎来到 Protocol Wiki
 
-Protocol Wiki is a learning resource for anyone diving into Ethereum protocol, its development and research. It has been created during EPF Study Group as collaborative effort to create a contextual documentation of important domains of the protocol.
+Protocol Wiki 是任何深入了解 Ethereum 协议及其开发和研究的人的学习资源。它是在 EPF 学习小组期间创建的，作为创建协议重要领域的上下文文档的协作努力。
 
-## Using the wiki
+## 使用维基
 
-The wiki structure follows the design of Ethereum protocol. It's divided into sections mapping to important areas of the protocol and its development. Each section consists of pages covering its most relevant parts and provides a technical overview. Sections and its topics can be navigated in the left sidebar.
+wiki 结构遵循 Ethereum 协议的设计。它分为几个部分，映射到协议及其开发的重要领域。每个部分都由涵盖最相关部分的页面组成，并提供技术概述。可以在左侧边栏中导航各部分及其主题。
 
-> Wiki pages provide a context and explanation but also serve as a collection of external resources covering the topic. Use the resource section at the bottom of each page to learn more about the topic.
+> Wiki 页面提供上下文和解释，但也作为涵盖该主题的外部资源的集合。使用每个页面底部的资源部分来了解有关该主题的更多信息。
 
-To learn about a specific topic, identify what section it belongs to or use the search bar to find occurrences of the relevant term. If there is an important topic currently missing, open an [issue](https://github.com/eth-protocol-fellows/protocol-studies/issues) to let other know. For contributing yourself, check [contribution guidelines](/contributing.md) first.
+要了解特定主题，请确定它属于哪个部分，或使用搜索栏查找相关术语的出现。如果当前缺少重要主题，请打开 [issue](https://github.com/eth-protocol-fellows/protocol-studies/issues) 让其他人知道。如需自行贡献，请先查看 [贡献指南](/contributing.md)。
 
-The wiki is written by a community of volunteers and continues to grow. Many pages are marked as _stubs_ and don't yet fully cover the topic.
+该维基百科由志愿者社区编写并不断发展。许多页面被标记为 _stubs_ 并且尚未完全涵盖该主题。

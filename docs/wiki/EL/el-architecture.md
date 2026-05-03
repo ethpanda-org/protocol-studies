@@ -1,69 +1,110 @@
-# Client Architecture
+# 客户端架构
 
-## Overview
+## 概述
 
-Beyond execution layer's fundamental role of transaction execution, the execution layer client undertakes several critical responsibilities. These include verification of the blockchain data and storing its local copy, facilitating network communication through gossip protocols with other execution layer clients, maintaining a transaction pool, and fulfilling the consensus layer's requirements that drive its functionality. This multifaceted operation ensures the robustness and integrity of the Ethereum network.
+除了 Execution Layer 执行交易的基本作用之外，Execution Layer 客户端还承担多项关键职责。其中包括验证区块链数据并存储其本地副本、通过八卦协议促进与其他 Execution Layer 客户端的网络通信、维护交易池以及满足 Consensus Layer 驱动其功能的要求。这种多方面的操作确保了 Ethereum 网​​络的稳健性和完整性。
 
-The client's architecture is built around a variety of specific standards, each of which plays a unique role in the overall functionality. The execution engine is located at the top, driving the execution layer, which in turn is driven by the consensus layer. The execution layer runs on top of DevP2P, the networking layer, which is initialized by providing legitimate boot nodes that provide an initial access point into the network. When we call one of the engine API methods, such as fork choice updated, we can download blocks from peers by subscribing to topics like our preferred mode of sync.
+客户端的架构是围绕各种特定标准构建的，每个标准在整体功能中都发挥着独特的作用。执行引擎位于顶部，驱动 Execution Layer，Execution Layer 又由 Consensus Layer 驱动。 Execution Layer 运行在 DevP2P (网络层) 之上，该网络层通过提供合法的启动节点进行初始化，该启动节点提供了网络的初始访问点。当我们调用引擎 API 方法之一 (例如分叉选择 Updated) 时，我们可以通过订阅诸如我们首选同步模式之类的主题，从对等节点下载区块。
 
 <img src="images/el-architecture/architecture-overview.png" width="1000"/>
 
-The diagram illustrates a simplified representation of the design, excluding several components.
+该图展示了设计的简化表示，不包括几个组件。
 
 **EVM**
 
-Ethereum is centered around a virtualized central processing unit (CPU). Computers have their own central processing units (CPUs) at a hardware level, which can be of many types such as x86, ARM, RISC-V, or others. These varied processor architectures have unique instruction sets that enable them to perform tasks such as arithmetic, logic, and data manipulation, allowing the computer to function as a general-purpose computing machine. Therefore, when executing a program written in the hardware-level instruction set, the outcome may vary depending on the specific hardware on which it is executed. Thus In computer science, we address this problem by virtualizing instruction sets through the creation of virtual machines, such as the JVM (Java Virtual Machine). These virtual machines ensure consistent results regardless of the underlying hardware. The EVM is a virtualized execution engine designed for ethereum programs. It ensures consistent results regardless of the hardware it runs on and facilitates consensus among all Ethereum clients regarding computation outcomes.
+Ethereum 以虚拟化中央处理单元 (CPU) 为中心。计算机在硬件级别有自己的中央处理器 (CPU)，其类型可以有多种，例如 x86、ARM、RISC-V 或其他类型。这些不同的处理器架构具有独特的指令集，使它们能够执行算术、逻辑和数据操作等任务，从而使计算机能够充当通用计算机器。因此，当执行以硬件级指令集编写的程序时，结果可能会根据执行该程序的具体硬件而有所不同。因此，在计算机科学中，我们通过创建虚拟机 (例如 JVM (Java 虚拟机)) 来虚拟化指令集来解决这个问题。无论底层硬件如何，这些虚拟机都能确保一致的结果。 EVM 是一个专为 Ethereum 程序设计的虚拟化执行引擎。无论运行在什么硬件上，它都能确保一致的结果，并促进所有 Ethereum 客户端之间关于计算结果的共识。
 
-In addition, Ethereum incorporates a sandwich complexity model as part of its design philosophy. This implies that the outer layers should be uncomplicated, while all the intricacy should be concentrated in the middle layers. In this context, the EVM's code can be seen as the outermost layer, while a high-level language like Solidity may be considered as the top layer. In between, there is a complicated compiler that translates the solidity code into the EVM's bytecode.
+此外，Ethereum 将三明治复杂性模型作为其设计理念的一部分。这意味着外层应该不复杂，而所有复杂性都应该集中在中间层。在这种情况下，EVM 的代码可以被视为最外层，而像 Solidity 这样的高级语言可以被视为顶层。在这之间，有一个复杂的编译器将 solidity 代码翻译成 EVM 的字节码。
 
-**State**
+**状态**
 
-Ethereum is a general purpose computational system that operates as a state machine, meaning it may transition between several states depending on the inputs it receives. In addition, Ethereum differs significantly from other blockchains like Bitcoin in that it maintains a global state, whereas Bitcoin only keeps global unspent transaction outputs (UTXOs). The term "state" refers to the comprehensive collection of data, data structures (such as Merkle-Patricia Tries), and databases that store various information. This includes addresses, balances, code and data for contracts, as well as the current state and network state.
+Ethereum 是一个通用计算系统，作为状态机运行，这意味着它可以根据接收到的输入在多个状态之间转换。此外，Ethereum 与 Bitcoin 等其他区块链显着不同，因为它维护全局状态，而 Bitcoin 仅保留全局未使用的交易输出 (UTXO)。术语“状态”是指数据、数据结构 (例如 Merkle-Patricia Tries) 和存储各种信息的数据库的综合集合。这包括合约的地址、余额、代码和数据，以及当前状态和网络状态。
 
-**Transactions**
+**交易**
 
-The EVM produces data and modifies the state of the Ethereum network through a process called state transition. This state transition is triggered by transactions, which are processed within the EVM. If a transaction is deemed legitimate, it results in a state change of the Ethereum network.
+EVM 产生数据并通过称为状态转换的过程修改 Ethereum 网络的状态。该状态转换由交易触发，并在 EVM 内进行处理。如果交易被认为是合法的，则会导致 Ethereum 网络的状态发生变化。
 
 **DevP2P**
 
-The interface for communicating with other  the execution layer clients. Transactions initially stored in the mempool, which serves as a repository for all incoming transactions, are disseminated by execution layer clients to other execution layer clients in the network using peer-to-peer communication. Every recipient of the transaction sent over the network confirms its validity before broadcasting it to the network.
+与其他 Execution Layer 客户端通信的接口。 交易最初存储在内存池中，该内存池作为所有传入交易的仓库，并由 Execution Layer 客户端传播到网络中的其他 Execution Layer 客户端对等节点到 对等节点通信。通过网络发送的交易的每个接收者都会在将其广播到网络之前确认其有效性。
 
 **JSON-RPC API**
 
-When utilizing a wallet or a DApp, our communication with the execution layer is conducted over a standardized JSON-RPC API. This enables us to externally query the Ethereum state or dispatch a transaction to it, signed by the wallet, which is subsequently validated by the execution layer client and disseminated around the network.
+当使用钱包或 DApp 时，我们与 Execution Layer 的通信是通过标准化的 JSON-RPC API 进行的。这使我们能够从外部查询 Ethereum 状态或向其发送由钱包签名的交易，随后由 Execution Layer 客户端进行验证并在网络中传播。
 
 **Engine API**
 
-This is the only link between the consensus and execution layer. The engine exposes two major classes of endpoints to the consensus layer: **fork choice updated** and **new payload** suffixed by the three versions they are exposed as (V1-V3).These methods encapsulate two major pipelines offered by the execution layer:
+**引擎 API** 位于 **Execution Layer** 中，专门用于 **Consensus Layer** 和 **Execution Layer (EL)** 之间的内部通信。该引擎向 Consensus Layer 公开两类主要端点：**分叉选择更新**和**新载荷**，后缀为它们公开的三个版本 (V1-V3)。
 
-1.  **New Payload** _(V1/V2/V3)_: payload validation & insertion pipeline.
-2.  **Fork Choice Updated** _(V1/V2/V3)_: state synchronization & block building pipeline.
+1. **新载荷 (V1/V2/V3):**  
+   处理载荷验证和插入。当 CL 接收到新的 Beacon block 时，它会提取执行载荷并在 EL 上调用 `engine_newPayload`。 EL 通过以下方式验证载荷：
+   - 检查载荷标头中的父级区块哈希是否存在并与本地链中的预期父级匹配。
+   - 验证任何其他执行承诺 (例如 Cancun 后数据)。
+   - 执行交易并更新状态。
+   
+   响应包括状态：
+   - **VALID：** 完全执行且正确。
+   - **INVALID:** 载荷或祖先验证失败。
+   - **SYNCING：** EL 仍在追赶 (例如缺少区块)。
+   - **ACCEPTED：** 基本检查已通过，但完整执行尚未完成 (常见于浅状态客户端)。
 
-**Sync**
+2. **分叉选择更新 (V1/V2/V3)：**  
+   管理状态同步并触发区块构建。 CL 发送分叉选择更新 (带有头、安全和最终的区块哈希)，并且如果选择提议区块，则可以包括载荷属性。 EL 将：
+   - 更新其规范头部。
+   - 如果提供了载荷属性，则启动载荷构建。
+   - 返回带有状态的响应，如果正在构建，则返回 `payloadId`。该状态指示 EL 当前处理分叉选择更新并 (如果适用) 开始构建区块的能力。
 
-In order to accurately process transactions on Ethereum, it is imperative that we reach a consensus on the global status of the network, rather than solely relying on our local perspective. The global state synchronization of the execution layer client is triggered by the fork choice rule governed by the LMD-GHOST algorithm in the consensus layer. It is then relayed to the execution layer through the fork choice updated endpoint of the engine API. Syncing entails two possible processes: downloading remote blocks from peers and validating them in the EVM.
+返回到 CL 的可能状态：
+- **VALID：** 分叉选择更新已成功处理，并且 EL 的链视图是最新的。
+- **INVALID：** 提供的分叉选择引用无效的区块或链段。
+- **SYNCING：** EL 仍在追赶 (例如，缺少区块或评估分叉选择所需的状态)。
+- **ACCEPTED：** 分叉选择更新已暂时接受，但完整验证正在等待中。当 EL 具有浅状态或非规范分叉的历史记录不完整时，可能会发生这种情况。
 
-## Components of the architecture
+**同步**
 
-### Engine
+为了准确地处理 Ethereum 上的交易，我们必须对网络的全局状态达成共识，而不是仅仅依靠我们本地的视角。 Execution Layer 客户端的全局状态同步由分叉选择规则触发，该分叉选择规则由 Consensus Layer 中的 LMD-GHOST 算法控制。然后，它通过引擎 API 的分叉选择更新端点中继到 Execution Layer。同步需要两个可能的过程：从对等节点下载远程区块并在 EVM 中验证它们。 状态响应 (VALID、INVALID、SYNCING、ACCEPTED) 指示 EL 的当前同步级别。
 
-The execution layer client acts as an _execution engine_ and exposes the Engine API, an authenticated endpoint, which connects to the consensus layer client. The engine is also referred to as the external consensus engine by the execution layer clients. The execution layer client can be only be driven by a single consensus layer, but a consensus layer client implementations can connect to multiple execution layer clients for redundancy. The Engine API uses the JSON-RPC interface over HTTP and requires authentication via a [JWT](https://jwt.io/introduction) token. Additionally the Engine JSON-RPC is not exposed to anyone besides the consensus layer. However, it's important to note that the JWT is primarily used for authenticating the Payload, i.e. sender is the consensus layer client, it does not encrypt the traffic.
+### 能力交流
 
-#### Routines
+在常规操作开始之前，CL 和 EL 通过 `engine_exchangeCapabilities` 方法执行能力交换。此步骤在客户端之间协商支持的引擎 API 方法版本，确保双方使用通用协议版本 (例如 V1、V2、V3) 进行操作。这种交换对于确保兼容性并在保持向后兼容性的同时启用新功能至关重要。
 
-##### Payload validation
+**Happy Path 流程 – 节点启动和验证者操作：**
 
-Payload is validated with respect to the block header and execution environment rule sets:
+1. **节点启动：**  
+   - CL 调用 `engine_exchangeCapabilities` 与 EL 共享支持的引擎 API 方法和版本的列表。
+   - EL 使用其自己的支持方法列表进行响应。
+   - 接下来，CL 发送初始 `engine_forkchoiceUpdated` 调用 (没有载荷属性) 以通知 EL 当前的分叉选择。
+   - 如果 EL 仍在追赶，则返回 SYNCING 状态。一旦追上，它就会以 VALID 进行响应。
+
+2. **验证者操作：**  
+   - 在每个时隙中，CL 都会发送 `engine_forkchoiceUpdated` 调用来更新 EL 的状态。
+   - 当分配验证者来提议区块时，CL 在分叉选择更新中包含载荷属性以触发区块构建。
+   - EL 返回载荷状态以及 `payloadId`，CL 稍后与 `engine_getPayload` 一起使用以检索构建的执行载荷。
+   - 另外，当验证者从网络接收到 Beacon block (由另一个验证者提议) 时，CL 提取执行载荷并在 EL 上调用 `engine_newPayload` 来验证载荷。
+
+## 架构的组成部分
+
+### 引擎
+
+Execution Layer 客户端充当_执行引擎_并公开引擎 API，这是一个经过身份验证的端点，它连接到 Consensus Layer 客户端。该引擎也被 Execution Layer 客户端称为外部共识引擎。 Execution Layer 客户端只能由单个 Consensus Layer 驱动，但 Consensus Layer 客户端实现可以连接到多个 Execution Layer 客户端以实现冗余。引擎 API 使用 HTTP 上的 JSON-RPC 接口，并需要通过 [JWT](https://jwt.io/introduction) 令牌进行身份验证。此外，除了 Consensus Layer 之外，引擎 JSON-RPC 不会暴露给任何人。但需要注意的是，JWT 主要用于验证载荷，即发送方是 Consensus Layer 客户端，它不会加密流量。
+
+ 此设计强制执行明确的职责分离：CL 处理共识和分叉选择，而 EL 验证并执行交易。
+
+#### 例程
+
+##### 载荷验证
+
+载荷针对区块标头和执行环境规则集进行验证：
 
 <img src="images/el-architecture/payload-validation-routine.png" width="1000"/>
 
-With the merge, the function of the execution layer has been altered within the Ethereum network. Previously, it was tasked with the responsibility of managing the consensus of the blockchain, ensuring the correct order of blocks, as well as handling reorganizations. However, after the merge, these tasks have been delegated to the consensus layer, resulting in a significant simplification of the execution layer. Now, we can conceptualize the execution layer as primarily carrying out the state transition function.
+通过合并，Execution Layer 的功能在 Ethereum 网​​络内发生了变化。此前，它的任务是管理区块链的共识，确保区块的正确顺序，以及处理重组。然而，合并后，这些任务已委托给 Consensus Layer，导致 Execution Layer 显着简化。现在，我们可以将 Execution Layer 概念化为主要执行状态转换函数。
 
-In order to gain a better understanding of the aforementioned concept, it is beneficial to examine the perspective of the consensus layer in relation to the execution layer. The consensus specification defines the _process execution payload_ in the deneb beacon chain specs, which is carried out by the beacon chain while undergoing several verifications required to validate a block and advance the consensus layer. The execution layer here is represented by the `execution_engine` function, which serves as a means of communication between the consensus layer and the execution layer and has a lot of varied complexities to it.
+为了更好地理解上述概念，检查 Consensus Layer 相对于 Execution Layer 的视角是有益的。共识规范在 deneb Beacon Chain 规范中定义了“进程执行载荷”，该负载由 Beacon Chain 执行，同时进行验证区块和推进 Consensus Layer 所需的多次验证。这里的 Execution Layer 由 `execution_engine` 函数表示，它充当 Consensus Layer 和 Execution Layer 之间的通信手段，并且具有很多不同的复杂性。
 
-During _process execution payload_ , we begin by conducting several high-level checks, including verifying the accuracy of the parent hash and validating the timestamp. Additionally, we perform various lightweight verifications. Subsequently, we transmit the payload to the execution layer, where it undergoes block verification. The notify payload function, is the lowest level function that serves as the interface between the consensus layer and the execution engine. It contains only the function's signature, without any implementation details. Its sole purpose is to transmit the execution payload to the execution engine, which acts as the client for the execution layer. The execution engine then carries out the actual state transition function, which involves verifying the accuracy of block headers and ensuring that transactions are correctly applied to the state. The execution engine will ultimately return a boolean value indicating whether the state transition was successful or not. From the standpoint of the consensus layer, this is simply the validation of blocks.
+在进程执行载荷期间，我们首先进行多项高级检查，包括验证父级哈希的准确性并验证时间戳。此外，我们还执行各种轻量级验证。随后，我们将载荷传输到 Execution Layer，并在那里进行区块验证。通知载荷函数是最低级别的函数，充当 Consensus Layer 和执行引擎之间的接口。它仅包含函数的签名，没有任何实现细节。其唯一目的是将执行载荷传输到执行引擎，执行引擎充当 Execution Layer 的客户端。然后，执行引擎执行实际的状态转换函数，这涉及验证区块标头的准确性并确保交易正确应用于状态。执行引擎最终会返回一个布尔值，指示状态转换是否成功。从 Consensus Layer 的角度来看，这只是对区块的验证。
 
-This is a simplified description of the block level state transition function (stf) in go. The stf is a crucial component of the block validation and insertion pipeline. Although the example is specific to Geth, it represents the functioning of the stf in other clients as well. It is worth mentioning that the state transition function is rarely referred to by its name in the code of different clients, save for the EELS python spec client. This is because its real operations are divided across many components of the client's architecture.
+这是 go 中区块级别状态转换函数 (stf) 的简化描述。 stf 是区块验证和插入管道的重要组成部分。尽管该示例特定于 Geth，但它也代表了其他客户端中 stf 的功能。值得一提的是，除了 EELS python 规范客户端之外，在不同客户端的代码中很少引用状态转换函数的名称。这是因为它的实际操作分为客户端架构的许多组件。
 
 ```go
 func stf(parent types.Block, block types.Block, state state.StateDB) (state.StateDB, error) { //1
@@ -83,21 +124,21 @@ func stf(parent types.Block, block types.Block, state state.StateDB) (state.Stat
 }
 ```
 
-1. State transition function's parameters and return values
-   - In this context, we examine both the parent block and the current block in order to validate certain transition logic from the parent block to the current block.
-   - We take the state DB in as an argument, which contains all the state data related to the parent block. This represents the most recent valid state.
-   - We return the state DB representing the updated state after the state transition
-   - if the state transition fails we don't update the state DB and return the error
-2. In the state transition functions procedure we first verify the headers
-   - As an illustration of the failure of header verification, let us consider the gas limit field, which is also of historical significance. Currently, the gas limit stands at around 30 million. It's important to note that the gas limit is not fixed within the execution layer. Block producers have the capacity to modify the gas limit using a technique that allows them to increase or decrease it by 1/1024th of the gas limit of the preceding block. Therefore, if you raise the gas limit from 30 million to 40 million within a single block, the header verification will fail because it exceeds the threshold of 30 million plus one-thousandth of 30 million.
-   - Additional instances of header verification failure can arise when the block numbers are not in sequential order. Typically, the beacon chain is responsible for detecting such discrepancies, although there are instances where it is detected at this stage as well. Failures may also arise when the 1559 base fee is not accurately updated according to the comparison between the last gas used and the gas limit.
-3. Once the header verification is completed, we consider the environment in the header as the environment in which the transactions should be executed and we apply the transactions. We iterate over the transactions in the block and execute each transaction in the EVM.
-   - The block headers are passed to the EVM in order to provide the necessary context for processing the transaction. This context includes instructions such as coinbase, gas limit, and timestamp, which are required for proper execution.
-   - Additionally we pass in the transaction and the state
-   - In the event of a failed execution, we simply return the error, indicating an invalid transaction within the block and thereby rendering the block invalid. Within the execution layer, the presence of anything erroneous in a block renders the entire block invalid, as it contaminates the block as a whole.
-   - Once we confirm the validity of the transactions, we proceed to update our state with the result . The state now represent the accumulated state that has all the transaction in the new block applied to it.
+1. 状态转换函数的参数和返回值
+   - 在这种情况下，我们检查父区块和当前区块，以验证从父区块到当前区块的某些转换逻辑。
+   - 我们将状态 DB 作为参数，其中包含与父级区块相关的所有状态数据。这代表最近的有效状态。
+   - 我们返回状态 DB 表示状态转换后更新的状态
+   - 如果状态转换失败，我们不会更新状态 DB 并返回错误
+2. 在状态转换函数过程中，我们首先验证标头
+   - 作为标头验证失败的说明，让我们考虑 gas 限制字段，该字段也具有历史意义。目前，gas 的限制约为 3000 万。值得注意的是，gas 限制在 Execution Layer 内并不固定。 区块生产者有能力修改 gas 限制，使用一种技术，允许他们将其增加或减少前面区块的 gas 限制的 1/1024。因此，如果在单个区块内将 gas 限制从 3000 万提高到 4000 万，标头验证将会失败，因为它超出了 3000 万加 3000 万的千分之一的阈值。
+   - 当区块编号不按顺序排列时，可能会出现其他标头验证失败的情况。通常，Beacon Chain 负责检测此类差异，尽管也有在此阶段检测到的情况。如果未根据上次使用的 gas 与 gas 限制之间的比较准确更新 1559 基本费用，也可能会出现故障。
+3. 一旦标头验证完成，我们将标头中的环境视为应该执行交易的环境，并应用交易。我们迭代区块中的交易并执行 EVM 中的每个交易。
+   - 区块标头被传递到 EVM，以便为处理交易提供必要的上下文。此上下文包括正确执行所需的指令，例如 coinbase、gas limit 和时间戳。
+   - 另外，我们传入交易和状态
+   - 如果执行失败，我们只需返回错误，表明区块中的交易无效，从而使区块无效。在 Execution Layer 内，区块中任何错误的存在都会导致整个区块无效，因为它会污染整个区块。
+   - 一旦我们确认了交易的有效性，我们就继续用结果更新我们的状态。该状态现在表示应用了新区块中的所有交易的累积状态。
 
-From the standpoint of beacon chains, the state transition function mentioned above is encompassed by the invocation of the "new payload" function.
+从 Beacon Chain 的角度来看，上面提到的状态转换函数包含在“new 载荷”函数的调用中。
 
 ```go
 func newPayload(execPayload engine.ExecutionPayload) bool {
@@ -108,126 +149,192 @@ func newPayload(execPayload engine.ExecutionPayload) bool {
 }
 ```
 
-The beacon chain  invokes the new payload function and transfers the execution payload as an argument. On the execution layer, we invoke the state transition function using the information from the execution payload. If the state transition function does not produce an error, we return true. Otherwise, we return false to indicate that the block is invalid.
+Beacon Chain 调用新的载荷函数并将执行载荷作为参数传输。在 Execution Layer 上，我们使用执行载荷中的信息调用状态转换函数。如果状态转换函数没有产生错误，我们返回 true。否则，我们返回 false 来指示区块无效。
 
 ##### Geth
 
-TODO: STF code links and walk through in Geth
+###### 交易在 Geth 中执行
+Geth 与其他 Ethereum 执行客户端一样，通过验证签名、检查 nonces、扣除 gas 费用并更新状态来处理交易。 交易首先进入内存池，在那里等待被包含在区块中。一旦获取，Geth 就会执行它们，修改账户余额、合约存储和其他状态数据。
 
-Check week 2 talk by lightclient for an overview.
+🔗[ 交易执行规范代码](https://github.com/ethereum/execution-specs/blob/0f9e4345b60d36c23fffaa69f70cf9cdb975f4ba/src/ethereum/shanghai/fork.py#L542)
 
-##### Sync
+###### 区块处理和状态更新
+每个新的区块都包含 Geth 按顺序处理的多个交易。一旦所有交易都执行完毕，最终状态就被提交，并存储一个状态根哈希以确保一致性。此过程遵循一组定义的规则来维护网络完整性。
 
-Execution client synchronizes the chain by downloading block data from its peers and verifying them using the block validation rule. Sync finishes when blockchain data is verified and clients catches up with the tip of the chain which enables building the latest state. 
+🔗 [状态转换代码](https://github.com/ethereum/execution-specs/blob/0f9e4345b60d36c23fffaa69f70cf9cdb975f4ba/src/ethereum/shanghai/fork.py#L145)
 
-Because it's inefficient to validate block by block and transaction by transaction since the genesis, EL clients employ other strategies to securely sync the tip of the chain, e.g. snap sync. 
+###### 网络和对等节点到 对等节点通信
+Ethereum 节点使用 DevP2P 进行通信，该协议允许执行客户端来交换交易和 区块。当发送新的交易时，它会通过对等节点到 对等节点连接在网络上传播，确保所有节点保持同步。每个收件人在转发交易之前都会对其进行验证，以防止垃圾邮件和无效状态转换。
 
-##### Payload building
+🔗[DevP2P 规范](https://github.com/ethereum/devp2p/blob/master/caps/eth.md)
 
-More details in [block production](/wiki/EL/block-production.md)
+###### EVM 执行
+Geth 的核心运行 Ethereum Virtual Machine (EVM)，该虚拟机处理智能合约逻辑。每个与合约交互的交易都在 EVM 内部执行，确保所有节点的一致性和确定性。
 
-#### Methods
+🔗 [EVM Geth 代码](https://github.com/ethereum/go-ethereum/blob/master/core/vm/evm.go#L90)
 
-##### New payload
+##### 状态同步
 
-Validates the payload that was built earlier by the payload building routine.
+所有执行客户端都需要最新的世界状态来验证和构建区块。为了引导新的节点的当前状态，客户端利用 Ethereum 的 DevP2P 子协议：`eth/*`(有线协议) 用于区块标头、正文和收据，`snap/1` 用于创建状态快照。使用这些子协议，客户端可以在两种同步策略之间进行选择：**完全同步**或**快照同步**。 快照同步的节点和完整的区块-by- 区块同步的节点之间的区别在于，快照同步的节点从比创世更新的初始检查点开始区块。
+
+让我们看看**完全同步**和**快照同步**的流程如何工作。
+
+### 全同步
+完全同步以绝对的不信任换取时间和资源。 客户端会重放每个区块和 交易从 genesis 到 Tip，逐步重建状态 Trie：
+1. 通过 `GetBlockHeaders` 协议使用 `eth/*` 来下载自创世以来的每个区块标头。
+2. 使用 `GetBlockBodies` 检索每个区块的 交易和叔叔。
+3. 按 EVM 顺序依次执行每个交易，更新每个区块处的本地 Trie。
+4. 确认本地状态 Trie 的根与提示的根匹配。每个状态转换都经过验证。
+
+此方法可保证最大程度的安全性，但在主网上可能需要数天时间，并消耗大量 CPU、磁盘和网络资源。 完全同步是一种幼稚的默认策略，因为它从创世开始，并且随着区块高度不断增长而需要更长的时间。 此外，在 [EIP-4444](https://eips.ethereum.org/EIPS/eip-4444) 完全实施后，将不再支持从创世开始的完全同步。 EIP-4444 之后的同步将是 **检查点同步**，这意味着同步将从 Weak Subjectivity 检查点开始，而不是从创世开始。
+
+### 快照同步
+Snap Sync 通过仅获取区块叶子 (帐户和存储槽) 加上 Merkle 证明来重建数据透视表区块的状态，然后单独下载任何所需的合约字节码，最后在本地重建 Trie：
+1. 选择最近完成的区块作为您的数据透视表区块。
+2. 通过 eth/*，通过 `GetBlockHeaders` 请求区块的 header 以了解其 stateRoot。 
+3. 通过 `eth/*` 将标头获取到枢轴，这样您就知道要定位哪个状态根。
+4. 以块的形式下载数据透视表区块的 世界状态 Trie 的叶子和帐户存储 Trie。
+   - **帐户**：使用 `GetAccountRange` 提取连续的世界状态 Trie 叶值。
+   - **存储**：使用`GetStorageRanges`为每个账户拉取连续的存储槽叶子节点。
+5. 为账户主体中找到的每个代码哈希发送 `GetByteCodes` 以获取该账户的合约代码
+6. 将每个获取的叶子本地插入到新快照 DB 中，通过 Merkle 范围证明根据枢轴区块的 stateRoot 验证每个批次。
+> 注意：实际上，客户端以快照特定的数据库格式存储这些获取的叶子，这与正常执行期间使用的 Merkle Trie 不同。此格式针对范围查询和快速重建进行了优化。完整的 MPT 结构是在修复阶段创建和验证的。
+
+### 愈合阶段
+第 6 步之后，我们将数据透视表区块的状态快照存储在平面快照数据库中。然而，由于链条不断前进，数据可能会陈旧、不完整或不一致。因此，需要一个愈合阶段。 在修复过程中，客户端会遍历快照 DB 并验证状态数据是否完整且与数据透视表区块的 stateRoot 一致。任何缺失的 Trie 节点、存储槽或合约字节码均使用目标快照请求获取。修复确保最终状态完整、一致，并且可以完全重构为有效的 MPT。
+
+此时，我们已经有了枢轴区块状态的快照，因此我们将区块的 区块应用于下载状态上的枢轴，以到达链的末端。
+
+Snap Sync 将主网引导时间从几天缩短到几小时。它的权衡是，修复阶段需要硬件密集型资源才能超过正在生成的新区块的 Trie 更改。
+
+当验证区块链数据并且客户端赶上链的尖端时，**完全同步**和**快照同步**都会完成，从而能够构建最新状态。 
+
+##### 载荷大厦
+
+更多详情参见 [区块生产](/wiki/EL/block-production.md)
+
+#### 方法
+
+##### 新载荷
+
+验证先前由载荷构建例程构建的载荷。
 
 <img src="images/el-architecture/new-payload.png" width="1000"/>
 
-##### Fork choice updated
+##### 分叉选择已更新
 
-Proof-of-stake LMD-GHOST fork choice rule & payload building routine instantiation.
+Proof-of-Stake LMD-GHOST 分叉选择规则和 载荷构建例程实例化。
 
 <img src="images/el-architecture/forkchoice-updated.png" width="1000"/>
 
-### Internal Consensus engines
+### 内部共识引擎
 
-The execution layer has its own consensus engine to work with its own copy of the beacon chain. The execution layer consensus engine is known as ethone and has about half the functionality of the full fledged consensus engine of the consensus layer.
+Execution Layer 有自己的共识引擎，可与其自己的 Beacon Chain 副本配合使用。 Execution Layer 共识引擎被称为 ethone，其功能大约是 Consensus Layer 成熟共识引擎的一半。
 
-| Function                                                                                                                                        | Beacon (Proof-of-stake)                                                                                                                                                                                                                                                                                                                                                                                                                                 | Clique (Proof-of-authority)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Ethash (Proof-of-work) |
+| 功能 | 信标 (Proof-of-Stake) | Clique (权威证明) | Ethash (Proof-of-Work) |
 | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
-| **Author**: Eth address of the block minter                                                                                                     | If the header is classified as a Proof of Stake (PoS) header, with a header difficulty set to 0, we will retrieve the header's coinbase. Otherwise, we will forward the header to the beacon's ethone engine (either clique or ethash) for further processing.                                                                                                                                                                                          | Obtains the account address that created the block. The process of recovering the public key from the header's extraData is performed by ecrerecover.                                                                                                                                                                                                                                                                                                                                                                     |                        |
-| **Verify Header(s)**: Processes a batch of headers and validates them according to the rules of the current consensus engine. :                 | Split the headers based on [Terminal Total difficulty](https://eips.ethereum.org/EIPS/eip-3675#definitions) into pre and post TTD batches . Verify the pre batches with the ethone engine and the post by beacon's verify header.                                                                                                                                                                                                                       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |                        |
-|                                                                                                                                                 | Here we perform block header verification similar to the one in the [execution layer Specs](wiki/EL/el-specs?id=block-header-validation) wiki page and covered below in the client code table.                                                                                                                                                                                                                                                          | We verify the time of the header is not greater than system time.                                                                                                                                                                                                                                                                                                                                                                                                                                                         |                        |
-|                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                         | If it is a checkpoint block (1'st slot of an epoch), then ensure it has no beneficiary.                                                                                                                                                                                                                                                                                                                                                                                                                                   |                        |
-|                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                         | The header nonce can take on two values: 0x00..0, which indicates a vote to add a signer, or 0xff..f, which indicates a vote to drop a signer. However, at checkpoints, we can only vote to drop a signer.                                                                                                                                                                                                                                                                                                                |                        |
-|                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                         | The extraData length mush account for vanity + signature. At checkpoints, the extraData contains the signer list + signature.                                                                                                                                                                                                                                                                                                                                                                                             |                        |
-|                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Header gas checks.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |                        |
-|                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Retrieve the snapshot                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |                        |
-|                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                         | On checkpoint blocks verify the signers in the snapshot against the extraData                                                                                                                                                                                                                                                                                                                                                                                                                                             |                        |
-|                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Invoke the verify Seal function to determine whether all the criteria for the signature included in the header have been satisfied. The recovery process involves extracting information from the header and the list of recent signers in the Clique object. We then verify whether the signer is included in the snapshot.                                                                                                                                                                                              |                        |     |
-| **Verify Uncles**                                                                                                                               | If the Header is a Proof-of-stake header, check that the length of uncles is 0. If the header is not Proof-of-stake, the process of verifying uncles is done via the ethone engine.                                                                                                                                                                                                                                                                     | In Clique no uncles should be present                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |                        |
-| **Prepare**: Initializes the consensus fields of a block's header.                                                                              | If TTD is reached we set the header's difficulty to beacon's difficulty of 0, else we call ethone's prepare                                                                                                                                                                                                                                                                                                                                             | Create the voting snapshot by supplying the parent hash and number.During the reverse iteration process, we start from the block number and proceed backwards. We stop the iteration if we reach the genesis block, if we are using a light client that doesn't store parent blocks, if we reach an epoch by traversing backwards, or if the headers traversed exceed the soft Finality value (indicating that the segment is considered immutable). At the checkpoint where we stop the iteration, we create a snapshot. |                        |
-|                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                         | If we are at the end of an epoch, we will go through the addresses in the proposals field of the snap object and choose one randomly as the coinbase. If the proposal is authorized, we will cast an auth-vote; otherwise, we will cast a drop vote.                                                                                                                                                                                                                                                                      |                        |
-|                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Set the header difficulty based on the signer's turn (2 if the signer is in turn and 1 if not)                                                                                                                                                                                                                                                                                                                                                                                                                            |                        |
-|                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Verify that the extraData contains all the necessary elements, including extraVanity and a list of signers if the block occurs at the end of the epoch. This is added to the Header's extraData field.                                                                                                                                                                                                                                                                                                                    |                        |
-| **Finalize**: After making changes to the state, the state database may be updated, but this action does not involve the assembly of the block. | If the header is not a Proof-of-stake header, we execute the finalize function of ethone. Otherwise, we loop through the withdrawals in the block, converting their amounts from wei to gwei. We then modify the state by adding the converted amount to the address associated with the current withdrawal.                                                                                                                                            | Clique has no post-transaction consensus rules, no block rewards in proof of authority                                                                                                                                                                                                                                                                                                                                                                                                                                    |                        |
-| **FinalizeAndAssemble**: Finalizes and assemble the final block                                                                                 | If the header is not a Proof-of-stake header, we invoke ethone's FinalizeAndAssemble. If there are no withdrawals and the block is after the Shanghai fork, we include an empty withdrawals object. Next, we invoke the finalize function to calculate the state root. We then assign this value to the root property of the header object. Finally, we construct a new block by combining the header, transactions, uncles, receipts, and withdrawals. | Verify that there are no withdrawals, invoke the finalize function, calculate the state root of our stateDB, and assign it to the the Header . Construct a new block using the header, transactions, and receipts.                                                                                                                                                                                                                                                                                                        |                        |
-| **Seal**: Generates a sealing request for a block and pushes the request into the given channel                                                 | If the header is not a Proof-of-stake header, we invoke ethone's seal. Otherwise, we take no action and return nil. The verification of the seal is performed by the consensus layer.                                                                                                                                                                                                                                                                   | Make sure that the block is not the initial block, obtain the snapshot, and confirm that we have the authority to sign and are not included in the list of recent signers. Coordinate the timing of our respective turns, apply the sign function to  sign, and transmit the securely sealed block through the designated channel.                                                                                                                                                                                        |                        |
-| **SealHash**: Hash of the block prior to sealing                                                                                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |                        |
-| **CalcDifficulty**: Difficulty adjustment algorithm, returns the difficulty of the new block                                                    |                                                                                                                                                                                                                                                                                                                                                                                                                                                         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |                        |
+| **作者**： 区块铸币者的 Ethereum 地址 | 如果标头被归类为 Proof-of-Stake (PoS) 标头，标头难度设置为 0，我们将检索标头的币库。否则，我们会将标头转发到信标的 ethone 引擎 (clique 或 ethash) 以进行进一步处理。 | 获取创建区块的账户地址。从标头的 extraData 中恢复公钥的过程由 ecrerecover 执行。 | |
+| **验证标头**：处理一批标头并根据当前共识引擎的规则对其进行验证。: | 根据 [终端总难度](https://eips.ethereum.org/EIPS/eip-3675#definitions) 将标头拆分为前后 TTD 批次。使用 ethone 引擎验证前批次，并通过信标的验证标头验证后批次。 | | |
+| | 在这里，我们执行区块标头验证，类似于 [Execution Layer Specs](wiki/EL/el-specs?id=block-header-validation) wiki 页面中的验证，并在下面的客户端代码表中进行介绍。 | 我们验证标头的时间不大于系统时间。 | |
+| | | 如果它是检查点区块 (epoch 的第一个时隙)，则确保它没有受益人。 | |
+| | | 标头随机数可以采用两个值：0x00..0，表示投票添加签名者，或 0xff..f，表示投票删除签名者。然而，在检查点，我们只能投票删除一个签名者。 | |
+| | | 额外的数据长度必须考虑虚荣+ 签名。在检查点处，extraData 包含签名者列表 + 签名。 | |
+| | | 标头 gas 检查。 | |
+| | | 检索快照 | |
+| | | 在检查点区块上根据 extraData 验证快照中的签名者 | |
+| | | 调用 verify Seal 函数来确定是否满足 header 中包含的签名的所有条件。恢复过程涉及从 Clique 对象中的标头和最近签名者列表中提取信息。然后我们验证签名者是否包含在快照中。 | | |
+| **验证叔叔** | 如果标头是 Proof-of-stake 标头，请检查叔叔的长度是否为 0。如果标头不是 Proof-of-stake，则验证叔叔的过程是通过 ethone 引擎完成的。 | 在派系中，叔叔不应该在场 | |
+| **准备**：初始化区块标头的共识字段。 | 如果达到 TTD，我们将标头的难度设置为信标的难度 0，否则我们调用 ethone 的 prepare | 通过提供父哈希和编号来创建投票快照。在反向迭代过程中，我们从区块编号开始向后进行。如果我们到达创世区块，如果我们使用不存储父区块的 轻客户端，如果我们通过向后遍历到达 epoch，或者如果遍历的标头超过了软最终确定性值 (表明该段被考虑)，我们将停止迭代不可变)。在停止迭代的检查点处，我们创建了一个快照。 | |
+| | | 如果我们位于 epoch 的末尾，我们将遍历 snap 对象的提案字段中的地址，并随机选择一个作为 coinbase。如果提案获得授权，我们将进行授权投票；否则，我们将投弃票。 | |
+| | | 根据签名者的轮次设置标头难度 (如果轮到签名者则为 2，否则为 1) | |
+| | | 验证 extraData 是否包含所有必要的元素，包括 extraVanity 和签名者列表 (如果区块出现在 epoch 的末尾)。这被添加到标头的 extraData 字段中。 | |
+| **完成**：对状态进行更改后，状态数据库可能会更新，但此操作不涉及区块的组装。 | 如果标头不是 Proof-of-Stake 标头，我们执行 ethone 的 Finalize 函数。否则，我们循环遍历区块中的提款，将其金额从 wei 转换为 gwei。然后，我们通过将转换后的金额添加到与当前提款相关的地址来修改状态。 | Clique 没有交易后共识规则，没有区块权威证明奖励 | |
+| **FinalizeAndAssemble**：完成并组装最终的区块 | 如果标头不是 Proof-of-Stake 标头，我们将调用 ethone 的 FinalizeAndAssemble。如果没有提款，并且区块在 Shanghai 分叉之后，我们将包含一个空的提款对象。接下来，我们调用 finalize 函数来计算状态根。然后我们将该值分配给标头对象的根属性。最后，我们通过组合 header、交易、叔叔、收据和提款来构造一个新的区块。 | 验证没有提款，调用 Finalize 函数，计算 stateDB 的状态根，并将其分配给 Header。使用标头交易和收据构造一个新的区块。 | |
+| **密封**：为区块生成密封请求并将请求推送到给定通道 | 如果标头不是 Proof-of-Stake 标头，我们将调用 ethone 的印章。否则，我们不采取任何行动并返回零。密封验证由 Consensus Layer 执行。 | 确保区块不是最初的区块，获取快照，并确认我们有签名权限且不包含在近期签名者列表中。协调我们各自轮流的时机，应用签名功能进行签名，并通过指定通道传输安全密封的区块。 | |
+| **SealHash**：密封之前的区块的 哈希 | | | |
+| **CalcDifficulty**：难度调整算法，返回新的区块 | 的难度 | | |
 
-#### Client code
+#### 客户端码
 
-|                                                                                           | EELS(cancun)                                                                                                                                                                          | Geth | Reth | Erigon | Nethermind | Besu |
+| | EELS (Cancun) | Geth | Reth | Erigon | Nethermind | Besu |
 | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ---- | ------ | ---------- | ---- |
-| $V(H) \equiv H_{gasUsed} \leq H_{gasLimit}$                                        | [validate_header](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L294)                                         |      |      |        |            |      |
-| $H_{gasLimit} < P(H)_{H_{gasLimit'}} + floor(\frac{P(H)_{H_{gasLimit'}}}{1024} ) $ | validate_header -> calculate_base_fee_per_gas -> [ensure](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L256) |      |      |        |            |      |
-| $H_{gasLimit} > P(H)_{H_{gasLimit'}} - floor(\frac{P(H)_{H_{gasLimit'}}}{1024} ) $ | ''                                                                                                                                                                                    |      |      |        |            |      |
-| $H_{gasLimit} > 5000$                                                              | calculate_base_fee_per_gas -> [check_gas_limit](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L1132)          |      |      |        |            |      |
-| $H_{timeStamp} > PH)_{H_{timeStamp'}} $                                           | validate_header-> [ensure](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L323)                                |      |      |        |            |      |
-| $H_{numberOfAncestors} = PH)_{H_{numberOfAncestors'}} + 1 )$                       | validate_header-> [ensure](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L324)                                |      |      |        |            |      |
-| $length(H_{extraData}) \leq 32_{bytes} $                                           | validate_header-> [ensure](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L325)                                |      |      |        |            |      |
-| $H_{baseFeePerGas} = F(H) $                                                        |                                                                                                                                                                                       |      |      |        |            |      |
-| $H_{parentHash} = KEC(RLP( P(H)_H ))  $                                            | validate_header-> [ensure](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L332)                                |      |      |        |            |      |
-| $H_{ommersHash} = KEC(RLP(())) $                                                   | validate_header-> [ensure](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L329)                                |      |      |        |            |      |
-| $H_{difficulty} = 0 $                                                              | validate_header-> [ensure](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L327)                                |      |      |        |            |      |
-| $H_{nonce} = 0x0000000000000000 $                                                  | validate_header-> [ensure](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L328)                                |      |      |        |            |      |
-| $H_{prevRandao} = PREVRANDAO()  $ (this is stale , beacon chain provides this now) |                                                                                                                                                                                       |      |      |        |            |      |
-| $H_{withdrawalHash} \neq nil $                                                     |                                                                                                                                                                                       |      |      |        |            |      |
-| $H_{blobGasUsed} \neq nil $                                                        |                                                                                                                                                                                       |      |      |        |            |      |
-| $H_{blobGasUsed} \leq  MaxBlobGasPerBlock_{=786432}  $                             |                                                                                                                                                                                       |      |      |        |            |      |
-| $H_{blobGasUsed} \% GasPerBlob_{=2^{17}} = 0 $                                     |                                                                                                                                                                                       |      |      |        |            |      |
-| $H_{excessBlobGas} = CalcExcessBlobGas(P(H)_H) $                                   | [ensure](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L187)                                                 |      |      |        |            |      |
+| $V (H) \equiv H_{gasUsed} \leq H_{gasLimit}$ | [validate_header](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L294) | | | | | |
+| $H_{gasLimit} < P (H)_{H_{gasLimit'}} + floor(\frac{P (H)_{H_{gasLimit'}}}{1024}) $ | validate_header -> calculate_base_fee_per_gas -> [确保](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L256) | | | | | |
+| $H_{gasLimit} > P (H)_{H_{gasLimit'}} - floor(\frac{P (H)_{H_{gasLimit'}}}{1024}) $ | '' | | | | | |
+| $H_{gasLimit} > 5000$ | calculate_base_fee_per_gas -> [check_gas_limit](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L1132) | | | | | |
+| $H_{timeStamp} > PH)_{H_{timeStamp'}} $ | validate_header-> [确保](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L323) | | | | | |
+| $H_{numberOfAncestors} = PH)_{H_{numberOfAncestors'}} + 1)$ | validate_header-> [确保](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L324) | | | | | |
+| $length (H_{extraData}) \leq 32_{bytes} $ | validate_header-> [确保](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L325) | | | | | |
+| $H_{baseFeePerGas} = F (H) $ | | | | | | |
+| $H_{parentHash} = KEC (RLP(P (H)_H)) $ | validate_header-> [确保](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L332) | | | | | |
+| $H_{ommersHash} = KEC (RLP(())) $ | validate_header-> [确保](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L329) | | | | | |
+| $H_{difficulty} = 0 $ | validate_header-> [确保](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L327) | | | | | |
+| $H_{nonce} = 0x0000000000000000 $ | validate_header-> [确保](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L328) | | | | | |
+| $H_{prevRandao} = PREVRANDAO() $(这是陈旧的，Beacon Chain 现在提供这个) | | | | | | |
+| $H_{withdrawalHash} \neq nil $ | | | | | | |
+| $H_{blobGasUsed} \neq nil $ | | | | | | |
+| $H_{blobGasUsed} \leq MaxBlobGasPerBlock_{=786432} $ | | | | | | |
+| $H_{blobGasUsed} \% GasPerBlob_{=2^{17}} = 0 $ | | | | | | |
+| $H_{excessBlobGas} = CalcExcessBlobGas (P (H)_H) $ | [确保](https://github.com/ethereum/execution-specs/blob/9fc7925c80ff2f3949e1cc340a4a0d36fcd4161c/src/ethereum/cancun/fork.py#L187) | | | | | |
 
-### Downloader
+### 下载器
 
-### Transaction Pools
+### 交易池
 
-In Ethereum two primary types of transaction pools are recognized:
+在 Ethereum 中，可识别两种主要类型的交易池：
 
-1. **Legacy Pools**: Managed by execution client, these pools employ price-sorted heaps or priority queues to organize transactions based on their price. Specifically, transactions are arranged using two heaps: one prioritizes the effective tip for the upcoming block, and the other focuses on the gas fee cap. During periods of saturation, the larger of these two heaps is selected for the eviction of transactions, optimizing the pool's efficiency and responsiveness. [urgent and floating heaps](https://github.com/ethereum/go-ethereum/blob/064f37d6f67a012eea0bf8d410346fb1684004b4/core/txpool/legacypool/list.go#L525)
+1. **旧池**：由执行客户端管理，这些池采用按价格排序的堆或优先级队列来根据其价格组织交易。具体来说，交易使用两个堆进行排列：一个优先考虑即将到来的区块的有效提示，另一个关注 gas 费用上限。在饱和期间，将选择这两个堆中较大的一个来驱逐交易，从而优化池的效率和响应能力。 [急浮堆](https://github.com/ethereum/go-ethereum/blob/064f37d6f67a012eea0bf8d410346fb1684004b4/core/txpool/legacypool/list.go#L525)
 
-2. **Blob Pools**: Unlike legacy pools, blob pools maintain a priority heap for transaction eviction but incorporate distinct mechanisms for operation. Notably, the implementation of blob pools is well-documented, with an extensive comments section available for review [here](https://github.com/ethereum/go-ethereum/blob/064f37d6f67a012eea0bf8d410346fb1684004b4/core/txpool/blobpool/blobpool.go#L132). A key feature of blob pools is the use of logarithmic functions in their eviction queues.
+2. **blob 池**：与旧版池不同，blob 池维护用于交易驱逐的优先级堆，但包含不同的操作机制。值得注意的是，blob 池的实现有详细记录，[此处](https://github.com/ethereum/go-ethereum/blob/064f37d6f67a012eea0bf8d410346fb1684004b4/core/txpool/blobpool/blobpool.go#L132) 有大量评论部分可供审查。 blob 池的一个关键特性是在其驱逐队列中使用对数函数。
 
-Note that these examples are using go-ethereum, specific naming and implementation details might differ in various clients while main principles stays the same. 
+请注意，这些示例使用 go-ethereum，具体命名和实现细节可能在不同的客户端中有所不同，但主要原理保持不变。 
 
 ### EVM
 
-[Wiki - EVM](/wiki/EL/evm.md)
-TODO: Move relevant code from specs into EVM
+[维基-EVM](/wiki/EL/evm.md)
+TODO：将相关代码从规范移至 EVM
 
 ### DevP2P
 
 [Wiki - DevP2P](/wiki/EL/devp2p.md)
 
-### Data structures
+### 数据结构
 
-More details in the page on [EL data structures](/wiki/EL/data-structures.md).
+更多详细信息请参见 [EL 数据结构](/wiki/EL/data-structures.md) 页面。
 
-### Storage
+### 存储和数据库后端
 
-Blockchain and state data processed by execution client need to be stored in the disk. These are necessary to validate new blocks, verify history and to serve peers in the network. Client stores historical data, also called the ancient database, which include previous blocks. Another database of trie structure contains the current state and small number of recent states. In practice, clients keep various databases for different data categories. Each client can implement a different backend to handle this data, e.g. leveldb, pebble, mdbx.
+区块链以及执行客户端处理后的状态数据需要存储在磁盘中。这些对于验证新的区块、验证历史记录以及在网络中提供对等节点是必需的。 客户端存储历史数据，也称为古数据库，其中包括以前的区块。 Trie 结构的另一个数据库包含当前状态和少量最近状态。在实践中，客户端为不同的数据类别保留了各种数据库。每个客户端可以实现不同的后端来处理这些数据，例如 leveldb、pebble、mdbx。
 
-**Leveldb** 
+**级别数据库**
 
-TODO
+LevelDB 是客户端使用的数据库实现之一，提供通用的有序键值接口，并且不了解 Ethereum 特定的结构。
 
-**Pebble** 
+LevelDB 是一个基于日志结构合并树设计的嵌入式键值数据库。写入首先附加到预写日志以进行崩溃恢复，然后插入到内存中的内存表中。当内存表已满时，它会作为不可变的排序字符串表刷新到磁盘。在磁盘上，这些表被组织成多个级别，并通过后台压缩定期合并。这种设计有利于高顺序写入吞吐量，但在数据频繁更新时会导致写入放大和可变延迟。
 
-TODO
+执行客户端大多从这种特定的数据库实现切换到具有主动支持的更现代的重新实现或具有改进性能的更多实验性设计。 
 
-**MDBX**.
+**卵石**
 
-Read more about its [features](https://github.com/erthink/libmdbx#features). Additionally, boltdb has a page on comparisons with other databases such as leveldb, [here](https://github.com/etcd-io/bbolt#comparison-with-other-databases). The comparative points mentioned on bolt are applicable to mdbx.   
+Pebble 被某些执行客户端使用作为 LevelDB 的替代品，履行与区块链数据、执行状态和索引的主要嵌入式键值存储相同的角色。 Geth 选择 pebble 作为替代方案，现在是默认后端，因为 LevelDB 已停止维护。随着其不断发展，它提供了具有某些优势的相同功能集。 
 
+
+与 LevelDB 相比，Pebble 保留了 LSM 树架构，但针对 Ethereum 执行中典型的写入量大、延迟敏感的工作负载进行了改进。它支持多个活动内存表以减少写入停顿，公开详细的 SSTable 和压缩元数据，并提供对压缩行为的更多控制。这些改进使客户端能够更好地管理写入放大，并在频繁的状态更新下实现更可预测的性能。 
+Pebble 还提供更强大的批处理语义和快照支持，使执行客户端能够更好地将数据库操作与区块执行和并发 RPC 读取保持一致。
+
+https://github.com/cockroachdb/pebble
+
+
+**MDBX**。
+
+详细了解其 [功能](https://github.com/erthink/libmdbx#features)。此外，boltdb 还有一个与其他数据库 (例如 leveldb) 进行比较的页面，[此处](https://github.com/etcd-io/bbolt#comparison-with-other-databases)。 Bolt 上提到的比较点也适用于 mdbx。   
+
+### 资源和参考资料
+
+- [Engine API 规范](https://github.com/ethereum/execution-apis/blob/main/src/engine/paris.md#payload-validation) • [已存档](https://web.archive.org/web/20250318111700/https://github.com/ethereum/execution-apis/blob/main/src/engine/paris.md#payload-validation)
+- [引擎 API：视觉指南](https://hackmd.io/@danielrachi/engine_api) • [已存档](https://web.archive.org/web/20241006232802/https://hackmd.io/@danielrachi/engine_api)
+- [Engine API |Mikhail |第 21 讲](https://youtu.be/fR7LBXAMH7g)
+- [“Snapping Snap Sync：Go Ethereum 同步节点的实际攻击”(ETH 苏黎世)](https://appliedcrypto.ethz.ch/content/dam/ethz/special-interest/infk/inst-infsec/appliedcrypto/research/TavernaPaterson-SnappingSnapSync.pdf)
+- [Geth 文档 – 同步模式](https://geth.ethereum.org/docs/fundamentals/sync-modes?utm_source=chatgpt.com) • [已存档](https://web.archive.org/web/20240505050000/https://geth.ethereum.org/docs/fundamentals/sync-modes)
+- [YouTube –“如何使用 Snap Sync 同步 Ethereum 节点”](https://www.youtube.com/watch?v=fk50UbUgkMM)
+- [Ethereum.org – Execution Layer 同步模式](https://ethereum.org/en/developers/docs/nodes-and-clients/#execution-layer-sync-modes) • [已存档](https://web.archive.org/web/20240507022042/https://ethereum.org/en/developers/docs/nodes-and-clients/#execution-layer-sync-modes)

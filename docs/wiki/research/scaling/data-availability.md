@@ -1,54 +1,54 @@
-# Data Availability
+# 数据可用性
 
-A core responsibility of any layer-1 blockchain is to guarantee _data availability_.
+任何第 1 层区块链的核心职责是保证_数据可用性_。
 
-Data availability refers to the availability of block data, i.e. headers and bodies containing the transaction tree. During synchronization, nodes download each block from its peers to verify it and add to local database. If the received block contains any incorrect transactions or any block validity rules, the is rejected as invalid. A block validation during sync is necessary for the node to operate trustlessly and build the current state which requires both historical and latest data. 
+数据可用性指 区块数据的可用性，即包含交易树的标头和正文。同步期间，节点从其对等节点中下载每个区块进行验证并添加到本地数据库。如果收到的区块包含任何不正确的交易或任何区块有效性规则，则该消息将被视为无效而被拒绝。同步期间的区块验证对于节点进行可信操作并构建需要历史数据和最新数据的当前状态是必要的。 
 
-Ethereum solves the data availability problem by requiring full nodes to download each block (and reject it if part of the data is unavailable). Each node can just request a specific block over p2p network from its peers and verify it locally. 
+Ethereum 通过要求全节点下载每个区块 (如果部分数据不可用则拒绝它) 来解决数据可用性问题。每个节点只能通过 p2p 网络从其对等节点请求特定的区块并在本地进行验证。 
 
-The data availability becomes a bottleneck for scalable systems like rollups which aim to process a lot of data. Optimistic rollups require transaction data to be available for their fraud-proof mechanism to identify and prove the incorrect state transition. And even validity-proof-based systems require data availability to ensure liveness (e.g., to prove asset ownership for a rollup’s escape hatch or forced transaction inclusion mechanism).
+数据可用性成为像 Rollup 这样旨在处理大量数据的可扩展系统的瓶颈。乐观的 Rollup 要求交易数据可用于其防欺诈机制，以识别和证明不正确的状态转换。即使基于有效性证明的系统也需要数据可用性来确保活跃性 (例如，证明 Rollup 的逃生舱口或强制交易包含机制的资产所有权)。
 
-Thus, the data availability problem for rollups (and other off-chain scaling protocols) is proving to the base layer (L1) that data for recreating the L2 state is available without requiring L1 nodes to download blocks and store copies of the data.
+因此，数据可用性 (以及其他链下扩展协议) 的数据可用性问题正在向基础层 (L1) 证明，用于重新创建 L2 状态的数据是可用的，而不需要 L1 节点下载区块并存储数据副本。
 
-## The Ethereum Approach (pre-4844)
+## Ethereum 方法 (4844 之前)
 
-Rollups on Ethereum are operated by a _sequencer_: a full node that accepts transactions from users on a L2, processes those transactions (using the rollup's virtual machine), and produces L2 blocks that update the state of contracts and accounts on the rollup.
+Ethereum 上的 Rollup 由_sequencer_ 操作：全节点从 L2 上的用户接收交易，处理这些交易 (使用 Rollup 的虚拟机)，并生成 L2 区块更新 Rollup 上的合约和账户状态。
 
-To enable Ethereum to monitor and enforce a rollup’s state transitions, a special “consensus” contract stores a state root—a cryptographic commitment to the rollup’s canonical state (similar to a block header on the L1 chain) that is generated after processing all transactions in a new batch.
+为了使 Ethereum 能够监控和强制执行 Rollup 的状态转换，一个特殊的“共识”合约存储了一个状态根——一个到 Rollup 规范状态的加密承诺 (类似于区块标头) L1 链) 是在处理新批次中的所有交易后生成的。
 
-At intervals, the sequencers arranges transactions in a new batch, and publishes the batch to the L1 by calling the L1 contract that stores rollup batches and passing the compressed data as _calldata_ to the batch submission function. Effectively storing L2 data on the L1 to ensure the availability.  
+排序器每隔一段时间就会将交易安排在新的批次中，并通过调用存储 Rollup 批次的 L1 合约并将压缩数据作为 _calldata_ 传递给批次提交函数，将该批次发布到 L1。将 L2 数据有效存储在 L1 上，保证可用性。  
 
-This was a significant cost overhead for L2s for which _blobs_ were introduced as an alternative. Compression techniques, such as removing redundancy, using bitmaps, exploiting common function signatures, employing scientific notation for large numbers, and utilizing contract storage for repetitive data, enabled the reduction of calldata size, leading to substantial gas savings.
+对于 L2 来说，这是一笔巨大的成本开销，为此引入了 _blobs_ 作为替代方案。压缩技术，例如删除冗余、使用位图、利用通用函数签名、对大数使用科学记数法以及对重复数据使用合约存储，可以减少 calldata 的大小，从而节省大量 gas 的费用。
 
 ## Data Availability Sampling
 
-The purpose of sampling is to provide the node a probabilistic guarantee that data is available. Light nodes do require a connection to other (honest) nodes to make samples. This is also true for full nodes in all blockchains – they don’t conduct data availability sampling but they require a connection to at least one other node that will provide them with historical data over the p2p network.
+采样的目的是为节点提供数据可用的概率保证。 Light 节点确实需要连接到其他 (诚实的) 节点来制作样本。对于所有区块链中的全节点也是如此 - 它们不执行 Data Availability Sampling，但它们需要连接到至少一个其他节点，以便通过 p2p 网络向它们提供历史数据。
 
-In DAS, each node only ends up downloading a small portion of the data, but the sampling is done _client-side_, and within each blob rather than between blobs. Each node (including client nodes that are not participating in staking) checks every blob, but instead of downloading the whole blob, they privately select N random indices in the blob (eg. N = 20), and attempt to download the data at just those positions.
+在 DAS 中，每个节点最终仅下载一小部分数据，但采样是在_客户端_完成的，并且在每个 blob 内而不是在 blob 之间完成。每个节点 (包括不参与质押的客户端节点) 检查每个 blob，但不是下载整个 blob，而是私下选择 blob 中的 N 个随机索引 (例如，N = 20)，并尝试下载这些位置的数据。
 
-The goal of this task is to verify that at least half of the data in each blob is _available_.
+此任务的目标是验证每个 blob 中至少有一半的数据可用。
 
 ![data-availability-sampling](../img/scaling/das.png)
 
-### Erasure Coding
+### 纠删码
 
-Erasure coding allows us to encode blobs in such a way that if at least half of the data in a blob is published, anyone in the network can reconstruct and re-publish the rest of the data; once that re-published data propagates, the clients that initially rejected the blob will converge to accept it.
+纠删码允许我们以这样的方式对 blob 进行编码：如果 blob 中至少一半的数据被发布，则网络中的任何人都可以重建并重新发布其余数据；一旦重新发布的数据传播，最初拒绝 blob 的客户端将收敛并接受它。
 
-On a high level, an erasure correcting code works like this: A vector of `k` information chunks gets encoded into a _longer_ vector of `n` coded chunks. The rate `R = k/n` of the code measures the redundancy introduced by the code. Subsequently, from certain subsets of the coded chunks we can decode the original information chunks.
+在高层次上，纠删码的工作原理如下：`k` 信息块的向量被编码为 `n` 编码块的_longer_ 向量。代码的速率`R = k/n`衡量代码引入的冗余。随后，从编码块的某些子集，我们可以解码原始信息块。
 
-If the code is [_maximum distance separable_](https://www.johndcook.com/blog/2020/03/07/mds-codes/) (MDS), then the original information chunks can be recovered from any subset of size of coded chunks, a useful efficiency and robustness guarantee. The concept works on the simple principle that if you know 2 points of a line, you can uniquely determine the entire line. In other words: Once you know the polynomial’s evaluation at `t` distinct locations, you can obtain its evaluation at any other location (by first recovering the polynomial, and then evaluating it).
+如果编码是 [_最大距离可分离_](https://www.johndcook.com/blog/2020/03/07/mds-codes/) (MDS)，则可以从编码块大小的任何子集恢复原始信息块，这是有用的效率和鲁棒性保证。这个概念的工作原理很简单，如果你知道一条线上的 2 个点，你就可以唯一地确定整条线。换句话说：一旦您知道多项式在 `t` 不同位置的评估，您就可以在任何其他位置获得其评估 (通过首先恢复多项式，然后评估它)。
 
-We require blocks to commit to the Merkle root of this "extended" data, and have light clients probabilistically check that the majority of the extended data is available, on which one of the three things is true
+我们要求区块提交此“扩展”数据的 Merkle 根，并让轻客户端概率性地检查大部分扩展数据是否可用，其中三件事之一为真
 
-- The entire extended data is available, the erasure code is constructed correctly, and the block is valid.
-- The entire extended data is available, the erasure code is constructed correctly, but the block is invalid.
-- The entire extended data is available, but the erasure code is constructed incorrectly.
+- 整个扩展数据可用，纠删码构造正确，并且区块有效。
+- 整个扩展数据可用，纠删码构造正确，但区块无效。
+- 整个扩展数据可用，但纠删码构造不正确。
 
-In case (1), the block is valid and the light client can accept it. In case (2), it is expected that some other node will quickly construct and relay a fraud proof. In case (3), it is also expected that some other node will quickly construct and relay a specialized kind of fraud proof that shows that the erasure code is constructed incorrectly. If a light client receives no fraud proofs for some time, it will take that as evidence that the block is in fact valid.
+在情况 (1) 中，区块有效并且轻客户端可以接受它。在情况 (2) 中，预计其他一些节点将快速构建中继 fraud proof。在情况 (3) 中，还预计其他一些节点将快速构造中继一种专门的 fraud proof，表明纠删码构造不正确。如果轻客户端在一段时间内没有收到 fraud proof，它将作为轻客户端实际上有效的证据。
 
-An interesting implementation to study can be found [here](https://github.com/ethereum/research/tree/master/erasure_code/ec65536).
+可以在 [此处](https://github.com/ethereum/research/tree/master/erasure_code/ec65536) 找到一个有趣的研究实现。
 
-Other resources:
+其他资源：
 
 - https://github.com/ethereum/research/wiki/A-note-on-data-availability-and-erasure-coding#what-is-the-data-availability-problem
 - https://hackmd.io/@alexbeckett/a-brief-data-availability-and-retrievability-faq

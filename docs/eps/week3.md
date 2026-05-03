@@ -1,45 +1,46 @@
-# Study Group Lecture 2 | Consensus Layer
+# 学习小组第二讲 | Consensus Layer
 
-The second day of EPFsg dives into the Consensus layer of Ethereum. 
+EPFsg 的第二天深入探讨 Ethereum 的 Consensus Layer。
 
-Watch the presentation on overview of the CL with Alex Stokes on [StreamEth](https://streameth.org/watch?event=&session=65e9f54579935301489a01eb) or [Youtube](https://www.youtube.com/watch?v=FqKjWYt6yWk). Presentations slides are [available here](https://github.com/eth-protocol-fellows/protocol-studies/tree/main/docs/eps/presentations/week3_presentation.pdf). 
+观看 Alex Stokes 在 [StreamEth](https://streameth.org/watch?event=&session=65e9f54579935301489a01eb) 或 [Youtube](https://www.youtube.com/watch?v=FqKjWYt6yWk) 上关于 CL 概述的演示。演示幻灯片 [可在此处获取](https://github.com/eth-protocol-fellows/protocol-studies/tree/main/docs/eps/presentations/week3_presentation.pdf)。
 
-[recording](https://streameth.org/embed/?playbackId=66a30awapcuiok0z&vod=true&streamId=&playerName=Consensus+Layer+Overview+%7C+Alex+Stokes+%7C+Week+3 ':include :type=iframe width=100% height=520 frameborder="0" allow="fullscreen" allowfullscreen')
+[录音](https://streameth.org/embed/?playbackId=66a30awapcuiok0z&vod=true&streamId=&playerName=Consensus+Layer+Overview+%7C+Alex+Stokes+%7C+Week+3 ':include :type=iframe width=100% height=520 frameborder="0" allow="fullscreen" allowfullscreen')
 
-For written summary of week 3 presentation, check the [notes](https://github.com/eth-protocol-fellows/protocol-studies/files/14850973/Week.3.EPFsg.Consensus.Layer.Overview.pdf)
+有关第 3 周演示的书面摘要，请查看 [注释](https://github.com/eth-protocol-fellows/protocol-studies/files/14850973/Week.3.EPFsg.Consensus.Layer.Overview.pdf)
 
-For archive of the discussion during the talk, check [this thread](https://discord.com/channels/1205546645496795137/1214219045205835776/1214219052969492541) in our Discord server.
+有关演讲期间讨论的存档，请检查我们的 Discord 服务器中的 [此线程](https://discord.com/channels/1205546645496795137/1214219045205835776/1214219052969492541)。
 
-## Pre-reading
+## 预读
 
-Before starting with the week 3 content, make yourself familiar with resources in [week 2](/eps/week2.md). 
+在开始第 3 周的内容之前，请先熟悉 [第 2 周](/eps/week2.md) 中的资源。
 
-Additionally, you can read and get ready by studying the following resources:
-- [Ethereum.org docs on Proof-of-stake](https://ethereum.org/developers/docs/consensus-mechanisms/pos) and its subtopics
-- [Beacon Chain explainer](https://ethos.dev/beacon-chain)
-- [PoS and Solar Punk Future, Dany Ryan 2022](https://www.youtube.com/watch?v=8N10a1EBhBc), a talk before the Merge, great insight into the Merge and Beacon Chain development and testing
+此外，您可以通过学习以下资源来阅读并做好准备：
 
-## Outline
+- [Ethereum.org 关于 Proof-of-Stake 的文档](https://ethereum.org/developers/docs/consensus-mechanisms/pos) 及其子主题
+- [Beacon Chain 解释](https://ethos.dev/beacon-chain)
+- [PoS 和太阳能朋克未来，Danny Ryan 2022](https://www.youtube.com/watch?v=8N10a1EBhBc)，合并前的演讲，对合并和 Beacon Chain 开发和测试的深刻见解
 
-- Blockchain enables creating a digital scarcity but it needs security which ensures its integrity
-- Distributed networks deal with Byzantine fault tolerance (BFT)
-- Bitcoin first solved the BFT with PoW
-- Ethereum moves to proof-of-stake, switching from exogenous signal for Sybil protection to endogenous in the system
-- Uses BFT majority to determine the state of the chain 
-    - Byzantine faults can be observed by the protocol and stake can be `slashed`
-    - The fork choice rule summarized in LMD-GHOST
-    - It ensures liveness thanks to Casper
-- Provides more cryptoeconomic security
+## 概要
 
-## Additional reading and exercises 
- 
-- [Gasper paper](https://arxiv.org/pdf/2003.03052.pdf)
-- [Bitwise LMD GHOST: An efficient CBC Casper fork choice rule](https://medium.com/@aditya.asgaonkar/bitwise-lmd-ghost-an-efficient-cbc-casper-fork-choice-rule-6db924e57d1f)
-- [Eth2book, annotated spec](https://eth2book.info/)
-- [Stuff you should know about PoS by Domothy](https://domothy.com/proof-of-stake/)
-- [Slashing scenario explanation by Dankrad Feist](https://dankradfeist.de/ethereum/2022/03/24/run-the-majority-client-at-your-own-peril.html)
-- [Beacon Chain design mistakes by Justin Drake](https://www.youtube.com/watch?v=10Ym34y3Eoo)
-- [Casper and Consensus from Devcon 3](https://archive.devcon.org/archive/watch/3/casper-and-consensus/?tab=YouTube)
-- [Anatomy of a slot](https://www.youtube.com/watch?v=EswDO0kL_O0)
+- 区块链能够创造数字稀缺性，但它需要确保其完整性的安全性
+- 分布式网络处理 Byzantine Fault Tolerance (BFT)
+- Bitcoin 首先用 PoW 解决了 BFT
+- Ethereum 转向 Proof-of-Stake，从 Sybil 保护的外源信号切换为系统中的内源信号
+- 使用 BFT 多数来确定链的状态
+  - 拜占庭故障可以通过协议观察，权益可以是 `slashed`
+  - 分叉选择规则总结在 LMD-GHOST 中
+  - 由于 Casper，它确保了活跃性
+- 提供更多的加密经济安全性
 
-After learning about both EL and CL, run a client pair. Spin a pair of one execution and consensus client, read their logs to learn how they operate. 
+## 额外阅读和练习
+
+- [加斯帕纸](https://arxiv.org/pdf/2003.03052.pdf)
+- [按位 LMD GHOST：高效的 CBC Casper 分叉选择规则](https://medium.com/@aditya.asgaonkar/bitwise-lmd-ghost-an-efficient-cbc-casper-fork-choice-rule-6db924e57d1f)
+- [Eth2book，带注释的规范](https://eth2book.info/)
+- [关于 PoS 你应该知道的事，作者 Domothy](https://web.archive.org/web/20240803111840/https://domothy.com/proof-of-stake/)
+- [Dankrad Feist 的削减场景解释](https://dankradfeist.de/ethereum/2022/03/24/run-the-majority-client-at-your-own-peril.html)
+- [Justin Drake 的 Beacon Chain 设计错误](https://www.youtube.com/watch?v=10Ym34y3Eoo)
+- [Casper 与 Devcon 3 共识](https://www.youtube.com/watch?v=2r2k6awEJr8)
+- [时隙剖析](https://www.youtube.com/watch?v=EswDO0kL_O0)
+
+了解 EL 和 CL 后，运行客户端对。旋转一对单执行和共识客户端，阅读它们的日志以了解它们的操作方式。
