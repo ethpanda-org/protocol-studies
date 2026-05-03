@@ -1,27 +1,27 @@
-## Wiki PR Checklist
+## Wiki PR 检查清单
 
-Thank you for contributing to the Protocol Wiki! Before you open a PR, make sure to read [information for contributors](https://epf.wiki/#/contributing) and take a look at following checklist:
+感谢你为 Protocol Wiki 做贡献！在提交 PR 前，请先阅读[贡献者说明](https://epf.wiki/#/contributing)，并确认以下事项：
 
-- [ ] Describe your changes, substitute this text with the information
-- [ ] If you are touching an existing piece of content, ask the [relevant maintainer](https://github.com/eth-protocol-fellows/protocol-studies/blob/maintainers/README.md#wiki-maintainers) for review
-- [ ] If you need feedback for your content from wider community, share the PR in our Discord
-- [ ] Review changes to ensure there are no typos, see instructions bellow
+- [ ] 描述你的改动，用具体说明替换这段文字
+- [ ] 如果你修改了现有内容，请邀请[相关维护者](https://github.com/eth-protocol-fellows/protocol-studies/blob/maintainers/README.md#wiki-maintainers) review
+- [ ] 如果你需要更广泛社区对内容提供反馈，请在我们的 Discord 中分享该 PR
+- [ ] 检查改动，确保没有拼写错误；可参考下方说明
 
 <!--
-ℹ️ Checking for typos locally
-1. Install [aspell](https://www.gnu.org/software/aspell/) for your platform.
-2. Navigate to the project root and run the script:
+ℹ️ 本地检查拼写错误
+1. 为你的平台安装 [aspell](https://www.gnu.org/software/aspell/)。
+2. 进入项目根目录并运行脚本：
 ```
 ./check_typos.sh
 ```
 
-ℹ️ Fixing typos
-1. Fix typos: Open the relevant files and fix any identified typos.
-2. Update wordlist: If a flagged word is actually a project-specific term add it to `wordlist.txt` in the project root.
-   Each word should be listed on a separate line.
- * 🚧 Remember:
-    * When adding new words it must NOT have any spaces or special characters within or around it.
-    * \`wordlist\` is NOT case sensitive.
-    * Use backticks to quote code variables so as to not bloat the \`wordlist\`.
-    * Use the HTML tag <name> to surround proper names. <name>John Doe</name>
+ℹ️ 修复拼写错误
+1. 修复拼写错误：打开相关文件并修复识别出的问题。
+2. 更新词表：如果被标记的词实际上是项目专有术语，请将它加入项目根目录下的 `wordlist.txt`。
+   每个词应单独占一行。
+ * 🚧 注意：
+    * 新增词条时，词条内部或周围不能包含空格或特殊字符。
+    * `wordlist` 不区分大小写。
+    * 使用反引号包裹代码变量，避免让 `wordlist` 膨胀。
+    * 使用 HTML 标签 <name> 包裹专有名词。示例：<name>John Doe</name>
 -->
