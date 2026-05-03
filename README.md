@@ -11,6 +11,8 @@ Learn more about the EPF study group and dive into the wiki content to study the
 You can visit the wiki at https://epf.wiki or head to /docs for the source.
 
 Join us to learn about the protocol and start contributing.
+<img width="1536" height="768" alt="image" src="https://github.com/user-attachments/assets/a9ecb128-b130-40f8-a63a-fa402f2e6b28" />
+
 
 ## 贡献指南
 
